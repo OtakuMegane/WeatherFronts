@@ -1,0 +1,128 @@
+# These are the default settings for a simulator
+# The defaults should on most small-medium servers and create similar amount of rain as the vanilla Minecraft weather
+# If you have a large server world you will likely want to adjust things
+# To apply custom settings to individual worlds edit world-settings.yml
+
+# Whether to create and remove weather fronts automatically. Manual creation will work regardless
+generate-fronts: true
+
+# The size in blocks of area to simulate fronts in. Default will cover a 40k x 40k block map
+# Fronts will simply die out when/if the center leaves the simulation area
+simulation-radius: 20000
+
+# The simulation will be centered around 0,0 by default unless the simulation-center values below are changed
+# Usually there will be no reason to change this unless you are running multiple simulators or have a spawn far from world center
+
+# X-axis location where simulation will be centered
+simulation-center-x: 0
+
+# Y-axis location where simulation will be centered
+simulation-center-z: 0
+
+# Maximum number of fronts to automatically create (you can manually add more than this)
+maximum-fronts: 8
+
+# This will apply the front intensity to the light level in fronts
+# With a front intensity of 1 you will get about the light level of vanilla rain
+# An intensity equal to maximum-intensity will be the light level of a vanilla thunderstorm
+# (This setting is purely aesthetic)
+use-intensity-for-light-level: true
+
+# Percentage chance a new front will be created each check
+# Setting this to a high number will ensure you are almost always at the maximum number of fronts
+chance-new-front: 50
+
+# Setting this true means fronts with an age-limit of 0 (front will never age) do not count towards maximum-fronts
+# If maximum-age in settings is set to 0, this will be ignored (otherwise you'd have an infinite loop of front creation)
+unending-does-not-count: true
+
+# This is the volume of the thunder and corresponds roughly to how many blocks before the sound of thunder will fade completely
+# The thunder-distance-outside setting will still override this
+# Set to 0 to disable the setting
+thunder-volume: 192
+
+# Distance outside a weather front that thunder can be heard
+thunder-distance-outside: 45
+
+# Distance outside a weather front that lightning can be seen
+lightning-distance-outside: 90
+
+# Whether there are lightning strikes in dry biomes such as desert and savanna
+# Be warned this could cause nasty wildfires as there is no rain in these biomes!
+lightning-in-dry-biomes: false
+
+# Whether there are lightning strikes in ice/snow biomes
+lightning-in-cold-biomes: false
+
+# Whether lightning striking sand or clay can create a fulgurite
+# This is disabled by default in case someone misses the setting and gets an unwanted beach full of glass
+create-fulgurites: false
+
+# The percent chance a fulgurite will be created during a lightning strike
+fulgurite-chance: 5
+
+# Maximum size (in blocks) of a fulgurite
+fulgurite-max-size: 5
+
+# This controls whether the parameters given during manual front creation will be limited to those of the simulator config
+manual-creation-limits: false
+
+# Shape of the front
+# Only rectangle so far
+front-shape: rectangle
+
+# Smallest x-axis radius for a front
+minimum-radius-x: 500
+
+# Largest x-axis radius for a front
+maximum-radius-x: 3000
+
+# Smallest z-axis radius for a front
+minimum-radius-z: 500
+
+# Largest z-axis radius for a front
+maximum-radius-z: 3000
+
+# Minimum time before a front dies out (in seconds)
+minimum-age: 180
+
+# Maximum time before a front dies out (in seconds)
+maximum-age: 1800
+
+# Chance of a front being rain only. Set to 100 for no thunderstorms
+rain-only-chance: 70
+
+# Intensity is the amount of precipitation from a front. Ranges from 1-100.
+# At present it affects the rate of snow formation, cauldrons being filled, farmland hydration and optionally the light level
+# An intensity of 10 is approximately the same as vanilla rain
+# Higher intensities will use more processing power so while it can go up to 100 it's probably not a good idea
+#
+# Minimum intensity of precipitation
+minimum-intensity: 1
+
+# The maximum intensity of precipitation
+maximum-intensity: 30
+
+# The lightning values are weighted by the front engine for a more consistent experience in larger fronts
+# For example a player inside a front with setting of 10 will witness approximately 10 strikes per minute
+# However the total number of strikes occurring throughout the entire front each minute may be higher
+# The lightning settings only apply to thunderstorms. They will not affect rainstorms obviously
+#
+# Minimum lightning strikes per minute
+# Value must be 1 or higher
+minimum-lightning-per-minute: 1
+
+# Maximum lightning strikes per minute
+maximum-lightning-per-minute: 60
+
+# Minimum speed of a front on X-axis East/West (blocks/s)
+minimum-velocity-x: 3
+
+# Maximum speed of a front on X-axis East/West (blocks/s)
+maximum-velocity-x: 12
+
+# Minimum speed of a front on Z-axis North/South (blocks/s)
+minimum-velocity-z: 3
+
+# Maximum speed of a front on Z-axis North/South (blocks/s)
+maximum-velocity-z: 12

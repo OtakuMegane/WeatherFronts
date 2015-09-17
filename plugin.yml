@@ -1,0 +1,39 @@
+name: WeatherFronts
+main: com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts
+version: 1.0
+website: http://www.minefit.com
+author: XerxesTireIron
+description: Change vanilla Minecraft weather into weather fronts.
+load: startup
+depend: [ProtocolLib]
+softdepend: [dynmap]
+
+commands:
+    fronts:
+        description: 'Commands for WeatherFronts'
+        usage: /fronts <add/addrandom/remove/list/save> [parameters]
+        aliases: [weatherfronts]
+permissions:
+    weatherfronts.*:
+        description: Full access to WeatherFronts commands
+        children:
+            weatherfronts.list: true
+            weatherfronts.save: true
+            weatherfronts.add: true
+            weatherfronts.remove: true
+            weatherfronts.rename: true
+        weatherfronts.list:
+            description: Can list weather fronts
+            default: true
+        weatherfronts.save:
+            description: Can save weather fronts data
+            default: op
+        weatherfronts.add:
+            description: Can add weather fronts
+            default: op
+        weatherfronts.remove:
+            description: Can remove weather fronts
+            default: op
+        weatherfronts.rename:
+            description: Can rename weather fronts
+            default: op

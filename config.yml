@@ -1,0 +1,11 @@
+#
+# HAI
+# 
+# These are basic plugin-wide settings
+# Most of the configuration is done in the world-specific config files
+#
+use-dynmap: true
+
+worlds-enabled:
+    example-world1: false
+        
