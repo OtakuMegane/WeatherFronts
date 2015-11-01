@@ -96,7 +96,13 @@ public class FrontEngine implements Listener
         int z = xz[1];
         boolean lightningDry = Configuration.main_config.getBoolean(simConfig + "lightning-in-dry-biomes");
         boolean lightningCold = Configuration.main_config.getBoolean(simConfig + "lightning-in-cold-biomes");
-        Block highBlock = test.getTopBlock(new Location(world, x, 0, z));
+        Block highBlock = test.getTopLightningBlock(new Location(world, x, 0, z));
+
+        if(highBlock == null)
+        {
+            return;
+        }
+
         Material blockType = highBlock.getType();
         Location highLoc = highBlock.getRelative(BlockFace.UP).getLocation();
 

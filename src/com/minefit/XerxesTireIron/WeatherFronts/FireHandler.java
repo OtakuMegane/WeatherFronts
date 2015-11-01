@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
 
 public class FireHandler implements Listener
@@ -37,7 +38,6 @@ public class FireHandler implements Listener
         for(Block block : fireBlocks.keySet())
         {
             Location location = block.getLocation();
-            Block down = block.getRelative(BlockFace.DOWN);
 
             if(!test.locationIsLoaded(location, false))
             {
@@ -52,6 +52,7 @@ public class FireHandler implements Listener
 
             if(test.locationIsInRain(location) || test.adjacentBlockExposed(block))
             {
+
                 if(fireBlocks.get(block) < 2)
                 {
                     if(block.getData() < 15)
@@ -65,20 +66,15 @@ public class FireHandler implements Listener
                 {
                     block.setType(Material.AIR);
                     fireBlocks.remove(block);
-                    continue;
                 }
             }
             else
             {
                 if(fireBlocks.get(block) > 0)
                 {
-                    if(block.getData() < 15)
-                    {
-                        block.setData((byte) 15);
-                    }
+                    block.setType(Material.AIR);
+                    fireBlocks.remove(block);
                 }
-
-                fireBlocks.remove(block);
             }
         }
     }
@@ -86,6 +82,11 @@ public class FireHandler implements Listener
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockIgnite(BlockIgniteEvent event)
     {
+        if(event.isCancelled())
+        {
+            return;
+        }
+
         Block block = event.getBlock();
         World world = block.getWorld();
         Location location = block.getLocation();
@@ -99,6 +100,11 @@ public class FireHandler implements Listener
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockBurn(BlockBurnEvent event)
     {
+        if(event.isCancelled())
+        {
+            return;
+        }
+
         Block block = event.getBlock();
         World world = block.getWorld();
         Location location = block.getLocation();
@@ -113,6 +119,11 @@ public class FireHandler implements Listener
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockSpread(BlockSpreadEvent event)
     {
+        if(event.isCancelled())
+        {
+            return;
+        }
+
         Block block = event.getBlock();
         World world = block.getWorld();
         Location location = block.getLocation();
@@ -128,6 +139,11 @@ public class FireHandler implements Listener
     @EventHandler(priority = EventPriority.NORMAL)
     public void onLightningStrike(LightningStrikeEvent event)
     {
+        if(event.isCancelled())
+        {
+            return;
+        }
+
         Block block = event.getLightning().getLocation().getBlock().getRelative(BlockFace.DOWN);
         World world = event.getWorld();
 
@@ -135,6 +151,12 @@ public class FireHandler implements Listener
         {
             fulgurite(world, block);
         }
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onClickEvent(PlayerInteractEvent event)
+    {
+        logger.info("BLOCK: " + event.getClickedBlock().getType() + "  LIGHT: " + event.getClickedBlock().getRelative(BlockFace.UP).getLightFromBlocks());
     }
 
     public void addAdjacentFire(Block block)

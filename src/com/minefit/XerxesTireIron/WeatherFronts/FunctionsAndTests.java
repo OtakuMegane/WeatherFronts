@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
@@ -185,36 +184,94 @@ public class FunctionsAndTests
     {
         return locationIsLoaded(location, false) && location.getBlockY() >= getTopBlockY(location);
     }
+    
+    public Block getTopBlock(Location location)
+    {
+        return findHighestBlock(location, 255);
+    }
 
     public int getTopBlockY(Location location)
     {
-        return getTopBlock(location).getY();
+        return findHighestBlock(location, 255).getY();
     }
 
     public Block getTopEmptyBlock(Location location)
     {
-        return getTopBlock(location).getRelative(BlockFace.UP);
+        return findHighestBlock(location, 255).getRelative(BlockFace.UP);
+    }
+    
+    public Block getTopLightningBlock(Location location)
+    {
+        Block block = findHighestBlock(location, 255);
+
+        while(!block.getType().isSolid() && !block.isLiquid())
+        {
+            if(block.getY() == 0)
+            {
+                return null;
+            }
+
+            block = findHighestBlock(location, block.getY() - 1);
+        }
+        
+        return block;
+    }
+    
+    public Block getTopSolidBlock(Location location)
+    {
+        Block block = findHighestBlock(location, 255);
+
+        while(!block.getType().isSolid())
+        {
+            if(block.getY() == 0)
+            {
+                return null;
+            }
+
+            block = findHighestBlock(location, block.getY() - 1);
+        }
+        
+        return block;
+    }
+    
+    public Block getTopLiquidBlock(Location location)
+    {
+        Block block = findHighestBlock(location, 255);
+
+        while(!block.isLiquid())
+        {
+            if(block.getY() == 0)
+            {
+                return null;
+            }
+
+            block = findHighestBlock(location, block.getY() - 1);
+        }
+        
+        return block;
     }
 
-    public Block getTopBlock(Location location)
+    public Block findHighestBlock(Location location, int start)
     {
         World world = location.getWorld();
         int i = 255;
 
-        Block topBlock = world.getBlockAt(location.getBlockX(), 0, location.getBlockZ());
+        if(start < 256 && start > 0)
+        {
+            i = start;
+        }
 
         for(; i > 0; --i)
         {
             Block testBlock = world.getBlockAt(location.getBlockX(), i, location.getBlockZ());
-            if(!testBlock.isEmpty() && testBlock.getType() != Material.ENDER_PORTAL && testBlock.getType() != Material.PORTAL
-                    && testBlock.getType() != Material.SNOW && testBlock.getType() != Material.TORCH && testBlock.getType() != Material.FIRE)
+
+            if(!testBlock.isEmpty())
             {
-                topBlock = world.getBlockAt(location.getBlockX(), i, location.getBlockZ());
-                break;
+                return testBlock;
             }
         }
 
-        return topBlock;
+        return world.getBlockAt(location.getBlockX(), 0, location.getBlockZ());
     }
 
     public boolean adjacentBlockExposed(Block block)
