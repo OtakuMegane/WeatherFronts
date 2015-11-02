@@ -18,11 +18,13 @@ import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -140,6 +142,40 @@ public class EntityHandler implements Listener
         }
     }
 
+    public void affectBlaze(World world)
+    {
+        Collection<Blaze> allBlazes = world.getEntitiesByClass(Blaze.class);
+        
+        for(Blaze blaze : allBlazes)
+        {
+            Location blazeLoc = blaze.getLocation();
+
+            if(!test.locationIsInRain(blazeLoc) || !test.locationIsLoaded(blazeLoc))
+            {
+                continue;
+            }
+
+            blaze.damage(1.0);
+        }
+    }
+    
+    public void affectSnowman(World world)
+    {
+        Collection<Snowman> allSnowmen = world.getEntitiesByClass(Snowman.class);
+        
+        for(Snowman snowman : allSnowmen)
+        {
+            Location snowmanLoc = snowman.getLocation();
+
+            if(!test.locationIsInRain(snowmanLoc) || !test.locationIsLoaded(snowmanLoc))
+            {
+                continue;
+            }
+
+            snowman.damage(1.0);
+        }
+    }
+
     public void affectEndermen(World world)
     {
         Collection<Enderman> allEndermen = world.getEntitiesByClass(Enderman.class);
@@ -147,17 +183,13 @@ public class EntityHandler implements Listener
         for(Enderman enderman : allEndermen)
         {
             Location endermanLoc = enderman.getLocation();
-            UUID endermanUUID = enderman.getUniqueId();
 
             if(!test.locationIsInRain(endermanLoc) || !test.locationIsLoaded(endermanLoc))
             {
                 continue;
             }
 
-            if(!endermanAttempts.containsKey(endermanUUID))
-            {
-                enderman.damage(1.0);
-            }
+            enderman.damage(1.0);
 
             boolean flag = false;
             int i = 0;
@@ -202,18 +234,6 @@ public class EntityHandler implements Listener
                 }
 
                 ++i;
-            }
-
-            if(!flag)
-            {
-                if(!endermanAttempts.containsKey(endermanUUID))
-                {
-                    endermanAttempts.put(endermanUUID, 1);
-                }
-                else
-                {
-                    endermanAttempts.remove(endermanUUID);
-                }
             }
         }
     }
