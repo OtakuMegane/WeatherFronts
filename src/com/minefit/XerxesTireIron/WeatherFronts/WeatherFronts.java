@@ -121,6 +121,9 @@ public class WeatherFronts extends JavaPlugin
                         entityHandler.changePlayerWeather(world);
                         entityHandler.affectEndermen(world);
                         entityHandler.affectWolves(world);
+                        entityHandler.affectBlazes(world);
+                        entityHandler.affectSnowmen(world);
+                        entityHandler.affectArrows(world);
 
                         for(String simulator : Configuration.fronts_config.getConfigurationSection(worldName).getKeys(false))
                         {

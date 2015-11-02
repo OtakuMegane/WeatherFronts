@@ -18,6 +18,7 @@ import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
@@ -141,8 +142,23 @@ public class EntityHandler implements Listener
             }
         }
     }
+    
+    public void affectArrows(World world)
+    {
+        Collection<Arrow> allArrows = world.getEntitiesByClass(Arrow.class);
+        
+        for(Arrow arrow : allArrows)
+        {
+            Location arrowLoc = arrow.getLocation();
 
-    public void affectBlaze(World world)
+            if(test.locationIsInRain(arrowLoc) && test.locationIsLoaded(arrowLoc))
+            {
+                arrow.setFireTicks(0);
+            }
+        }
+    }
+
+    public void affectBlazes(World world)
     {
         Collection<Blaze> allBlazes = world.getEntitiesByClass(Blaze.class);
         
@@ -150,16 +166,14 @@ public class EntityHandler implements Listener
         {
             Location blazeLoc = blaze.getLocation();
 
-            if(!test.locationIsInRain(blazeLoc) || !test.locationIsLoaded(blazeLoc))
+            if(test.locationIsInRain(blazeLoc) && test.locationIsLoaded(blazeLoc))
             {
-                continue;
+                blaze.damage(1.0);
             }
-
-            blaze.damage(1.0);
         }
     }
     
-    public void affectSnowman(World world)
+    public void affectSnowmen(World world)
     {
         Collection<Snowman> allSnowmen = world.getEntitiesByClass(Snowman.class);
         
@@ -167,12 +181,10 @@ public class EntityHandler implements Listener
         {
             Location snowmanLoc = snowman.getLocation();
 
-            if(!test.locationIsInRain(snowmanLoc) || !test.locationIsLoaded(snowmanLoc))
+            if(test.locationIsInRain(snowmanLoc) && test.locationIsLoaded(snowmanLoc))
             {
-                continue;
+                snowman.damage(1.0);
             }
-
-            snowman.damage(1.0);
         }
     }
 
