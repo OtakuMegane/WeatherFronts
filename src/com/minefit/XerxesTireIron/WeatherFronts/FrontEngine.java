@@ -87,7 +87,7 @@ public class FrontEngine implements Listener
         String simConfig = "worlds." + world.getName() + "." + simulator + ".";
         int[] xz = test.randomXYInFront(frontMap);
 
-        if(!test.locationIsLoaded(world, xz[0], xz[1], false))
+        if(!test.locationIsLoaded(world, xz[0], xz[1]))
         {
             return;
         }
@@ -127,7 +127,7 @@ public class FrontEngine implements Listener
     {
         int[] xz = test.randomXYInFront(frontMap);
 
-        if(!test.locationIsLoaded(world, xz[0], xz[1], false))
+        if(!test.locationIsLoaded(world, xz[0], xz[1]))
         {
             return;
         }

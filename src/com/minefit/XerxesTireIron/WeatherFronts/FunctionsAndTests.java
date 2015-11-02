@@ -182,7 +182,7 @@ public class FunctionsAndTests
 
     public Boolean locationIsAboveground(Location location)
     {
-        return locationIsLoaded(location, false) && location.getBlockY() >= getTopBlockY(location);
+        return locationIsLoaded(location) && location.getBlockY() >= getTopBlockY(location);
     }
     
     public Block getTopBlock(Location location)
@@ -414,21 +414,19 @@ public class FunctionsAndTests
         return whichFront[0];
     }
 
-    public boolean locationIsLoaded(Location location, boolean inUseCheck)
+    public boolean locationChunkIsInUse(Location location)
     {
-        if(inUseCheck)
-        {
-            return location.getWorld().isChunkInUse(location.getBlockX() >> 4, location.getBlockZ() >> 4);
-        }
-        else
-        {
-            return location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
-        }
+        return location.getWorld().isChunkInUse(location.getBlockX() >> 4, location.getBlockZ() >> 4);
     }
 
-    public boolean locationIsLoaded(World world, int x, int z, boolean inUseCheck)
+    public boolean locationIsLoaded(Location location)
     {
-        return locationIsLoaded(new Location(world, x, 0 , z), inUseCheck);
+        return location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+    }
+
+    public boolean locationIsLoaded(World world, int x, int z)
+    {
+        return locationIsLoaded(new Location(world, x, 0 , z));
     }
 
     public Map<String, Integer> mapFront(String simulator, String frontName)

@@ -39,12 +39,12 @@ public class FireHandler implements Listener
         {
             Location location = block.getLocation();
 
-            if(!test.locationIsLoaded(location, false))
+            if(!test.locationIsLoaded(location))
             {
-                continue;
+                fireBlocks.remove(block);
             }
 
-            if(block.getType() != Material.FIRE || block.getRelative(BlockFace.DOWN).getType() == Material.NETHERRACK)
+            if(!test.locationIsLoaded(location) || block.getType() != Material.FIRE || block.getRelative(BlockFace.DOWN).getType() == Material.NETHERRACK)
             {
                 fireBlocks.remove(block);
                 continue;

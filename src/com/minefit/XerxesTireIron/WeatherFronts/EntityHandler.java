@@ -149,7 +149,7 @@ public class EntityHandler implements Listener
             Location endermanLoc = enderman.getLocation();
             UUID endermanUUID = enderman.getUniqueId();
 
-            if(!test.locationIsInRain(endermanLoc) || !test.locationIsLoaded(endermanLoc, true))
+            if(!test.locationIsInRain(endermanLoc) || !test.locationIsLoaded(endermanLoc))
             {
                 continue;
             }
@@ -169,7 +169,7 @@ public class EntityHandler implements Listener
                 int z = endermanLoc.getBlockZ() + random.nextInt(64) - 32;
                 Location newLoc = new Location(world, x, y, z);
 
-                if(!test.locationIsLoaded(newLoc, true))
+                if(!test.locationIsLoaded(newLoc))
                 {
                     continue;
                 }
