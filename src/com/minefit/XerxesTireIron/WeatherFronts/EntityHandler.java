@@ -265,13 +265,14 @@ public class EntityHandler implements Listener
         int baseZ = chunk.getZ() << 4;
         int x = random.nextIntRange(baseX, baseX + 15);
         int z = random.nextIntRange(baseZ, baseZ + 15);
-        Location location = new Location(world, x + 0.5, world.getHighestBlockYAt(x, z), z + 0.5);
-
-        if(!test.locationIsInStorm(location))
+        Block block = test.getTopSolidBlock(new Location(world, x, 0, z));
+        
+        if(!block.getType().isSolid() || !test.locationIsInStorm(block.getLocation()))
         {
             return false;
         }
-
+        
+        Location location = new Location(world, x, block.getY() + 1, z);
         int hostileCount = 0;
 
         for(Entity entity : chunk.getEntities())
@@ -293,9 +294,22 @@ public class EntityHandler implements Listener
                 }
             }
         }
+        
+        int height = 2;
+        int width = 1;
+        EntityType mob = randomHostile();
+        
+        if(mob == EntityType.SPIDER || mob == EntityType.SKELETON)
+        {
+            width = 2;
+        }
+        
+        if(mob == EntityType.ENDERMAN)
+        {
+            height = 3;
+        }
 
-        if(hostileCount >= world.getMonsterSpawnLimit() || !test.locationIsInFront(location)
-                || location.getBlock().getLightFromBlocks() > 7 || !mobCanSpawn(location))
+        if(hostileCount >= world.getMonsterSpawnLimit() || location.getBlock().getLightFromBlocks() > 7 || !mobCanSpawn(location, width, height))
         {
             return false;
         }
@@ -305,18 +319,32 @@ public class EntityHandler implements Listener
         return true;
     }
 
-    public boolean mobCanSpawn(Location location)
+    public boolean mobCanSpawn(Location location, int width, int height)
     {
         World world = location.getWorld();
         int x = location.getBlockX();
         int y = location.getBlockY();
         int z = location.getBlockZ();
+        int xx = 0;
+        int yy = 0;
+        int zz = 0;
 
-        if(!world.getBlockAt(x, y - 1, z).getType().isOccluding() || !world.getBlockAt(x, y, z).isEmpty()
-                || !world.getBlockAt(x, y + 1, z).isEmpty() || !world.getBlockAt(x, y + 2, z).isEmpty())
+        for(;xx < width; ++xx)
         {
-            return false;
+            for(;zz < width; ++zz)
+            {
+                for(;yy < height; ++yy)
+                {
+                    Block block = world.getBlockAt(x + width, y + height, z + width);
+
+                    if(block.getType().isSolid() || block.isLiquid())
+                    {
+                        return false;
+                    }
+                }
+            }
         }
+
 
         return true;
     }

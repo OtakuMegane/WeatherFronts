@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
 
 public class FireHandler implements Listener
@@ -151,12 +150,6 @@ public class FireHandler implements Listener
         {
             fulgurite(world, block);
         }
-    }
-    
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onClickEvent(PlayerInteractEvent event)
-    {
-        logger.info("BLOCK: " + event.getClickedBlock().getType() + "  LIGHT: " + event.getClickedBlock().getRelative(BlockFace.UP).getLightFromBlocks());
     }
 
     public void addAdjacentFire(Block block)
