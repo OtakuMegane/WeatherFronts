@@ -54,6 +54,9 @@ lightning-in-dry-biomes: false
 # Whether there are lightning strikes in ice/snow biomes
 lightning-in-cold-biomes: false
 
+# Trigger lightning fires in spawn chunks
+lightning-fire-in-spawn-chunk: false
+
 # Whether lightning striking sand or clay can create a fulgurite
 # This is disabled by default in case someone misses the setting and gets an unwanted beach full of glass
 create-fulgurites: false
@@ -63,6 +66,9 @@ fulgurite-chance: 5
 
 # Maximum size (in blocks) of a fulgurite
 fulgurite-max-size: 5
+
+# Create fulgurites in spawn chunks
+fulgurite-in-spawn-chunk: false
 
 # This controls whether the parameters given during manual front creation will be limited to those of the simulator config
 manual-creation-limits: false

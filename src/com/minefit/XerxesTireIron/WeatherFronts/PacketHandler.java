@@ -10,45 +10,38 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
-public class PacketHandler
-{
+public class PacketHandler {
     final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
     private WeatherFronts plugin;
 
-    public PacketHandler(WeatherFronts instance)
-    {
+    public PacketHandler(WeatherFronts instance) {
         plugin = instance;
     }
 
     private FunctionsAndTests test = new FunctionsAndTests(plugin);
 
-    public void onSoundPacket(PacketEvent event)
-    {
+    public void onSoundPacket(PacketEvent event) {
         event.setCancelled(true);
 
         World world = event.getPlayer().getWorld();
         String soundName = event.getPacket().getStrings().read(0);
 
-        if(!test.worldIsEnabled(world) || soundName != "ambient.weather.thunder")
-        {
+        if (!test.worldIsEnabled(world) || soundName != "ambient.weather.thunder") {
             event.setCancelled(false);
             return;
         }
 
-        for(String key : Configuration.fronts_config.getConfigurationSection(world.getName()).getKeys(false))
-        {
+        for (String key : Configuration.fronts_config.getConfigurationSection(world.getName()).getKeys(false)) {
             String simConfig = "worlds." + world.getName() + "." + key + ".";
             int volume = Configuration.main_config.getInt(simConfig + "thunder-volume");
 
-            if(volume == 0)
-            {
+            if (volume == 0) {
                 return;
             }
 
             int hearOutside = Configuration.main_config.getInt(simConfig + "thunder-distance-outside");
 
-            for(String key2 : Configuration.fronts_config.getConfigurationSection(world.getName() + "." + key).getKeys(false))
-            {
+            for (String key2 : Configuration.fronts_config.getConfigurationSection(world.getName() + "." + key).getKeys(false)) {
                 String frontConfig = world.getName() + "." + key + "." + key2 + ".";
 
                 double x = (event.getPacket().getIntegers().read(0) / 8.0);
@@ -57,8 +50,7 @@ public class PacketHandler
                 Location eventLoc = new Location(world, x, y, z);
                 String[] front = test.locationInWhichFront(eventLoc, true, false);
 
-                if(front[1] == null)
-                {
+                if (front[1] == null) {
                     continue;
                 }
 
@@ -78,15 +70,13 @@ public class PacketHandler
                 int z1 = frontZ + frontRadiusZ;
                 int z2 = frontZ - frontRadiusZ;
 
-                if(x1 + hearOutside > playerX && x2 - hearOutside < playerX
-                        && z1 + hearOutside > playerZ && z2 - hearOutside < playerZ)
-                {
+                if (x1 + hearOutside > playerX && x2 - hearOutside < playerX && z1 + hearOutside > playerZ
+                        && z2 - hearOutside < playerZ) {
                     hearThunder = true;
                     event.getPacket().getFloat().write(0, (float) volume / 16);
                 }
 
-                if(hearThunder)
-                {
+                if (hearThunder) {
                     event.setCancelled(false);
                     break;
                 }
@@ -94,25 +84,20 @@ public class PacketHandler
         }
     }
 
-    public void onLightningPacket(PacketEvent event)
-    {
+    public void onLightningPacket(PacketEvent event) {
         event.setCancelled(true);
         World world = event.getPlayer().getWorld();
 
-        if(!test.worldIsEnabled(world))
-        {
+        if (!test.worldIsEnabled(world)) {
             event.setCancelled(false);
             return;
         }
 
-        for(String key : Configuration.fronts_config.getConfigurationSection(world.getName()).getKeys(false))
-        {
+        for (String key : Configuration.fronts_config.getConfigurationSection(world.getName()).getKeys(false)) {
             String simConfig = "worlds." + world.getName() + "." + key + ".";
 
-            for(String key2 : Configuration.fronts_config.getConfigurationSection(world.getName() + "." + key).getKeys(false))
-            {
+            for (String key2 : Configuration.fronts_config.getConfigurationSection(world.getName() + "." + key).getKeys(false)) {
                 String frontConfig = world.getName() + "." + key + "." + key2 + ".";
-
 
                 double x = (event.getPacket().getIntegers().read(1) / 32.0);
                 double y = (event.getPacket().getIntegers().read(2) / 32.0);
@@ -128,14 +113,12 @@ public class PacketHandler
                 int seeOutside = Configuration.main_config.getInt(simConfig + "lightning-distance-outside");
                 String[] front = test.locationInWhichFront(testEventLoc, false, false);
 
-                if(front[1] == null)
-                {
+                if (front[1] == null) {
                     continue;
                 }
 
-                if(frontX + frontRadiusX + seeOutside > playerX && frontX - frontRadiusX - seeOutside < playerX
-                        && frontZ + frontRadiusZ + seeOutside > playerZ && frontZ - frontRadiusZ - seeOutside < playerZ)
-                {
+                if (frontX + frontRadiusX + seeOutside > playerX && frontX - frontRadiusX - seeOutside < playerX
+                        && frontZ + frontRadiusZ + seeOutside > playerZ && frontZ - frontRadiusZ - seeOutside < playerZ) {
                     event.setCancelled(false);
                     break;
                 }
@@ -143,46 +126,36 @@ public class PacketHandler
         }
     }
 
-    public void changeWeather(Player player, String[] front)
-    {
+    public void changeWeather(Player player, String[] front) {
         World world = player.getWorld();
 
-        if(!test.worldIsEnabled(world))
-        {
+        if (!test.worldIsEnabled(world)) {
             return;
         }
 
         PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
 
-        if(front[1] == null)
-        {
+        if (front[1] == null) {
             packet1.getIntegers().write(0, 1);
             packet1.getFloat().write(0, 0.0F);
-        }
-        else
-        {
+        } else {
             String frontConfig = world.getName() + "." + front[0] + "." + front[1] + ".";
             String simConfig = "worlds." + world.getName() + "." + front[0] + ".";
             int intensity = Integer.parseInt(front[2]);
 
-            if(Configuration.fronts_config.getInt(frontConfig + "lightning-per-minute") == 0)
-            {
+            if (Configuration.fronts_config.getInt(frontConfig + "lightning-per-minute") == 0) {
                 packet1.getIntegers().write(0, 8);
                 packet1.getFloat().write(0, 0.0F);
 
-            }
-            else if(Configuration.fronts_config.getInt(frontConfig + "lightning-per-minute") != 0)
-            {
+            } else if (Configuration.fronts_config.getInt(frontConfig + "lightning-per-minute") != 0) {
                 packet1.getIntegers().write(0, 8);
                 packet1.getFloat().write(0, 1.0F);
             }
 
-            if(Configuration.main_config.getBoolean(simConfig + "use-intensity-for-light-level"))
-            {
+            if (Configuration.main_config.getBoolean(simConfig + "use-intensity-for-light-level")) {
                 int maxIntensity = Configuration.main_config.getInt(simConfig + "maximum-intensity");
 
-                if(maxIntensity > 100)
-                {
+                if (maxIntensity > 100) {
                     maxIntensity = 100;
                 }
 
@@ -194,25 +167,19 @@ public class PacketHandler
         sendPacket(packet1, player);
     }
 
-    public void sendPacket(PacketContainer packet, Player player)
-    {
-        try
-        {
+    public void sendPacket(PacketContainer packet, Player player) {
+        try {
             protocolManager.sendServerPacket(player, packet);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException("Cannot send packet " + packet, e);
         }
     }
 
-    public void onStateChangePacket(PacketEvent event)
-    {
+    public void onStateChangePacket(PacketEvent event) {
         Player player = event.getPlayer();
         World world = player.getWorld();
 
-        if(!test.worldIsEnabled(world))
-        {
+        if (!test.worldIsEnabled(world)) {
             return;
         }
 

@@ -15,8 +15,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
-public class WeatherFronts extends JavaPlugin
-{
+public class WeatherFronts extends JavaPlugin {
     Configuration config;
     FireHandler fireHandler;
     FrontEngine frontsHandler;
@@ -30,14 +29,13 @@ public class WeatherFronts extends JavaPlugin
 
     private int fiveTickTask;
     private int twentyTickTask;
-    private HashMap<String,Integer> taskDelay;
+    private HashMap<String, Integer> taskDelay;
 
     private Logger logger = Logger.getLogger("Minecraft");
     private BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         config = new Configuration(this);
         config.loadMainConfig();
 
@@ -51,7 +49,7 @@ public class WeatherFronts extends JavaPlugin
         worldListener = new WorldListener(this);
         commands = new CommandHandler(this);
 
-        taskDelay = new HashMap<String,Integer>();
+        taskDelay = new HashMap<String, Integer>();
         taskDelay.put("40t", 1);
         taskDelay.put("600t", 1);
 
@@ -63,43 +61,34 @@ public class WeatherFronts extends JavaPlugin
 
         final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
-        protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.NAMED_SOUND_EFFECT)
-        {
+        protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.NAMED_SOUND_EFFECT) {
             @Override
-            public void onPacketSending(PacketEvent event)
-            {
+            public void onPacketSending(PacketEvent event) {
                 packetHandler.onSoundPacket(event);
             }
         });
 
-        protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.SPAWN_ENTITY_WEATHER)
-        {
+        protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.SPAWN_ENTITY_WEATHER) {
             @Override
-            public void onPacketSending(PacketEvent event)
-            {
+            public void onPacketSending(PacketEvent event) {
                 packetHandler.onLightningPacket(event);
             }
         });
 
-        scheduler.scheduleSyncDelayedTask(this, new Runnable()
-        {
+        scheduler.scheduleSyncDelayedTask(this, new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 dynmapFunctions.checkDynmapSetting();
                 config.loadWorlds();
                 config.loadAllFronts();
 
-                for(String worldName : Configuration.main_config.getConfigurationSection("worlds-enabled").getKeys(false))
-                {
-                    if(Bukkit.getServer().getWorld(worldName) != null)
-                    {
+                for (String worldName : Configuration.main_config.getConfigurationSection("worlds-enabled").getKeys(false)) {
+                    if (Bukkit.getServer().getWorld(worldName) != null) {
                         World world = Bukkit.getServer().getWorld(worldName);
 
-                        for(String simulator : Configuration.fronts_config.getConfigurationSection(worldName).getKeys(false))
-                        {
-                            for(String front : Configuration.fronts_config.getConfigurationSection(worldName + "." + simulator).getKeys(false))
-                            {
+                        for (String simulator : Configuration.fronts_config.getConfigurationSection(worldName).getKeys(false)) {
+                            for (String front : Configuration.fronts_config.getConfigurationSection(worldName + "." + simulator)
+                                    .getKeys(false)) {
                                 dynmapFunctions.addMarker(world, simulator, front);
                             }
                         }
@@ -108,15 +97,11 @@ public class WeatherFronts extends JavaPlugin
             }
         }, 0L);
 
-        fiveTickTask = scheduler.scheduleSyncRepeatingTask(this, new Runnable()
-        {
+        fiveTickTask = scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
-            public void run()
-            {
-                for(String worldName : Configuration.main_config.getConfigurationSection("worlds-enabled").getKeys(false))
-                {
-                    if(Bukkit.getServer().getWorld(worldName) != null)
-                    {
+            public void run() {
+                for (String worldName : Configuration.main_config.getConfigurationSection("worlds-enabled").getKeys(false)) {
+                    if (Bukkit.getServer().getWorld(worldName) != null) {
                         World world = Bukkit.getServer().getWorld(worldName);
                         entityHandler.changePlayerWeather(world);
                         entityHandler.affectEndermen(world);
@@ -125,10 +110,9 @@ public class WeatherFronts extends JavaPlugin
                         entityHandler.affectSnowmen(world);
                         entityHandler.affectArrows(world);
 
-                        for(String simulator : Configuration.fronts_config.getConfigurationSection(worldName).getKeys(false))
-                        {
-                            for(String front : Configuration.fronts_config.getConfigurationSection(worldName + "." + simulator).getKeys(false))
-                            {
+                        for (String simulator : Configuration.fronts_config.getConfigurationSection(worldName).getKeys(false)) {
+                            for (String front : Configuration.fronts_config.getConfigurationSection(worldName + "." + simulator)
+                                    .getKeys(false)) {
                                 frontsHandler.lightningGen(world, simulator, front);
                                 frontsHandler.precipitationBlockEffects(world, simulator, front);
                             }
@@ -138,37 +122,28 @@ public class WeatherFronts extends JavaPlugin
             }
         }, 1L, 5L);
 
-        twentyTickTask = scheduler.scheduleSyncRepeatingTask(this, new Runnable()
-        {
+        twentyTickTask = scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 fireHandler.extinguishFire();
 
-                if(taskDelay.get("40t") >= 2)
-                {
+                if (taskDelay.get("40t") >= 2) {
                     frontsHandler.hydrateFarmland();
                     taskDelay.put("40t", 1);
-                }
-                else
-                {
+                } else {
                     taskDelay.put("40t", taskDelay.get("40t") + 1);
                 }
 
-                for(String worldName : Configuration.main_config.getConfigurationSection("worlds-enabled").getKeys(false))
-                {
-                    if(Bukkit.getServer().getWorld(worldName) != null)
-                    {
+                for (String worldName : Configuration.main_config.getConfigurationSection("worlds-enabled").getKeys(false)) {
+                    if (Bukkit.getServer().getWorld(worldName) != null) {
                         World world = Bukkit.getServer().getWorld(worldName);
 
                         entityHandler.spawnMobs(world);
 
-                        for(String simulator : Configuration.fronts_config.getConfigurationSection(worldName).getKeys(false))
-                        {
-                            if(taskDelay.get("600t") >= 600)
-                            {
-                                if(!Configuration.main_config.getBoolean("worlds." + worldName + "." + simulator + ".generate-fronts"))
-                                {
+                        for (String simulator : Configuration.fronts_config.getConfigurationSection(worldName).getKeys(false)) {
+                            if (taskDelay.get("600t") >= 600) {
+                                if (!Configuration.main_config.getBoolean("worlds." + worldName + "." + simulator
+                                        + ".generate-fronts")) {
                                     continue;
                                 }
 
@@ -176,14 +151,12 @@ public class WeatherFronts extends JavaPlugin
                                 frontParams.put("random", "true");
                                 frontParams.put("command", "false");
                                 frontGenerator.generateNewFront(world, simulator, frontParams);
-                            }
-                            else
-                            {
+                            } else {
                                 taskDelay.put("600t", taskDelay.get("600t") + 1);
                             }
 
-                            for(String front : Configuration.fronts_config.getConfigurationSection(worldName + "." + simulator).getKeys(false))
-                            {
+                            for (String front : Configuration.fronts_config.getConfigurationSection(worldName + "." + simulator)
+                                    .getKeys(false)) {
                                 frontsHandler.moveFront(world, simulator, front);
                                 frontsHandler.ageFront(world, simulator, front);
                             }
@@ -197,8 +170,7 @@ public class WeatherFronts extends JavaPlugin
     }
 
     @Override
-    public void onDisable()
-    {
+    public void onDisable() {
         getServer().getScheduler().cancelTask(fiveTickTask);
         getServer().getScheduler().cancelTask(twentyTickTask);
         config.saveFronts("all");
