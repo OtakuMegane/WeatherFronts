@@ -1,6 +1,9 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
+import java.util.logging.Logger;
+
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -13,6 +16,7 @@ import com.comphenix.protocol.events.PacketEvent;
 public class PacketHandler {
     final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
     private WeatherFronts plugin;
+    private Logger logger = Logger.getLogger("Minecraft");
 
     public PacketHandler(WeatherFronts instance) {
         plugin = instance;
@@ -24,9 +28,18 @@ public class PacketHandler {
         event.setCancelled(true);
 
         World world = event.getPlayer().getWorld();
-        String soundName = event.getPacket().getStrings().read(0);
+        boolean isThunder = false;
 
-        if (!test.worldIsEnabled(world) || soundName != "ambient.weather.thunder") {
+        if(this.plugin.serverVersionMajor.equals("8"))
+        {
+            isThunder = event.getPacket().getStrings().read(0).equals("ambient.weather.thunder");
+        }
+        else if(this.plugin.serverVersionMajor.equals("9"))
+        {
+            isThunder = event.getPacket().getSoundEffects().read(0) == Sound.ENTITY_LIGHTNING_THUNDER;
+        }
+
+        if (!test.worldIsEnabled(world) || !isThunder) {
             event.setCancelled(false);
             return;
         }
@@ -98,10 +111,23 @@ public class PacketHandler {
 
             for (String key2 : Configuration.fronts_config.getConfigurationSection(world.getName() + "." + key).getKeys(false)) {
                 String frontConfig = world.getName() + "." + key + "." + key2 + ".";
+                double x = 0.0;
+                double y = 0.0;
+                double z = 0.0;
 
-                double x = (event.getPacket().getIntegers().read(1) / 32.0);
-                double y = (event.getPacket().getIntegers().read(2) / 32.0);
-                double z = (event.getPacket().getIntegers().read(3) / 32.0);
+                if(this.plugin.serverVersionMajor.equals("8"))
+                {
+                    x = (event.getPacket().getIntegers().read(1) / 32.0);
+                    y = (event.getPacket().getIntegers().read(2) / 32.0);
+                    z = (event.getPacket().getIntegers().read(3) / 32.0);
+                }
+                else if(this.plugin.serverVersionMajor.equals("9"))
+                {
+                    x = (event.getPacket().getDoubles().read(0));
+                    y = (event.getPacket().getDoubles().read(1));
+                    z = (event.getPacket().getDoubles().read(2));
+                }
+
                 Player player = event.getPlayer();
                 double playerX = player.getLocation().getX();
                 double playerZ = player.getLocation().getZ();

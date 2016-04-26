@@ -19,11 +19,11 @@ public class FunctionsAndTests {
     public FunctionsAndTests(WeatherFronts instance) {
         plugin = instance;
     }
-    
+
     public Boolean locationInSpawnChunk(Location location)
     {
         Location spawn = location.getWorld().getSpawnLocation();
-        
+
         if(location.getX() < (spawn.getX() + 128 + 8) && location.getX() > (spawn.getX() - 128 - 8)
                 && location.getZ() < (spawn.getZ() + 128 + 8) && location.getZ() > (spawn.getZ() - 128 - 8))
         {
@@ -44,9 +44,9 @@ public class FunctionsAndTests {
     public Boolean biomeIsDry(Location location) {
         Biome blockBiome = location.getBlock().getBiome();
 
-        if (blockBiome == Biome.DESERT || blockBiome == Biome.DESERT_HILLS || blockBiome == Biome.DESERT_MOUNTAINS
-                || blockBiome == Biome.SAVANNA || blockBiome == Biome.SAVANNA_MOUNTAINS || blockBiome == Biome.SAVANNA_PLATEAU
-                || blockBiome == Biome.SAVANNA_PLATEAU_MOUNTAINS) {
+        if (blockBiome == Biome.DESERT || blockBiome == Biome.DESERT_HILLS || blockBiome == Biome.MUTATED_DESERT
+                || blockBiome == Biome.SAVANNA || blockBiome == Biome.SAVANNA_ROCK || blockBiome == Biome.MUTATED_SAVANNA
+                || blockBiome == Biome.MUTATED_SAVANNA_ROCK) {
             return true;
         }
 
@@ -56,9 +56,9 @@ public class FunctionsAndTests {
     public Boolean biomeIsCold(Location location) {
         Biome blockBiome = location.getBlock().getBiome();
 
-        if (blockBiome == Biome.COLD_BEACH || blockBiome == Biome.COLD_TAIGA || blockBiome == Biome.COLD_TAIGA_HILLS
-                || blockBiome == Biome.COLD_TAIGA_MOUNTAINS || blockBiome == Biome.FROZEN_OCEAN || blockBiome == Biome.FROZEN_RIVER
-                || blockBiome == Biome.ICE_MOUNTAINS || blockBiome == Biome.ICE_PLAINS || blockBiome == Biome.ICE_PLAINS_SPIKES) {
+        if (blockBiome == Biome.COLD_BEACH || blockBiome == Biome.TAIGA_COLD || blockBiome == Biome.TAIGA_COLD_HILLS
+                || blockBiome == Biome.MUTATED_TAIGA_COLD || blockBiome == Biome.FROZEN_OCEAN || blockBiome == Biome.FROZEN_RIVER
+                || blockBiome == Biome.ICE_MOUNTAINS || blockBiome == Biome.ICE_FLATS || blockBiome == Biome.MUTATED_ICE_FLATS) {
             return true;
         }
 

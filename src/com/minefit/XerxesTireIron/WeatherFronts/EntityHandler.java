@@ -196,11 +196,11 @@ public class EntityHandler implements Listener {
                             && block.getRelative(BlockFace.UP).isEmpty()
                             && block.getRelative(BlockFace.UP).getRelative(BlockFace.UP).isEmpty()) {
                         if (enderman.isInsideVehicle() && enderman.getVehicle().getType() == EntityType.MINECART) {
-                            world.playSound(endermanLoc, Sound.ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                            world.playSound(endermanLoc, Sound.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
                             break;
                         }
 
-                        world.playSound(endermanLoc, Sound.ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                        world.playSound(endermanLoc, Sound.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
                         enderman.teleport(new Location(world, x, y, z));
                         flag2 = true;
                         flag = true;
@@ -227,7 +227,7 @@ public class EntityHandler implements Listener {
             if (!test.locationIsInRain(wolfLoc) && wolvesInRain.contains(wolf)) {
                 wolvesInRain.remove(wolf);
                 wolf.playEffect(EntityEffect.WOLF_SHAKE);
-                world.playSound(wolfLoc, Sound.WOLF_SHAKE, 0.4F, 1.0F);
+                world.playSound(wolfLoc, Sound.ENTITY_WOLF_SHAKE, 0.4F, 1.0F);
             }
         }
     }

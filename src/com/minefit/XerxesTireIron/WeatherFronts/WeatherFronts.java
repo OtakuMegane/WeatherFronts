@@ -26,6 +26,8 @@ public class WeatherFronts extends JavaPlugin {
     DynmapFunctions dynmapFunctions;
     FrontGenerator frontGenerator;
     WorldListener worldListener;
+    String serverVersionMajor;
+    String serverVersionMinor;
 
     private int fiveTickTask;
     private int twentyTickTask;
@@ -48,6 +50,12 @@ public class WeatherFronts extends JavaPlugin {
         frontGenerator = new FrontGenerator(this);
         worldListener = new WorldListener(this);
         commands = new CommandHandler(this);
+
+        String name = getServer().getClass().getPackage().getName();
+        String v1 = name.substring(name.lastIndexOf(".") + 1);
+        String[] vn = v1.split("_");
+        this.serverVersionMajor = vn[1];
+        this.serverVersionMinor = vn[2];
 
         taskDelay = new HashMap<String, Integer>();
         taskDelay.put("40t", 1);
