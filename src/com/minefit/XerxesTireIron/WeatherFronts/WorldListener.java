@@ -1,26 +1,33 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
-import java.util.logging.Logger;
-
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
+
+import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
 
 public class WorldListener implements Listener {
     private WeatherFronts plugin;
-    private Logger logger = Logger.getLogger("Minecraft");
 
     public WorldListener(WeatherFronts instance) {
-        plugin = instance;
+        this.plugin = instance;
     }
-
-    private FunctionsAndTests test = new FunctionsAndTests(plugin);
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onWorldLoad(WorldLoadEvent event) {
         World world = event.getWorld();
-        plugin.config.loadWorld(world.getName());
+        this.plugin.addWorld(world);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onWorldUnload(WorldUnloadEvent event) {
+        String worldName = event.getWorld().getName();
+        FrontsWorld handle = this.plugin.getWorldHandle(worldName);
+        handle.saveFronts();
+        handle.saveSimulators();
+        this.plugin.removeWorld(worldName);
     }
 }

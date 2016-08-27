@@ -1,5 +1,6 @@
 #
-# This is for simulator-specific overrides and to create and name simulators
+# This is where we create and name simulators
+# It also contains optional simulator-specific overrides to the default settings
 # Anything setting not specified here will use the value in defaults.yml
 #
 # To add more simulators just create a new node with the simulator name
@@ -9,6 +10,3 @@
 #
 simulator1:
     generate-fronts: true
-    simulation-radius: 20000
-    simulation-center-x: 0
-    simulation-center-z: 0

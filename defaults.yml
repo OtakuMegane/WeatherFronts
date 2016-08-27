@@ -70,6 +70,13 @@ fulgurite-max-size: 5
 # Create fulgurites in spawn chunks
 fulgurite-in-spawn-chunk: false
 
+# Used when calculating mob spawns in thunderstorms
+# Vanilla and CraftBukkit is 8, Spigot default is 4 (mob-spawn-range in spigot.yml)
+mob-spawn-range: 8
+
+# Gives a small percentage increase over the normal cap because we're competing with the normal MC spawn cycle
+# Set to 0 if you want the spawn cap strictly observed
+
 # This controls whether the parameters given during manual front creation will be limited to those of the simulator config
 manual-creation-limits: false
 
@@ -90,10 +97,10 @@ minimum-radius-z: 500
 maximum-radius-z: 3000
 
 # Minimum time before a front dies out (in seconds)
-minimum-age: 180
+minimum-age-limit: 180
 
 # Maximum time before a front dies out (in seconds)
-maximum-age: 1800
+maximum-age-limit: 1800
 
 # Chance of a front being rain only. Set to 100 for no thunderstorms
 rain-only-chance: 70
@@ -116,10 +123,10 @@ maximum-intensity: 30
 #
 # Minimum lightning strikes per minute
 # Value must be 1 or higher
-minimum-lightning-per-minute: 1
+minimum-lightning-per-minute: 1.0
 
 # Maximum lightning strikes per minute
-maximum-lightning-per-minute: 60
+maximum-lightning-per-minute: 60.0
 
 # Minimum speed of a front on X-axis East/West (blocks/s)
 minimum-velocity-x: 3

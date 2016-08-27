@@ -10,12 +10,16 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
+
 public class CommandHandler implements CommandExecutor {
     private WeatherFronts plugin;
     private FunctionsAndTests test = new FunctionsAndTests(plugin);
+    private SaveData save;
 
     public CommandHandler(WeatherFronts instance) {
         plugin = instance;
+        this.save = new SaveData(instance);
     }
 
     @Override
@@ -54,12 +58,12 @@ public class CommandHandler implements CommandExecutor {
                 if (frontResult[1] == "worlddisabled") {
                     player.sendMessage("Front failed to form. Fronts are disabled in world " + worldName + ".");
                 } else {
-                    String frontX = Integer.toString(Configuration.fronts_config.getInt(worldName + "." + frontResult[2] + "."
-                            + frontResult[0] + ".center-x"));
-                    String frontZ = Integer.toString(Configuration.fronts_config.getInt(worldName + "." + frontResult[2] + "."
-                            + frontResult[0] + ".center-z"));
-                    player.sendMessage("New front named " + frontResult[0] + " has randomly formed in world " + worldName + " at "
-                            + "X: " + frontX + " Z: " + frontZ);
+                    String frontX = Integer.toString(Configuration.fronts_config
+                            .getInt(worldName + "." + frontResult[2] + "." + frontResult[0] + ".center-x"));
+                    String frontZ = Integer.toString(Configuration.fronts_config
+                            .getInt(worldName + "." + frontResult[2] + "." + frontResult[0] + ".center-z"));
+                    player.sendMessage("New front named " + frontResult[0] + " has randomly formed in world "
+                            + worldName + " at " + "X: " + frontX + " Z: " + frontZ);
                 }
 
                 return true;
@@ -132,14 +136,15 @@ public class CommandHandler implements CommandExecutor {
                     if (frontResult[1] == "worlddisabled") {
                         player.sendMessage("Front failed to form. Fronts are disabled in world " + worldName + ".");
                     } else if (frontResult[1] == "invalidsim") {
-                        player.sendMessage("Front failed to form. The location given is not within a valid weather simulation.");
+                        player.sendMessage(
+                                "Front failed to form. The location given is not within a valid weather simulation.");
                     } else {
-                        String frontX = Integer.toString(Configuration.fronts_config.getInt(worldName + "." + frontResult[2] + "."
-                                + frontResult[0] + ".center-x"));
-                        String frontZ = Integer.toString(Configuration.fronts_config.getInt(worldName + "." + frontResult[2] + "."
-                                + frontResult[0] + ".center-z"));
-                        player.sendMessage("New front named " + frontResult[0] + " has formed in world " + worldName + " at "
-                                + "X: " + frontX + " Z: " + frontZ);
+                        String frontX = Integer.toString(Configuration.fronts_config
+                                .getInt(worldName + "." + frontResult[2] + "." + frontResult[0] + ".center-x"));
+                        String frontZ = Integer.toString(Configuration.fronts_config
+                                .getInt(worldName + "." + frontResult[2] + "." + frontResult[0] + ".center-z"));
+                        player.sendMessage("New front named " + frontResult[0] + " has formed in world " + worldName
+                                + " at " + "X: " + frontX + " Z: " + frontZ);
                     }
 
                     return true;
@@ -171,7 +176,8 @@ public class CommandHandler implements CommandExecutor {
 
                     if (frontId != null) {
                         if (plugin.frontsHandler.removeFront(world, null, frontId)) {
-                            player.sendMessage("The front " + frontId + " in world " + world.getName() + " has dissipated.");
+                            player.sendMessage(
+                                    "The front " + frontId + " in world " + world.getName() + " has dissipated.");
                         }
                         return true;
                     }
@@ -198,8 +204,8 @@ public class CommandHandler implements CommandExecutor {
                 }
 
                 for (String key : Configuration.fronts_config.getConfigurationSection(world.getName()).getKeys(false)) {
-                    for (String key2 : Configuration.fronts_config.getConfigurationSection(world.getName() + "." + key).getKeys(
-                            false)) {
+                    for (String key2 : Configuration.fronts_config.getConfigurationSection(world.getName() + "." + key)
+                            .getKeys(false)) {
                         String frontConfig = world.getName() + "." + key + "." + key2 + ".";
                         String heading = "Heading: ";
                         String type = "Type: ";
@@ -246,9 +252,9 @@ public class CommandHandler implements CommandExecutor {
 
                 if (arguments.length > 1) {
                     if (arguments[1].equalsIgnoreCase("-w")) {
-                        plugin.config.saveFronts(arguments[1]);
+                        this.save.saveFrontsForWorld(this.plugin.worlds.get(arguments[1]).getWorld());
                     } else {
-                        plugin.config.saveFronts("all");
+                        this.save.saveAllFronts();
                     }
                 }
 
@@ -278,13 +284,14 @@ public class CommandHandler implements CommandExecutor {
             int argLength = arguments.length - 1;
             String original = null;
             String newname = null;
+            FrontsWorld worldHandle = this.plugin.worlds.get(world.getName());
 
             for (int i = 1; i < argLength; i++) {
                 String currentArgument = arguments[i].trim();
                 String currentValue = arguments[i + 1].trim();
 
                 if (currentArgument.equalsIgnoreCase("-w")) {
-                    world = Bukkit.getWorld(currentValue);
+                    worldHandle = this.plugin.worlds.get(currentValue);
                 } else if (currentArgument.equalsIgnoreCase("-from")) {
                     original = currentValue;
                 } else if (currentArgument.equalsIgnoreCase("-to")) {
@@ -294,14 +301,14 @@ public class CommandHandler implements CommandExecutor {
                 i++;
             }
 
-            String worldName = world.getName();
+            String worldName = worldHandle.getWorld().getName();
 
-            if (Configuration.fronts_config.contains("worlds." + worldName + "." + newname)) {
+            if (worldHandle.hasFront(newname)) {
                 player.sendMessage("A front named " + newname + " already exists");
                 player.sendMessage("in world " + worldName);
             } else {
-                plugin.config.renameFront(worldName, original, newname);
-                plugin.config.saveFronts(worldName);
+                this.plugin.worlds.get(worldName).getSimulatorByFront(original).renameFront(original, newname);
+                this.save.saveFrontsForWorld(this.plugin.worlds.get(world).getWorld());
                 player.sendMessage("Front " + original + " in world " + worldName);
                 player.sendMessage("has been renamed to " + newname);
             }

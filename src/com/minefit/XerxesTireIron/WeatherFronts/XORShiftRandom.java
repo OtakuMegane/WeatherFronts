@@ -40,6 +40,14 @@ public class XORShiftRandom extends Random {
         return this.nextInt((max - min) + 1) + min;
     }
 
+    public double nextDoubleRange(double min, double max) {
+        if (max == Double.MAX_VALUE) {
+            max = max - 1;
+        }
+
+        return this.nextDouble() * (max - min) + min;
+    }
+
     @Override
     public void setSeed(long seed) {
         this.seed = seed;
