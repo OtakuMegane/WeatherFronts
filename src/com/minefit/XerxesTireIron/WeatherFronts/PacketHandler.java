@@ -1,5 +1,7 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
+import java.util.logging.Logger;
+
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -7,15 +9,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
-import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class PacketHandler {
     private final WeatherFronts plugin;
+    private Logger logger = Logger.getLogger("Minecraft");
 
     public PacketHandler(WeatherFronts instance) {
         this.plugin = instance;
@@ -26,7 +26,7 @@ public class PacketHandler {
         World world = event.getPlayer().getWorld();
         boolean isThunder = false;
 
-        if (this.plugin.oldPacket) {
+        if (this.plugin.useOldPacket()) {
             isThunder = event.getPacket().getStrings().read(0).equals("ambient.weather.thunder");
         } else {
             isThunder = event.getPacket().getSoundEffects().read(0) == Sound.ENTITY_LIGHTNING_THUNDER;
@@ -66,6 +66,7 @@ public class PacketHandler {
 
         if (x1 + hearOutside > playerX && x2 - hearOutside < playerX && z1 + hearOutside > playerZ
                 && z2 - hearOutside < playerZ) {
+            logger.info("lightningSound " + x + " " + z);
             event.setCancelled(false);
             event.getPacket().getFloat().write(0, (float) volume / 16);
         }
@@ -84,7 +85,7 @@ public class PacketHandler {
         double y = 0.0;
         double z = 0.0;
 
-        if (this.plugin.oldPacket) {
+        if (this.plugin.useOldPacket()) {
             x = (event.getPacket().getIntegers().read(1) / 32.0);
             y = (event.getPacket().getIntegers().read(2) / 32.0);
             z = (event.getPacket().getIntegers().read(3) / 32.0);
@@ -125,7 +126,7 @@ public class PacketHandler {
             return;
         }
 
-        PacketContainer packet1 = this.plugin.protocolManager.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
+        PacketContainer packet1 = this.plugin.getProtocolManager().createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
 
         if (front == null) {
             packet1.getIntegers().write(0, 1);
@@ -134,7 +135,7 @@ public class PacketHandler {
             FrontsWorld worldHandle = this.plugin.getWorldHandle(world);
             YamlConfiguration simConfig = worldHandle.getSimulatorByFront(front).getSimulatorConfig();
             YamlConfiguration frontConfig = worldHandle.getSimulatorByFront(front).getFrontData(front);
-            int intensity = frontConfig.getInt("intensity");
+            int intensity = frontConfig.getInt("precipitation-intensity");
 
             if (frontConfig.getInt("lightning-per-minute") == 0) {
                 packet1.getIntegers().write(0, 8);
@@ -146,7 +147,7 @@ public class PacketHandler {
             }
 
             if (simConfig.getBoolean("use-intensity-for-light-level")) {
-                int maxIntensity = simConfig.getInt("maximum-intensity");
+                int maxIntensity = simConfig.getInt("maximum-precipitation-intensity");
 
                 if (maxIntensity > 100) {
                     maxIntensity = 100;
@@ -162,7 +163,7 @@ public class PacketHandler {
 
     public void sendPacket(PacketContainer packet, Player player) {
         try {
-            this.plugin.protocolManager.sendServerPacket(player, packet);
+            this.plugin.getProtocolManager().sendServerPacket(player, packet);
         } catch (Exception e) {
             throw new RuntimeException("Cannot send packet " + packet, e);
         }

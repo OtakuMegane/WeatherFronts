@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.bukkit.World;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -21,12 +19,11 @@ public class LoadData {
         }
     }
 
-    public YamlConfiguration loadMainConfig()
-    {
+    public YamlConfiguration loadMainConfig() {
         YamlConfiguration main_config = new YamlConfiguration();
 
         try {
-            File configFile = new File(plugin.getDataFolder() + File.separator + "config.yml");
+            File configFile = new File(this.plugin.getDataFolder() + File.separator + "config.yml");
 
             if (!configFile.exists()) {
                 copy(this.plugin.getResource("config.yml"), configFile);
@@ -40,20 +37,21 @@ public class LoadData {
         return main_config;
     }
 
-    public YamlConfiguration loadConfigForWorld(String worldName, String fileName, boolean copyFile)
-    {
+    public YamlConfiguration loadConfigForWorld(String worldName, String fileName, boolean copyFile) {
         YamlConfiguration config = new YamlConfiguration();
 
         try {
-            File configFile = new File(plugin.getDataFolder() + File.separator + worldName + File.separator + fileName);
+            File configFile = new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + fileName);
 
             if (!configFile.exists()) {
-                File newFile = new File(this.plugin.getDataFolder() + File.separator + worldName);
-                //configFile.mkdirs();
-                configFile.createNewFile();
-                if(copyFile)
-                {
+
+                if (copyFile) {
                     copy(this.plugin.getResource(fileName), configFile);
+                }
+                else
+                {
+                configFile.mkdirs();
+                configFile.createNewFile();
                 }
             }
 
@@ -65,20 +63,17 @@ public class LoadData {
         return config;
     }
 
-    public YamlConfiguration combineConfigDefaults(String path, YamlConfiguration defaults, YamlConfiguration config)
-    {
+    public YamlConfiguration combineConfigDefaults(String path, YamlConfiguration defaults, YamlConfiguration config) {
 
-     YamlConfiguration combined = new YamlConfiguration();
-     // Loop through default settings
+        YamlConfiguration combined = new YamlConfiguration();
+        // Loop through default settings
         for (String key : defaults.getKeys(false)) {
             // Loop through each simulator for the current setting
             ConfigurationSection config2 = config.getConfigurationSection(path);
             for (String key2 : config2.getKeys(false)) {
                 if (!config2.contains(key)) {
                     combined.set(key, defaults.get(key));
-                }
-                else
-                {
+                } else {
                     combined.set(key, config2.get(key));
                 }
             }
@@ -87,18 +82,15 @@ public class LoadData {
         return combined;
     }
 
-    public YamlConfiguration loadSimulatorFrontsData(String simulatorName, YamlConfiguration worldFrontsData)
-    {
+    public YamlConfiguration loadSimulatorFrontsData(String simulatorName, YamlConfiguration worldFrontsData) {
         YamlConfiguration simulatorFronts = (YamlConfiguration) worldFrontsData.getConfigurationSection(simulatorName);
         return simulatorFronts;
     }
 
-    public YamlConfiguration loadFrontData(String frontName, YamlConfiguration simulatorFrontsData)
-    {
+    public YamlConfiguration loadFrontData(String frontName, YamlConfiguration simulatorFrontsData) {
         YamlConfiguration frontData = new YamlConfiguration();
         ConfigurationSection frontSection = simulatorFrontsData.getConfigurationSection(frontName);
-        for(String key : frontSection.getKeys(true))
-        {
+        for (String key : frontSection.getKeys(true)) {
             frontData.set(key, frontSection.get(key));
         }
 

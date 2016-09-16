@@ -74,9 +74,6 @@ fulgurite-in-spawn-chunk: false
 # Vanilla and CraftBukkit is 8, Spigot default is 4 (mob-spawn-range in spigot.yml)
 mob-spawn-range: 8
 
-# Gives a small percentage increase over the normal cap because we're competing with the normal MC spawn cycle
-# Set to 0 if you want the spawn cap strictly observed
-
 # This controls whether the parameters given during manual front creation will be limited to those of the simulator config
 manual-creation-limits: false
 
@@ -105,22 +102,31 @@ maximum-age-limit: 1800
 # Chance of a front being rain only. Set to 100 for no thunderstorms
 rain-only-chance: 70
 
-# Intensity is the amount of precipitation from a front. Ranges from 1-100.
+# Is it possible for rain to change into athunderstorm (currently not used)
+rain-to-thunder: true
+
+# Percent chance of rain turning into a thunderstorm (currently not used)
+chane-rain-to-thunder: 10
+
+# Precipitation intensity is the amount of precipitation from a front. Ranges from 1-100.
 # At present it affects the rate of snow formation, cauldrons being filled, farmland hydration and optionally the light level
 # An intensity of 10 is approximately the same as vanilla rain
-# Higher intensities will use more processing power so while it can go up to 100 it's probably not a good idea
 #
 # Minimum intensity of precipitation
-minimum-intensity: 1
+minimum-precipitation-intensity: 1
 
 # The maximum intensity of precipitation
-maximum-intensity: 30
+maximum-precipitation-intensity: 30
 
-# The lightning values are weighted by the front engine for a more consistent experience in larger fronts
+# Whether to use weighted lightning for larger storms
+# The lightning values will be weighted by the front engine for a more consistent experience in larger fronts
 # For example a player inside a front with setting of 10 will witness approximately 10 strikes per minute
 # However the total number of strikes occurring throughout the entire front each minute may be higher
-# The lightning settings only apply to thunderstorms. They will not affect rainstorms obviously
-#
+use-weighted-lightning: true
+
+# The minimum radius to activate weight calculations for lightning
+weight-radius-threshold: 192
+
 # Minimum lightning strikes per minute
 # Value must be 1 or higher
 minimum-lightning-per-minute: 1.0

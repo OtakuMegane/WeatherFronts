@@ -15,6 +15,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Functions;
 
 public class LightningGen {
     private final WeatherFronts plugin;
+    private final Front front;
     private final YamlConfiguration frontConfig;
     private final YamlConfiguration simulatorConfig;
     private final Functions functions;
@@ -25,10 +26,11 @@ public class LightningGen {
     private double lightningPerCheck;
     private boolean hasLightning;
 
-    public LightningGen(WeatherFronts instance, YamlConfiguration config, YamlConfiguration config2) {
+    public LightningGen(WeatherFronts instance, YamlConfiguration config, Front front) {
         this.plugin = instance;
-        this.frontConfig = config;
-        this.simulatorConfig = config2;
+        this.front = front;
+        this.frontConfig = front.getData();
+        this.simulatorConfig = config;
         this.functions = new Functions(instance);
         this.blocktest = new BlockTests(instance);
         this.locationtest = new LocationTests(instance);
@@ -38,17 +40,21 @@ public class LightningGen {
         } else {
             this.hasLightning = true;
             this.weightedLPM = this.frontConfig.getDouble("lightning-per-minute");
-            weight();
+
+            if (this.simulatorConfig.getBoolean("use-weighted-lightning")) {
+                weight(this.simulatorConfig.getInt("weight-radius-threshold"));
+            }
+
             this.lightningPerCheck = this.weightedLPM / 240;
         }
     }
 
-    private void weight() {
-        if (this.frontConfig.getInt("radius-x") > 160) {
+    private void weight(int threshold) {
+        if (this.frontConfig.getInt("radius-x") > threshold) {
             this.weightedLPM *= this.frontConfig.getInt("radius-x") / 160;
         }
 
-        if (this.frontConfig.getInt("radius-z") > 160) {
+        if (this.frontConfig.getInt("radius-z") > threshold) {
             this.weightedLPM *= this.frontConfig.getInt("radius-z") / 160;
         }
     }
@@ -72,8 +78,8 @@ public class LightningGen {
         }
     }
 
-    public void randomStrike(World world, Chunk[] validChunks) {
-        int[] xz = this.functions.randomXYInFront(this.frontConfig);
+    private void randomStrike(World world, Chunk[] validChunks) {
+        int[] xz = this.functions.randomXYInFront(this.front.getDimSpeed());
 
         if (!this.locationtest.locationIsLoaded(world, xz[0], xz[1])) {
             return;
@@ -92,7 +98,8 @@ public class LightningGen {
         Location highLoc = highBlock.getRelative(BlockFace.UP).getLocation();
         Biome biome = highBlock.getBiome();
 
-        if ((!this.functions.biomeIsDry(biome) && !this.functions.biomeIsCold(biome)) || (this.functions.biomeIsDry(biome) && lightningDry)
+        if ((!this.functions.biomeIsDry(biome) && !this.functions.biomeIsCold(biome))
+                || (this.functions.biomeIsDry(biome) && lightningDry)
                 || (this.functions.biomeIsCold(biome) && lightningCold)) {
             world.strikeLightning(highLoc);
         }

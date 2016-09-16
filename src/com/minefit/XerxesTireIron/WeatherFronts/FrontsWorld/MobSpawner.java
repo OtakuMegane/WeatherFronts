@@ -49,6 +49,11 @@ public class MobSpawner {
         }
 
         List<Player> allPlayers = world.getPlayers();
+
+        if (allPlayers.size() == 0) {
+            return;
+        }
+
         Set<Chunk> playerChunks = new HashSet<Chunk>();
         int mobRange = 8;
 
@@ -90,9 +95,7 @@ public class MobSpawner {
                 int baseX = chunk.getX() << 4;
                 int baseZ = chunk.getZ() << 4;
                 int x = random.nextIntRange(baseX, baseX + 15);
-                //int y = random.nextIntRange(0, 255);
                 int z = random.nextIntRange(baseZ, baseZ + 15);
-                // Block block = this.world.getBlockAt(x, y, z);
                 Block block = this.blocktest.getTopSolidBlock(new Location(world, x, 0, z));
 
                 if (!this.locationtest.locationIsInWeather(block.getLocation())
@@ -126,7 +129,7 @@ public class MobSpawner {
         }
     }
 
-    public int spawnPack(Block centerBlock) {
+    private int spawnPack(Block centerBlock) {
         int packMobs = 0;
         int packSize = 3;
         int centerX = centerBlock.getX();
@@ -218,8 +221,7 @@ public class MobSpawner {
     }
 
     public EntityType randomHostile() {
-        // From BiomeBase.java, hostile mob weights (minus slime for now) totals
-        // 415
+        // From BiomeBase.java, hostile mob weights (minus slime for now) totals 415
         int roll = random.nextInt(415);
 
         if (roll < 100) {

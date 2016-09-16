@@ -1,6 +1,8 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -18,52 +20,53 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
 
 public class WeatherFronts extends JavaPlugin {
-    final WeatherListener weatherListener;
-    Commands commands;
-    public final PacketHandler packetHandler;
-    //final DynmapFunctions dynmapFunctions;
-    private final WorldListener worldListener;
+    private final WeatherListener weatherListener = new WeatherListener(this);
+    private final Commands commands = new Commands(this);
+    private final PacketHandler packetHandler = new PacketHandler(this);
+    private final DynmapFunctions dynmap = new DynmapFunctions(this);
+    private final WorldListener worldListener = new WorldListener(this);
     private final ServerVersion serverVersion = new ServerVersion(this);
     private Logger logger = Logger.getLogger("Minecraft");
-    public boolean oldPacket;
+    private final boolean oldPacket;
     private final Map<String, FrontsWorld> worlds = new HashMap<String, FrontsWorld>();
     private YamlConfiguration mainConfig;
     private final LoadData load = new LoadData(this);
-    private final SaveData save = new SaveData(this);
-    public ProtocolManager protocolManager;
+    private final List<String> compatibleVersions;
+    private ProtocolManager protocolManager;
 
     public WeatherFronts() {
-        this.worldListener = new WorldListener(this);
-        this.weatherListener = new WeatherListener(this);
-        this.packetHandler = new PacketHandler(this);
-        //this.dynmapFunctions = new DynmapFunctions(this);
-        this.commands = new Commands(this);
+        this.compatibleVersions = Arrays.asList("v1_7_R1", "v1_7_R2", "v1_7_R3", "v1_7_R4", "v1_8_R1", "V1_8_R2",
+                "v1_8_R3", "v1_9_R1", "v1_9_R2", "v1_10_R1");
+
+        if (!this.serverVersion.compatibleVersion(this.compatibleVersions)) {
+            this.logger.info(
+                    "[" + this.getName() + " Error] This version of Minecraft is not supported. Disabling plugin.");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+
+        if (this.serverVersion.getMajor().equals("7") || this.serverVersion.getMajor().equals("8")) {
+            this.oldPacket = true;
+        } else {
+            this.oldPacket = false;
+        }
     }
 
     @Override
     public void onEnable() {
-        this.mainConfig = this.load.loadMainConfig();
         this.protocolManager = ProtocolLibrary.getProtocolManager();
+        this.mainConfig = this.load.loadMainConfig();
+        this.dynmap.initDynmap();
+        this.getServer().getPluginManager().registerEvents(this.weatherListener, this);
+        this.getServer().getPluginManager().registerEvents(this.worldListener, this);
 
-        if (this.serverVersion.major.equals("7") || serverVersion.major.equals("8")) {
-            oldPacket = true;
-        } else {
-            oldPacket = false;
-        }
-
-        this.getServer().getPluginManager().registerEvents(weatherListener, this);
-        this.getServer().getPluginManager().registerEvents(worldListener, this);
-
-        final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-
-        protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.NAMED_SOUND_EFFECT) {
+        this.protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.NAMED_SOUND_EFFECT) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 packetHandler.onSoundPacket(event);
             }
         });
 
-        protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.SPAWN_ENTITY_WEATHER) {
+        this.protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.SPAWN_ENTITY_WEATHER) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 packetHandler.onLightningPacket(event);
@@ -75,6 +78,8 @@ public class WeatherFronts extends JavaPlugin {
         }
 
         getCommand("fronts").setExecutor(this.commands);
+
+        this.logger.info(this.getName() + " WeatherFronts has loaded successfully!");
     }
 
     @Override
@@ -82,6 +87,21 @@ public class WeatherFronts extends JavaPlugin {
         for (Entry<String, FrontsWorld> entry : this.worlds.entrySet()) {
             entry.getValue().shutdown();
         }
+    }
+
+    public PacketHandler getPacketHandler()
+    {
+        return this.packetHandler;
+    }
+
+    public ProtocolManager getProtocolManager()
+    {
+        return this.protocolManager;
+    }
+
+    public boolean useOldPacket()
+    {
+        return this.oldPacket;
     }
 
     public FrontsWorld addWorld(World world) {

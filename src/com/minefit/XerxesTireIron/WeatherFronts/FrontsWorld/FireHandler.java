@@ -23,6 +23,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.BlockTests;
 import com.minefit.XerxesTireIron.WeatherFronts.LocationTests;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
+import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class FireHandler implements Listener {
     private final Random random = new XORShiftRandom();
@@ -81,8 +82,14 @@ public class FireHandler implements Listener {
         Block block = event.getBlock();
         World world = block.getWorld();
         Location location = block.getLocation();
-        YamlConfiguration simulatorConfig = this.plugin.getWorldHandle(world).getSimulatorByLocation(location)
-                .getSimulatorConfig();
+        Simulator simulator = this.plugin.getWorldHandle(world).getSimulatorByLocation(location);
+
+        if(simulator == null)
+        {
+            return;
+        }
+
+        YamlConfiguration simulatorConfig = simulator.getSimulatorConfig();
 
         if (event.getCause() == IgniteCause.LIGHTNING && this.locationtest.locationInSpawnChunk(location)
                 && !simulatorConfig.getBoolean("lightning-fire-in-spawn-chunk")) {
@@ -132,14 +139,22 @@ public class FireHandler implements Listener {
 
         Location location = event.getLightning().getLocation();
         Block block = event.getLightning().getLocation().getBlock();
-        YamlConfiguration simulatorConfig = this.plugin.getWorldHandle(world).getSimulatorByLocation(location).getSimulatorConfig();
 
-        if (!simulatorConfig.getBoolean("create-fulgurites") ) {
+        Simulator simulator = this.plugin.getWorldHandle(world).getSimulatorByLocation(location);
+
+        if(simulator == null)
+        {
             return;
         }
 
-        if(this.random.nextInt(100) < simulatorConfig.getInt("fulgurite-chance") || simulatorConfig.getInt("fulgurite-chance") == 100)
-        {
+        YamlConfiguration simulatorConfig = simulator.getSimulatorConfig();
+
+        if (!simulatorConfig.getBoolean("create-fulgurites")) {
+            return;
+        }
+
+        if (this.random.nextInt(100) < simulatorConfig.getInt("fulgurite-chance")
+                || simulatorConfig.getInt("fulgurite-chance") == 100) {
             generateFulgurite(block);
         }
     }
@@ -186,39 +201,35 @@ public class FireHandler implements Listener {
         YamlConfiguration simulatorConfig = frontsWorld.getSimulatorByLocation(block.getLocation())
                 .getSimulatorConfig();
 
-        Material blockType = block.getType();
-        Material newType = convertBlock(blockType);
-
         if (this.locationtest.locationInSpawnChunk(block.getLocation())
                 && !simulatorConfig.getBoolean("fulgurite-in-spawn-chunk")) {
             return;
         }
 
-        if (newType == null) {
+        Material blockType = convertBlock(block.getType());
+
+        if (blockType == null) {
             return;
         }
 
-        block.setType(newType);
+        block.setType(blockType);
         int limit = random.nextInt(simulatorConfig.getInt("fulgurite-max-size"));
         Block baseBlock = block;
-
         int i = 0;
+        BlockFace[] faces = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.DOWN };
 
         for (i = 0; i < limit; ++i) {
-            BlockFace[] faces = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.DOWN };
             Block block2 = baseBlock.getRelative(faces[random.nextInt(5)]);
 
-            if (limit > 2 && i == 0) {
-                block2 = block.getRelative(BlockFace.DOWN);
+            if (i == 0 && limit > 2) {
+                block2 = baseBlock.getRelative(BlockFace.DOWN);
             }
 
-            newType = convertBlock(block2.getType());
+            Material newType = convertBlock(block2.getType());
 
-            if (newType == null) {
-                return;
+            if (newType != null) {
+                block2.setType(newType);
             }
-
-            block2.setType(newType);
 
             if (random.nextInt(2) == 0) {
                 baseBlock = block2;

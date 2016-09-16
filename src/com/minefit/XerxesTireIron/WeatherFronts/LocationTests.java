@@ -18,13 +18,8 @@ public class LocationTests {
 
     public Boolean locationInSpawnChunk(Location location) {
         Location spawn = location.getWorld().getSpawnLocation();
-
-        if (location.getX() < (spawn.getX() + 128 + 8) && location.getX() > (spawn.getX() - 128 - 8)
-                && location.getZ() < (spawn.getZ() + 128 + 8) && location.getZ() > (spawn.getZ() - 128 - 8)) {
-            return true;
-        }
-
-        return false;
+        return location.getX() < (spawn.getX() + 128 + 8) && location.getX() > (spawn.getX() - 128 - 8)
+                && location.getZ() < (spawn.getZ() + 128 + 8) && location.getZ() > (spawn.getZ() - 128 - 8);
     }
 
     public boolean locationIsInRain(Location location) {

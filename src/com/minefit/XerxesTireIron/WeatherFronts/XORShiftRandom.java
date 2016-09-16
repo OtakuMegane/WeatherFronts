@@ -16,10 +16,10 @@ public class XORShiftRandom extends Random {
     }
 
     private long XORShiftGen() {
-        state ^= (state << 21);
-        state ^= (state >>> 35);
-        state ^= (state << 4);
-        return state;
+        this.state ^= (this.state << 21);
+        this.state ^= (this.state >>> 35);
+        this.state ^= (this.state << 4);
+        return this.state;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class XORShiftRandom extends Random {
     @Override
     public void setSeed(long seed) {
         this.seed = seed;
-        state = seed;
+        this.state = seed;
     }
 
     public long getSeed() {

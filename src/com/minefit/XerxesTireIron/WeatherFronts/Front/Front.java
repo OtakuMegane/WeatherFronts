@@ -1,8 +1,11 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Front;
 
+import java.util.logging.Logger;
+
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.minefit.XerxesTireIron.WeatherFronts.DynmapFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
@@ -15,6 +18,9 @@ public class Front {
     private final Simulator simulator;
     private final LightningGen lightning;
     private final PrecipitationEffects precipitation;
+    private final int[] dimSpeed;
+    private final DynmapFunctions dynmap;
+    private Logger logger = Logger.getLogger("Minecraft");
 
     public Front(WeatherFronts instance, Simulator simulator, YamlConfiguration data, String name) {
         this.plugin = instance;
@@ -22,9 +28,28 @@ public class Front {
         this.world = simulator.getWorld();
         this.data = data;
         this.name = name;
-        this.lightning = new LightningGen(instance, this.data, simulator.getSimulatorConfig());
-        this.precipitation = new PrecipitationEffects(instance, this.data, this.world);
+        this.lightning = new LightningGen(instance, simulator.getSimulatorConfig(), this);
+        this.precipitation = new PrecipitationEffects(instance, this);
         this.plugin.getServer().getPluginManager().registerEvents(precipitation, plugin);
+        this.dimSpeed = new int[6];
+        updateDimSpeed();
+        this.dynmap = new DynmapFunctions(instance);
+    }
+
+    // center, radius and velocity are very commonly accessed and used in calculations
+    // This way we can pass and access them easier
+    private void updateDimSpeed() {
+        dimSpeed[0] = this.data.getInt("center-x");
+        dimSpeed[1] = this.data.getInt("center-z");
+        dimSpeed[2] = this.data.getInt("radius-x");
+        dimSpeed[3] = this.data.getInt("radius-z");
+        dimSpeed[4] = this.data.getInt("velocity-x");
+        dimSpeed[5] = this.data.getInt("velocity-z");
+    }
+
+    public int[] getDimSpeed()
+    {
+        return this.dimSpeed;
     }
 
     public YamlConfiguration getData() {
@@ -40,16 +65,14 @@ public class Front {
     }
 
     public boolean isPermanent() {
-        if (this.data.getInt("age-limit") == 0) {
-            return true;
-        }
-
-        return false;
+        return this.data.getInt("age-limit") == 0;
     }
 
     public boolean update() {
         move();
         age();
+        updateDimSpeed();
+        this.dynmap.moveMarker(this.name, this.dimSpeed);
         return shouldDie();
     }
 
@@ -72,14 +95,8 @@ public class Front {
     }
 
     private void move() {
-        int velocityX = this.data.getInt("velocity-x");
-        int velocityZ = this.data.getInt("velocity-z");
-        int centerX = this.data.getInt("center-x");
-        int centerZ = this.data.getInt("center-z");
-        this.data.set("center-x", centerX + velocityX);
-        this.data.set("center-z", centerZ + velocityZ);
-        // this.plugin.dynmapFunctions.moveMarker(world,
-        // this.simulator.getName(), this.name);
+        this.data.set("center-x", this.data.getInt("center-x") + this.data.getInt("velocity-x"));
+        this.data.set("center-z", this.data.getInt("center-z") + this.data.getInt("velocity-z"));
     }
 
     private void age() {

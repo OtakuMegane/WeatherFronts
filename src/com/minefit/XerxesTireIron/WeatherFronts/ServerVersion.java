@@ -1,20 +1,47 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
+import java.util.List;
+
 public class ServerVersion {
 
-    private WeatherFronts plugin;
-    public final String nmsVersion;
-    public final String major;
-    public final String minor;
-    public final String revision;
+    private final WeatherFronts plugin;
+    private final String nmsVersion;
+    private final String major;
+    private final String minor;
+    private final String revision;
 
     public ServerVersion(WeatherFronts instance) {
         this.plugin = instance;
-        String name = plugin.getServer().getClass().getPackage().getName();
+        String name = this.plugin.getServer().getClass().getPackage().getName();
         this.nmsVersion = name.substring(name.lastIndexOf(".") + 1);
         String[] vn = this.nmsVersion.split("_");
         this.major = vn[0];
         this.minor = vn[1];
         this.revision = vn[2];
+    }
+
+    public boolean compatibleVersion(List<String> list)
+    {
+        return list.contains(this.nmsVersion);
+    }
+
+    public String getMajor()
+    {
+        return this.major;
+    }
+
+    public String getMinor()
+    {
+        return this.minor;
+    }
+
+    public String getRevision()
+    {
+        return this.revision;
+    }
+
+    public String getNMSVersion()
+    {
+        return this.nmsVersion;
     }
 }

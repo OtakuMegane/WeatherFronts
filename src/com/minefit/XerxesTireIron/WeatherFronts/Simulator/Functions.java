@@ -18,12 +18,10 @@ public class Functions {
         this.random = new XORShiftRandom();
     }
 
-    public int[] randomXYInFront(YamlConfiguration config) {
+    public int[] randomXYInFront(int[] values) {
         int[] xz = new int[2];
-        xz[0] = random.nextIntRange(config.getInt("center-x") - config.getInt("radius-x"),
-                config.getInt("center-x") + config.getInt("radius-x"));
-        xz[1] = random.nextIntRange(config.getInt("center-z") - config.getInt("radius-z"),
-                config.getInt("center-z") + config.getInt("radius-z"));
+        xz[0] = random.nextIntRange(values[0] - values[2], values[0] + values[2]);
+        xz[1] = random.nextIntRange(values[1] - values[3], values[1] + values[3]);
         return xz;
     }
 
@@ -42,7 +40,7 @@ public class Functions {
                 continue;
             }
 
-            if (!isSolid && !isLiquid && !block.isEmpty()) {
+            if (!isSolid && !isLiquid) {
                 return block;
             }
 

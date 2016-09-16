@@ -45,13 +45,8 @@ public class BlockTests {
         Location westLoc = block.getRelative(BlockFace.WEST).getLocation();
         Location northLoc = block.getRelative(BlockFace.NORTH).getLocation();
         Location southLoc = block.getRelative(BlockFace.SOUTH).getLocation();
-
-        if (getTopBlockY(northLoc) >= northLoc.getY() && getTopBlockY(southLoc) >= southLoc.getY()
-                && getTopBlockY(eastLoc) >= eastLoc.getY() && getTopBlockY(westLoc) >= westLoc.getY()) {
-            return false;
-        }
-
-        return true;
+        return getTopBlockY(northLoc) >= northLoc.getY() && getTopBlockY(southLoc) >= southLoc.getY()
+                && getTopBlockY(eastLoc) >= eastLoc.getY() && getTopBlockY(westLoc) >= westLoc.getY();
     }
 
     public Boolean blockIsCold(Location location) {

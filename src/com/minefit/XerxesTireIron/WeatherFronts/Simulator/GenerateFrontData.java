@@ -92,7 +92,7 @@ public class GenerateFrontData {
 
     private void frontIntensity() {
         if (!this.frontValues.contains("intensity")) {
-            this.frontValues.set("intensity", intFromMinMax("intensity"));
+            this.frontValues.set("precipitation-intensity", intFromMinMax("precipitation-intensity"));
         }
     }
 

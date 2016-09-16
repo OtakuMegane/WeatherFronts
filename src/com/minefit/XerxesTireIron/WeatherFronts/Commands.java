@@ -1,11 +1,8 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,7 +20,7 @@ public class Commands implements CommandExecutor {
     private Logger logger = Logger.getLogger("Minecraft");
 
     public Commands(WeatherFronts instance) {
-        plugin = instance;
+        this.plugin = instance;
         this.save = new SaveData(instance);
     }
 
@@ -102,26 +99,26 @@ public class Commands implements CommandExecutor {
                 } else if (currentArgument.equalsIgnoreCase("-n")) {
                     newFrontConfig.set("name", currentValue);
                 } else if (currentArgument.equalsIgnoreCase("-x")) {
-                    newFrontConfig.set("center-x", currentValue);
+                    newFrontConfig.set("center-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-z")) {
-                    newFrontConfig.set("center-z", currentValue);
+                    newFrontConfig.set("center-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-rx")) {
-                    newFrontConfig.set("radius-x", currentValue);
+                    newFrontConfig.set("radius-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-rz")) {
-                    newFrontConfig.set("radius-z", currentValue);
+                    newFrontConfig.set("radius-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-vx")) {
-                    newFrontConfig.set("velocity-x", currentValue);
+                    newFrontConfig.set("velocity-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-vz")) {
-                    newFrontConfig.set("velocity-z", currentValue);
+                    newFrontConfig.set("velocity-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-i")) {
-                    newFrontConfig.set("intensity", currentValue);
+                    newFrontConfig.set("intensity", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-ro")) {
                     newFrontConfig.set("lightning-per-minute", 0.0);
                     continue;
                 } else if (currentArgument.equalsIgnoreCase("-lpm")) {
-                    newFrontConfig.set("lightning-per-minute", currentValue);
+                    newFrontConfig.set("lightning-per-minute", Double.parseDouble(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-a")) {
-                    newFrontConfig.set("age-limit", currentValue);
+                    newFrontConfig.set("age-limit", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-shp")) {
                     newFrontConfig.set("shape", currentValue);
                 } else if (currentArgument.equalsIgnoreCase("-sim")) {
@@ -158,9 +155,8 @@ public class Commands implements CommandExecutor {
             Front newFront = simulator.createFront(newFrontConfig, true);
             YamlConfiguration frontData = newFront.getData();
 
-            player.sendMessage("New front named " + newFront.getName() + " has formed in world "
-                    + newFrontWorldName + " at " + "X: " + frontData.getInt("center-x") + " Z: "
-                    + frontData.getInt("center-z"));
+            player.sendMessage("New front named " + newFront.getName() + " has formed in world " + newFrontWorldName
+                    + " at " + "X: " + frontData.getInt("center-x") + " Z: " + frontData.getInt("center-z"));
 
             return true;
         }
@@ -188,7 +184,7 @@ public class Commands implements CommandExecutor {
                     }
                 }
 
-                frontsWorld = plugin.getWorldHandle(frontWorldName);
+                frontsWorld = this.plugin.getWorldHandle(frontWorldName);
 
                 if (frontId != null) {
                     if (frontsWorld != null) {
@@ -207,7 +203,6 @@ public class Commands implements CommandExecutor {
         }
 
         if (arguments[0].equalsIgnoreCase("list")) {
-            logger.info("durr3");
             if (!player.hasPermission("weatherfronts.list")) {
                 player.sendMessage("You do not have permission to list weather fronts.");
                 return true;
@@ -270,66 +265,35 @@ public class Commands implements CommandExecutor {
 
             return true;
         }
-        /*
-         * if (arguments[0].equalsIgnoreCase("save")) { if
-         * (!player.hasPermission("weatherfronts.save")) { player.sendMessage(
-         * "You do not have permission to save front data."); return true; }
-         *
-         * if (arguments.length > 1) { if (arguments[1].equalsIgnoreCase("-w"))
-         * { this.save.saveFrontsForWorld(this.plugin.worlds.get(arguments[1]).
-         * getWorld()); } else { this.save.saveAllFronts(); } }
-         *
-         * player.sendMessage("Fronts saved."); return true; } else if
-         * (arguments[0].equalsIgnoreCase("rename")) { if
-         * (!player.hasPermission("weatherfronts.rename")) { player.sendMessage(
-         * "You do not have permission to rename weather fronts."); return true;
-         * } rename(arguments, player, world); return true; }
-         */
+
+        if (arguments[0].equalsIgnoreCase("save")) {
+            if (!player.hasPermission("weatherfronts.save")) {
+                player.sendMessage("You do not have permission to save front data.");
+                return true;
+            }
+
+            if (arguments.length > 1) {
+                if (arguments[1].equalsIgnoreCase("-w")) {
+                    this.plugin.getWorldHandle(arguments[2]);
+                } else {
+                    for (Entry<String, FrontsWorld> entry : this.plugin.getAllFrontsWorlds().entrySet()) {
+                        entry.getValue().saveFronts();
+                    }
+                }
+            }
+
+            player.sendMessage("Fronts saved.");
+            return true;
+        }
+
         if (arguments[0].equalsIgnoreCase("help")) {
             help(arguments, player);
             return true;
         }
-        logger.info("wat2 " + arguments);
+
         return false;
 
     }
-
-   /* public void rename(String[] arguments, Player player, World world) {
-
-        if (arguments.length > 1) {
-            int argLength = arguments.length - 1;
-            String original = null;
-            String newname = null;
-            FrontsWorld worldHandle = this.plugin.worlds.get(world.getName());
-
-            for (int i = 1; i < argLength; i++) {
-                String currentArgument = arguments[i].trim();
-                String currentValue = arguments[i + 1].trim();
-
-                if (currentArgument.equalsIgnoreCase("-w")) {
-                    worldHandle = this.plugin.worlds.get(currentValue);
-                } else if (currentArgument.equalsIgnoreCase("-from")) {
-                    original = currentValue;
-                } else if (currentArgument.equalsIgnoreCase("-to")) {
-                    newname = currentValue;
-                }
-
-                i++;
-            }
-
-            String worldName = worldHandle.getWorld().getName();
-
-            if (worldHandle.hasFront(newname)) {
-                player.sendMessage("A front named " + newname + " already exists");
-                player.sendMessage("in world " + worldName);
-            } else {
-                this.plugin.worlds.get(worldName).getSimulatorByFront(original).renameFront(original, newname);
-                this.save.saveFrontsForWorld(this.plugin.worlds.get(world).getWorld());
-                player.sendMessage("Front " + original + " in world " + worldName);
-                player.sendMessage("has been renamed to " + newname);
-            }
-        }
-    }*/
 
     public void help(String[] arguments, Player player) {
         if (arguments.length == 1) {

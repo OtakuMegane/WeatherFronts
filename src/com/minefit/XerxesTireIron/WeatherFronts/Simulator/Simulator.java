@@ -1,6 +1,5 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,12 +9,12 @@ import java.util.logging.Logger;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.minefit.XerxesTireIron.WeatherFronts.DynmapFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.LoadData;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 
 public class Simulator {
-
     private final World world;
     private final YamlConfiguration simulatorConfig;
     private final YamlConfiguration frontsData;
@@ -24,6 +23,7 @@ public class Simulator {
     private final ConcurrentMap<String, Front> fronts = new ConcurrentHashMap<String, Front>();
     private final LoadData load;
     private Logger logger = Logger.getLogger("Minecraft");
+    private final DynmapFunctions dynmap;
 
     public Simulator(World world, WeatherFronts instance, YamlConfiguration config, String name) {
         this.simulatorConfig = config;
@@ -32,7 +32,7 @@ public class Simulator {
         this.name = name;
         this.load = new LoadData(instance);
         this.frontsData = this.load.loadConfigForWorld(world.getName(), "fronts.yml", false);
-
+        this.dynmap = new DynmapFunctions(instance);
         loadFronts();
     }
 
@@ -60,7 +60,7 @@ public class Simulator {
 
     private void loadFronts() {
         for (String frontName : this.frontsData.getKeys(false)) {
-            fronts.put(frontName,
+            this.fronts.put(frontName,
                     new Front(this.plugin, this, this.load.loadFrontData(frontName, this.frontsData), frontName));
         }
     }
@@ -70,14 +70,14 @@ public class Simulator {
             GenerateFrontData generate = new GenerateFrontData(this.plugin, this, config);
             String name = generate.frontName();
             this.fronts.put(name, new Front(this.plugin, this, generate.generateValues(), name));
+            this.dynmap.addMarker(this.world.getName(), name, this.fronts.get(name).getDimSpeed());
             return this.fronts.get(name);
         }
 
         return null;
     }
 
-    public void removeFront(String frontName)
-    {
+    public void removeFront(String frontName) {
         Front front = this.fronts.get(frontName);
         this.fronts.remove(frontName);
     }
@@ -106,11 +106,7 @@ public class Simulator {
     }
 
     public boolean simulatorHasFront(String frontName) {
-        if (this.fronts.containsKey(frontName)) {
-            return true;
-        }
-
-        return false;
+        return this.fronts.containsKey(frontName);
     }
 
     public boolean renameFront(String originalName, String newName) {
@@ -129,7 +125,6 @@ public class Simulator {
 
     public YamlConfiguration allFrontsData() {
         YamlConfiguration allFronts = new YamlConfiguration();
-        // allFronts.createSection(this.name);
 
         for (Entry<String, Front> entry : this.fronts.entrySet()) {
             allFronts.set(entry.getKey(), getFrontData(entry.getKey()));

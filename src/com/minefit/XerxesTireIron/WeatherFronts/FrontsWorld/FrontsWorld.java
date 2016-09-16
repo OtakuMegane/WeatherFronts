@@ -3,6 +3,7 @@ package com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,7 +18,6 @@ import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 
 public class FrontsWorld {
-
     private final WeatherFronts plugin;
     private final World world;
     private final LoadData load;
@@ -29,6 +29,7 @@ public class FrontsWorld {
     private final BukkitTask sixHundredTick;
     private YamlConfiguration worldSimulatorConfigs;
     private final XORShiftRandom random = new XORShiftRandom();
+    private Logger logger = Logger.getLogger("Minecraft");
 
     public FrontsWorld(WeatherFronts instance, World world) {
         this.plugin = instance;
@@ -66,11 +67,7 @@ public class FrontsWorld {
     }
 
     public boolean hasFront(String frontName) {
-        if (whichSimulator(frontName) != null) {
-            return true;
-        }
-
-        return false;
+        return whichSimulator(frontName) != null;
     }
 
     private Simulator whichSimulator(String frontName) {
@@ -115,7 +112,12 @@ public class FrontsWorld {
 
     public Simulator getSimulatorByLocation(Location location) {
         String frontName = locationInWhichFront(location.getBlockX(), location.getBlockZ());
-        return getSimulatorByFront(frontName);
+
+        if (frontName != null && hasFront(frontName)) {
+            return getSimulatorByFront(frontName);
+        }
+
+        return null;
     }
 
     public void loadSimulators() {
@@ -136,14 +138,6 @@ public class FrontsWorld {
     public void saveSimulators() {
         // This will come later
         // For now only manual changes to the file
-        /*YamlConfiguration allSimulators = new YamlConfiguration();
-        String worldName = this.world.getName();
-
-        for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            allSimulators = entry.getValue().getSimulatorConfig();
-        }
-
-        this.save.saveToYamlFile(worldName, "simulators.yml", allSimulators);*/
     }
 
     public void saveFronts() {
@@ -160,7 +154,9 @@ public class FrontsWorld {
     public void shutdown() {
         saveSimulators();
         saveFronts();
+        this.oneTick.cancel();
         this.fiveTick.cancel();
+        this.twentyTick.cancel();
         this.sixHundredTick.cancel();
     }
 

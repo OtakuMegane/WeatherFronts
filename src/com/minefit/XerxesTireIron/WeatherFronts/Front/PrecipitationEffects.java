@@ -1,7 +1,7 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Front;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,26 +22,28 @@ import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Functions;
 
 public class PrecipitationEffects implements Listener {
     private final WeatherFronts plugin;
+    private final Front front;
     private final Functions functions;
     private final LocationTests locationtest;
     private final BlockTests blocktest;
     private final YamlConfiguration frontConfig;
     private final XORShiftRandom random = new XORShiftRandom();
-    private final Set<Block> farmland = new HashSet<Block>();
+    private final ConcurrentHashMap<Block, Boolean> farmland = new ConcurrentHashMap<Block, Boolean>();
     private final World world;
 
-    public PrecipitationEffects(WeatherFronts instance, YamlConfiguration config, World world) {
+    public PrecipitationEffects(WeatherFronts instance, Front front) {
         this.plugin = instance;
+        this.front = front;
         this.functions = new Functions(instance);
         this.locationtest = new LocationTests(instance);
         this.blocktest = new BlockTests(instance);
-        this.frontConfig = config;
-        this.world = world;
+        this.frontConfig = front.getData();
+        this.world = front.getWorld();
     }
 
     public void precipitationBlockEffects() {
         int loopLimit = (int) Math.ceil(((this.frontConfig.getInt("radius-x") + this.frontConfig.getInt("radius-z"))
-                * this.frontConfig.getInt("intensity")) / 100);
+                * this.frontConfig.getInt("precipitation-intensity")) / 100);
 
         for (int i = 0; i < loopLimit; i++) {
             alterBlock();
@@ -49,18 +51,19 @@ public class PrecipitationEffects implements Listener {
     }
 
     private void alterBlock() {
-        int[] xz = this.functions.randomXYInFront(this.frontConfig);
+        int[] xz = this.functions.randomXYInFront(this.front.getDimSpeed());
 
         if (!this.locationtest.locationIsLoaded(this.world, xz[0], xz[1])) {
             return;
         }
 
         Block highBlock = this.blocktest.getTopEmptyBlock(new Location(this.world, xz[0], 0, xz[1]));
-        Block lowBlock = this.blocktest.getTopBlock(new Location(this.world, xz[0], 0, xz[1]));
 
         if (blockCanHaveSnow(highBlock.getLocation())) {
             highBlock.setType(Material.SNOW);
         }
+
+        Block lowBlock = this.blocktest.getTopBlock(new Location(this.world, xz[0], 0, xz[1]));
 
         if (this.locationtest.locationIsInRain(lowBlock.getLocation())) {
             if (lowBlock.getType() == Material.CAULDRON && this.random.nextInt(20) == 0 && lowBlock.getData() < 3) {
@@ -68,7 +71,7 @@ public class PrecipitationEffects implements Listener {
             }
 
             if (lowBlock.getType() == Material.SOIL) {
-                this.farmland.add(lowBlock);
+                this.farmland.put(lowBlock, true);
             }
         }
     }
@@ -93,12 +96,13 @@ public class PrecipitationEffects implements Listener {
 
         if (block.getType() == Material.SOIL && this.locationtest.locationIsInRain(blockLoc)) {
             event.setCancelled(true);
-            this.farmland.add(block);
+            this.farmland.put(block, true);
         }
     }
 
     public void hydrateFarmland() {
-        for (Block block : this.farmland) {
+        for (Entry<Block, Boolean> entry : this.farmland.entrySet()) {
+            Block block = entry.getKey();
             if (block.getType() == Material.SOIL && this.locationtest.locationIsInRain(block.getLocation())) {
                 block.setData((byte) 6);
             } else {

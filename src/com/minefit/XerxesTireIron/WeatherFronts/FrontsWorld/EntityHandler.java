@@ -1,8 +1,7 @@
 package com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.bukkit.EntityEffect;
@@ -39,7 +38,7 @@ public class EntityHandler implements Listener {
     private final XORShiftRandom random = new XORShiftRandom();
     private final WeatherFronts plugin;
     private final LocationTests locationtest;
-    private final Set<Wolf> wolvesInRain = new HashSet<Wolf>();
+    private final ConcurrentHashMap<Wolf,Boolean> wolvesInRain = new ConcurrentHashMap<Wolf, Boolean>();
     private final FrontsWorld frontsWorld;
     private final World world;
     private Logger logger = Logger.getLogger("Minecraft");
@@ -117,7 +116,7 @@ public class EntityHandler implements Listener {
                 }
 
                 String front = this.frontsWorld.locationInWhichFront(playerLoc.getBlockX(), playerLoc.getBlockZ());
-                this.plugin.packetHandler.changeWeather(player, front);
+                this.plugin.getPacketHandler().changeWeather(player, front);
             }
         }
     }
@@ -174,9 +173,9 @@ public class EntityHandler implements Listener {
             int i = 0;
 
             while (!flag && i < 64) {
-                int x = endermanLoc.getBlockX() + random.nextInt(64) - 32;
-                int y = endermanLoc.getBlockY() - random.nextInt(32);
-                int z = endermanLoc.getBlockZ() + random.nextInt(64) - 32;
+                int x = endermanLoc.getBlockX() + this.random.nextInt(64) - 32;
+                int y = endermanLoc.getBlockY() - this.random.nextInt(32);
+                int z = endermanLoc.getBlockZ() + this.random.nextInt(64) - 32;
                 Location newLoc = new Location(world, x, y, z);
 
                 if (!this.locationtest.locationIsLoaded(newLoc)) {
@@ -216,7 +215,7 @@ public class EntityHandler implements Listener {
             Location wolfLoc = wolf.getLocation();
 
             if (this.locationtest.locationIsInRain(wolfLoc) && !wolvesInRain.contains(wolf)) {
-                wolvesInRain.add(wolf);
+                wolvesInRain.put(wolf, true);
             }
 
             if (!this.locationtest.locationIsInRain(wolfLoc) && wolvesInRain.contains(wolf)) {
