@@ -2,7 +2,6 @@ package com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
@@ -41,7 +40,6 @@ public class EntityHandler implements Listener {
     private final ConcurrentHashMap<Wolf,Boolean> wolvesInRain = new ConcurrentHashMap<Wolf, Boolean>();
     private final FrontsWorld frontsWorld;
     private final World world;
-    private Logger logger = Logger.getLogger("Minecraft");
 
     public EntityHandler(WeatherFronts instance, FrontsWorld frontsWorld) {
         this.plugin = instance;

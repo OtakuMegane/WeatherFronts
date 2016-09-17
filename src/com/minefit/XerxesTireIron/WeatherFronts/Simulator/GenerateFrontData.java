@@ -6,16 +6,15 @@ import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 
 public class GenerateFrontData {
-    private WeatherFronts plugin;
-    private YamlConfiguration frontValues;
-    private XORShiftRandom random;
-    private YamlConfiguration simulatorConfig;
-    private Simulator simulator;
+    private final WeatherFronts plugin;
+    private final YamlConfiguration frontValues;
+    private final XORShiftRandom random;
+    private final YamlConfiguration simulatorConfig;
+    private final Simulator simulator;
 
     public GenerateFrontData(WeatherFronts instance, Simulator simulator, YamlConfiguration config) {
         this.plugin = instance;
         this.random = new XORShiftRandom();
-        this.frontValues = new YamlConfiguration();
         this.simulator = simulator;
         this.simulatorConfig = simulator.getSimulatorConfig();
         this.frontValues = config;

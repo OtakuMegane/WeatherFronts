@@ -1,7 +1,5 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
-import java.util.logging.Logger;
-
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -15,7 +13,6 @@ import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
 
 public class PacketHandler {
     private final WeatherFronts plugin;
-    private Logger logger = Logger.getLogger("Minecraft");
 
     public PacketHandler(WeatherFronts instance) {
         this.plugin = instance;
@@ -66,7 +63,6 @@ public class PacketHandler {
 
         if (x1 + hearOutside > playerX && x2 - hearOutside < playerX && z1 + hearOutside > playerZ
                 && z2 - hearOutside < playerZ) {
-            logger.info("lightningSound " + x + " " + z);
             event.setCancelled(false);
             event.getPacket().getFloat().write(0, (float) volume / 16);
         }

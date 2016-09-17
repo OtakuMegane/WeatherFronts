@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -32,7 +31,6 @@ public class MobSpawner {
     private final BlockTests blocktest;
     private final FrontsWorld frontsWorld;
     private final World world;
-    private Logger logger = Logger.getLogger("Minecraft");
 
     public MobSpawner(WeatherFronts instance, FrontsWorld frontsWorld) {
         this.plugin = instance;
@@ -44,11 +42,11 @@ public class MobSpawner {
 
     public void spawnMobs() {
         // No point in doing our surface spawn routines at night or on Peaceful
-        if ((world.getTime() > 13187 && world.getTime() < 22812) || world.getDifficulty() == Difficulty.PEACEFUL) {
+        if ((this.world.getTime() > 13187 && this.world.getTime() < 22812) || this.world.getDifficulty() == Difficulty.PEACEFUL) {
             return;
         }
 
-        List<Player> allPlayers = world.getPlayers();
+        List<Player> allPlayers = this.world.getPlayers();
 
         if (allPlayers.size() == 0) {
             return;
@@ -68,16 +66,16 @@ public class MobSpawner {
 
             for (int x = chunk.getX() - mobRange; x <= maxX; ++x) {
                 for (int z = chunk.getZ() - mobRange; z <= maxZ; ++z) {
-                    playerChunks.add(world.getChunkAt(x, z));
+                    playerChunks.add(this.world.getChunkAt(x, z));
                 }
             }
 
         }
 
         int totalPlayerChunks = playerChunks.size();
-        int worldHostileCap = (int) (world.getMonsterSpawnLimit() * totalPlayerChunks) / 289;
+        int worldHostileCap = (int) (this.world.getMonsterSpawnLimit() * totalPlayerChunks) / 289;
         int totalHostiles = 0;
-        List<LivingEntity> allLivingEntities = world.getLivingEntities();
+        List<LivingEntity> allLivingEntities = this.world.getLivingEntities();
 
         for (LivingEntity entity : allLivingEntities) {
             if (totalHostiles >= worldHostileCap) {
@@ -96,7 +94,7 @@ public class MobSpawner {
                 int baseZ = chunk.getZ() << 4;
                 int x = random.nextIntRange(baseX, baseX + 15);
                 int z = random.nextIntRange(baseZ, baseZ + 15);
-                Block block = this.blocktest.getTopSolidBlock(new Location(world, x, 0, z));
+                Block block = this.blocktest.getTopSolidBlock(new Location(this.world, x, 0, z));
 
                 if (!this.locationtest.locationIsInWeather(block.getLocation())
                         || !this.blocktest.blockTypeCanSpawnHostile(block.getType())
@@ -208,7 +206,7 @@ public class MobSpawner {
         for (int xx = 0; xx < width; ++xx) {
             for (int zz = 0; zz < width; ++zz) {
                 for (int yy = 0; yy < height; ++yy) {
-                    Block testBlock = world.getBlockAt(x + width, y + height, z + width);
+                    Block testBlock = this.world.getBlockAt(x + width, y + height, z + width);
 
                     if (testBlock.getType().isSolid() || testBlock.isLiquid()) {
                         return false;

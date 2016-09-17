@@ -3,7 +3,6 @@ package com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -29,7 +28,6 @@ public class FrontsWorld {
     private final BukkitTask sixHundredTick;
     private YamlConfiguration worldSimulatorConfigs;
     private final XORShiftRandom random = new XORShiftRandom();
-    private Logger logger = Logger.getLogger("Minecraft");
 
     public FrontsWorld(WeatherFronts instance, World world) {
         this.plugin = instance;

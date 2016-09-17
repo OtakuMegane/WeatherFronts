@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,7 +21,6 @@ public class Simulator {
     private String name;
     private final ConcurrentMap<String, Front> fronts = new ConcurrentHashMap<String, Front>();
     private final LoadData load;
-    private Logger logger = Logger.getLogger("Minecraft");
     private final DynmapFunctions dynmap;
 
     public Simulator(World world, WeatherFronts instance, YamlConfiguration config, String name) {

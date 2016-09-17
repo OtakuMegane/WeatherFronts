@@ -20,8 +20,8 @@ public class Functions {
 
     public int[] randomXYInFront(int[] values) {
         int[] xz = new int[2];
-        xz[0] = random.nextIntRange(values[0] - values[2], values[0] + values[2]);
-        xz[1] = random.nextIntRange(values[1] - values[3], values[1] + values[3]);
+        xz[0] = this.random.nextIntRange(values[0] - values[2], values[0] + values[2]);
+        xz[1] = this.random.nextIntRange(values[1] - values[3], values[1] + values[3]);
         return xz;
     }
 

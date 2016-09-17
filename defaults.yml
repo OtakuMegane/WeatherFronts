@@ -55,6 +55,7 @@ lightning-in-dry-biomes: false
 lightning-in-cold-biomes: false
 
 # Trigger lightning fires in spawn chunks
+# Since spawn chunks are often loaded at all times they tend to be more susceptible to accumulated damage
 lightning-fire-in-spawn-chunk: false
 
 # Whether lightning striking sand or clay can create a fulgurite
@@ -74,11 +75,11 @@ fulgurite-in-spawn-chunk: false
 # Vanilla and CraftBukkit is 8, Spigot default is 4 (mob-spawn-range in spigot.yml)
 mob-spawn-range: 8
 
-# This controls whether the parameters given during manual front creation will be limited to those of the simulator config
+# This controls whether the parameters given during manual front creation will be forced to comply with those of the simulator config
+## Currently Unused ##
 manual-creation-limits: false
 
-# Shape of the front
-# Only rectangle so far
+# Shape of the front. Currently only rectangle
 front-shape: rectangle
 
 # Smallest x-axis radius for a front
@@ -102,10 +103,12 @@ maximum-age-limit: 1800
 # Chance of a front being rain only. Set to 100 for no thunderstorms
 rain-only-chance: 70
 
-# Is it possible for rain to change into athunderstorm (currently not used)
+# Is it possible for rain to change into a thunderstorm
+## Currently Unused ##
 rain-to-thunder: true
 
-# Percent chance of rain turning into a thunderstorm (currently not used)
+# Percent chance of rain turning into a thunderstorm
+## Currently Unused ##
 chane-rain-to-thunder: 10
 
 # Precipitation intensity is the amount of precipitation from a front. Ranges from 1-100.
@@ -121,7 +124,7 @@ maximum-precipitation-intensity: 30
 # Whether to use weighted lightning for larger storms
 # The lightning values will be weighted by the front engine for a more consistent experience in larger fronts
 # For example a player inside a front with setting of 10 will witness approximately 10 strikes per minute
-# However the total number of strikes occurring throughout the entire front each minute may be higher
+# However the total number of strikes occurring throughout the entire front each minute may be higher in order to achieve that
 use-weighted-lightning: true
 
 # The minimum radius to activate weight calculations for lightning

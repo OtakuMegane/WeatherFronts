@@ -2,7 +2,6 @@ package com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld;
 
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,7 +30,6 @@ public class FireHandler implements Listener {
     private final ConcurrentHashMap<Block, Integer> fireBlocks = new ConcurrentHashMap<Block, Integer>();
     private final LocationTests locationtest;
     private final BlockTests blocktest;
-    private Logger logger = Logger.getLogger("Minecraft");
 
     public FireHandler(WeatherFronts instance) {
         this.plugin = instance;

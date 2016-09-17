@@ -1,7 +1,5 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Front;
 
-import java.util.logging.Logger;
-
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -20,7 +18,6 @@ public class Front {
     private final PrecipitationEffects precipitation;
     private final int[] dimSpeed;
     private final DynmapFunctions dynmap;
-    private Logger logger = Logger.getLogger("Minecraft");
 
     public Front(WeatherFronts instance, Simulator simulator, YamlConfiguration data, String name) {
         this.plugin = instance;

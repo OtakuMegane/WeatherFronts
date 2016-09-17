@@ -5,13 +5,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 
 public class Runnable1Tick extends BukkitRunnable {
-
-    WeatherFronts plugin;
-    MobSpawner mobSpawner;
-
-    public Runnable1Tick(WeatherFronts instance) {
-        this.plugin = instance;
-    }
+    private final WeatherFronts plugin;
+    private final MobSpawner mobSpawner;
 
     public Runnable1Tick(WeatherFronts instance, FrontsWorld frontsWorld) {
         this.plugin = instance;
