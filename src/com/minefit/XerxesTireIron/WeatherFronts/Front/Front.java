@@ -4,8 +4,10 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.XerxesTireIron.WeatherFronts.DynmapFunctions;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
+import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.WeatherSystem;
 
 public class Front {
 
@@ -18,6 +20,7 @@ public class Front {
     private final PrecipitationEffects precipitation;
     private final int[] dimSpeed;
     private final DynmapFunctions dynmap;
+    private WeatherSystem system;
 
     public Front(WeatherFronts instance, Simulator simulator, YamlConfiguration data, String name) {
         this.plugin = instance;
@@ -30,7 +33,8 @@ public class Front {
         this.plugin.getServer().getPluginManager().registerEvents(precipitation, plugin);
         this.dimSpeed = new int[6];
         updateDimSpeed();
-        this.dynmap = new DynmapFunctions(instance);
+        this.dynmap = this.plugin.getDynmap();
+        this.dynmap.addMarker(this.world.getName(), name, this.dimSpeed);
     }
 
     // center, radius and velocity are very commonly accessed and used in calculations
@@ -53,6 +57,19 @@ public class Front {
         return this.data;
     }
 
+    public FrontLocation getLocation()
+    {
+        FrontLocation location = new FrontLocation(this.simulator);
+        location.updatePosition(this.data.getInt("center-x"), this.data.getInt("center-z"));
+        location.updateVelocity(this.data.getInt("velocity-x"), this.data.getInt("velocity-z"));
+        return location;
+    }
+
+    public void updatePosition(int x, int z) {
+        this.data.set("center-x", x);
+        this.data.set("center-z", z);
+    }
+
     public String getName() {
         return this.name;
     }
@@ -61,16 +78,28 @@ public class Front {
         return this.world;
     }
 
+    public int ageLimit()
+    {
+        return this.data.getInt("age-limit");
+    }
+
+    public int currentAge()
+    {
+        return this.data.getInt("age");
+    }
+
+    public void changeAge(int age)
+    {
+        this.data.set("age", age);
+    }
+
     public boolean isPermanent() {
         return this.data.getInt("age-limit") == 0;
     }
 
-    public boolean update() {
-        move();
-        age();
+    public void update() {
         updateDimSpeed();
-        this.dynmap.moveMarker(this.name, this.dimSpeed);
-        return shouldDie();
+        this.dynmap.moveMarker(this.world.getName(), this.name, this.dimSpeed);
     }
 
     public void genLightning() {
@@ -89,30 +118,6 @@ public class Front {
         }
 
         return newName;
-    }
-
-    private void move() {
-        this.data.set("center-x", this.data.getInt("center-x") + this.data.getInt("velocity-x"));
-        this.data.set("center-z", this.data.getInt("center-z") + this.data.getInt("velocity-z"));
-    }
-
-    private void age() {
-        this.data.set("age", this.data.getInt("age") + 1);
-    }
-
-    private boolean shouldDie() {
-        int ageLimit = this.data.getInt("age-limit");
-        int age = this.data.getInt("age");
-
-        if (age > ageLimit && ageLimit != 0) {
-            return true;
-        }
-
-        if (!this.simulator.isInSimulator(this.data.getInt("center-x"), this.data.getInt("center-z"))) {
-            return true;
-        }
-
-        return false;
     }
 
     public boolean isInFront(int x, int z) {

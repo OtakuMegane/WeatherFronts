@@ -86,13 +86,13 @@ front-shape: rectangle
 minimum-radius-x: 500
 
 # Largest x-axis radius for a front
-maximum-radius-x: 3000
+maximum-radius-x: 2500
 
 # Smallest z-axis radius for a front
 minimum-radius-z: 500
 
 # Largest z-axis radius for a front
-maximum-radius-z: 3000
+maximum-radius-z: 2500
 
 # Minimum time before a front dies out (in seconds)
 minimum-age-limit: 180
@@ -103,13 +103,21 @@ maximum-age-limit: 1800
 # Chance of a front being rain only. Set to 100 for no thunderstorms
 rain-only-chance: 70
 
-# Is it possible for rain to change into a thunderstorm
-## Currently Unused ##
+# Is it possible for rain to change to a thunderstorm
 rain-to-thunder: true
 
-# Percent chance of rain turning into a thunderstorm
-## Currently Unused ##
-chane-rain-to-thunder: 10
+# Percent chance of a rain to thunder change
+chance-rain-to-thunder: 10
+
+# Is it possible for thunderstorm to change to only rain
+thunder-to-rain: true
+
+# Percent chance of a rain to thunder change
+chance-thunder-to-rain: 5
+
+# Changes between rain and thunder can happen more than once in a single front
+## UNUSED ##
+multiple-storm-changes: true
 
 # Precipitation intensity is the amount of precipitation from a front. Ranges from 1-100.
 # At present it affects the rate of snow formation, cauldrons being filled, farmland hydration and optionally the light level
@@ -128,14 +136,14 @@ maximum-precipitation-intensity: 30
 use-weighted-lightning: true
 
 # The minimum radius to activate weight calculations for lightning
-weight-radius-threshold: 192
+weight-radius-threshold: 256
 
 # Minimum lightning strikes per minute
 # Value must be 1 or higher
 minimum-lightning-per-minute: 1.0
 
 # Maximum lightning strikes per minute
-maximum-lightning-per-minute: 60.0
+maximum-lightning-per-minute: 50.0
 
 # Minimum speed of a front on X-axis East/West (blocks/s)
 minimum-velocity-x: 3

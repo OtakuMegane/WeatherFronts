@@ -12,6 +12,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.DynmapFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.LoadData;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
+import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.WeatherSystem;
 
 public class Simulator {
     private final World world;
@@ -22,6 +23,7 @@ public class Simulator {
     private final ConcurrentMap<String, Front> fronts = new ConcurrentHashMap<String, Front>();
     private final LoadData load;
     private final DynmapFunctions dynmap;
+    private WeatherSystem system;
 
     public Simulator(World world, WeatherFronts instance, YamlConfiguration config, String name) {
         this.simulatorConfig = config;
@@ -30,7 +32,7 @@ public class Simulator {
         this.name = name;
         this.load = new LoadData(instance);
         this.frontsData = this.load.loadConfigForWorld(world.getName(), "fronts.yml", false);
-        this.dynmap = new DynmapFunctions(instance);
+        this.dynmap = this.plugin.getDynmap();
         loadFronts();
     }
 
@@ -48,10 +50,12 @@ public class Simulator {
 
     public void updateFronts() {
         for (Entry<String, Front> entry : this.fronts.entrySet()) {
-            boolean shouldDie = entry.getValue().update();
+            Front front = entry.getValue();
+            this.system.moveFront(front);
+            this.system.ageFront(front);
 
-            if (shouldDie) {
-                this.fronts.remove(entry.getKey());
+            if (this.system.shouldDie(front, this)) {
+                removeFront(entry.getKey());
             }
         }
     }
@@ -68,7 +72,6 @@ public class Simulator {
             GenerateFrontData generate = new GenerateFrontData(this.plugin, this, config);
             String name = generate.frontName();
             this.fronts.put(name, new Front(this.plugin, this, generate.generateValues(), name));
-            this.dynmap.addMarker(this.world.getName(), name, this.fronts.get(name).getDimSpeed());
             return this.fronts.get(name);
         }
 
@@ -76,8 +79,8 @@ public class Simulator {
     }
 
     public void removeFront(String frontName) {
-        Front front = this.fronts.get(frontName);
         this.fronts.remove(frontName);
+        this.dynmap.deleteMarker(world, this.name, frontName);
     }
 
     private boolean canCreateFront(boolean command) {

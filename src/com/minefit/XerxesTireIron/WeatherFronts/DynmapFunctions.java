@@ -1,12 +1,23 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.World;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-public class DynmapFunctions {
+import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
+import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
+
+public class DynmapFunctions implements Listener {
     private final WeatherFronts plugin;
     private DynmapAPI dynmapAPI;
     private Boolean dynmapEnabled = false;
@@ -15,20 +26,26 @@ public class DynmapFunctions {
 
     public DynmapFunctions(WeatherFronts instance) {
         this.plugin = instance;
+        this.dynmapAPI = (DynmapAPI) this.plugin.getServer().getPluginManager().getPlugin("dynmap");
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPluginEnable(PluginEnableEvent event) {
+        if(event.getPlugin().getName().equals("dynmap"))
+        {
+            this.dynmapEnabled = initDynmap();
+        }
     }
 
     public boolean initDynmap() {
-        if (this.plugin.getServer().getPluginManager().getPlugin("dynmap") == null) {
+        if (this.dynmapAPI == null) {
             this.plugin.logger.info(
                     "[WeatherFronts] Dynmap not detected or did not properly initialize. Not enabled for WeatherFronts.");
             return false;
         }
 
-        this.dynmapAPI = (DynmapAPI) plugin.getServer().getPluginManager().getPlugin("dynmap");
-
         if (this.dynmapAPI.markerAPIInitialized()) {
             this.markerAPI = this.dynmapAPI.getMarkerAPI();
-            this.dynmapEnabled = true;
             this.plugin.logger.info("[WeatherFronts] Dynmap detected and enabled for WeatherFronts");
 
             if (this.markerAPI.getMarkerSet("Weather") != null) {
@@ -40,28 +57,6 @@ public class DynmapFunctions {
 
         return true;
 
-    }
-
-    public void checkDynmapSetting() {
-        if (this.plugin.useDynmap() && this.plugin.getServer().getPluginManager().getPlugin("dynmap") != null) {
-            this.dynmapAPI = (DynmapAPI) this.plugin.getServer().getPluginManager().getPlugin("dynmap");
-
-            if (this.dynmapAPI.markerAPIInitialized()) {
-                this.markerAPI = this.dynmapAPI.getMarkerAPI();
-                this.dynmapEnabled = true;
-                this.plugin.logger.info("[WeatherFronts] Dynmap detected and enabled for WeatherFronts");
-
-                if (this.markerAPI.getMarkerSet("Weather") != null) {
-                    this.frontMarkers = this.markerAPI.getMarkerSet("Weather");
-                } else {
-                    this.frontMarkers = this.markerAPI.createMarkerSet("Weather", "Weather", null, false);
-                }
-            }
-        } else {
-            this.dynmapEnabled = false;
-            this.plugin.logger.info(
-                    "[WeatherFronts] Dynmap not detected or did not properly initialize. Not enabled for WeatherFronts.");
-        }
     }
 
     public void addMarker(String worldName, String frontName, int[] dimSpeed) {
@@ -89,7 +84,7 @@ public class DynmapFunctions {
         newMarker.setFillStyle(0.40000000000000002D, 0xffffff);
     }
 
-    public void moveMarker(String frontName, int[] dimSpeed) {
+    public void moveMarker(String worldName, String frontName, int[] dimSpeed) {
         if (!this.dynmapEnabled) {
             return;
         }
@@ -107,6 +102,10 @@ public class DynmapFunctions {
             z[3] = dimSpeed[1] + dimSpeed[3];
 
             this.frontMarkers.findAreaMarker(frontName).setCornerLocations(x, z);
+        }
+        else
+        {
+            addMarker(worldName, frontName, dimSpeed);
         }
     }
 

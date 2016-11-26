@@ -26,12 +26,9 @@ public class Runnable5Tick extends BukkitRunnable {
 
     @Override
     public void run() {
-        this.entityHandler.changePlayerWeather();
         this.entityHandler.affectEndermen();
-        this.entityHandler.affectWolves();
         this.entityHandler.affectBlazes();
         this.entityHandler.affectSnowmen();
-        this.entityHandler.affectArrows();
         this.fireHandler.extinguishFire();
 
         for (Entry<String, Simulator> entry : this.frontsWorld.getSimulatorList().entrySet()) {

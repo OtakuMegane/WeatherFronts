@@ -21,7 +21,7 @@ public class BlockTests {
     }
 
     public Block getTopLightningBlock(Location location) {
-        return this.functions.findHighestBlock(location, 255, true, true);
+        return this.functions.findHighestBlock(location, 255, true, true).getRelative(BlockFace.UP);
     }
 
     public Block getTopSolidBlock(Location location) {

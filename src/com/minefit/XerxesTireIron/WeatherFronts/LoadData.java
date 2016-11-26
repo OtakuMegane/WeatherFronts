@@ -26,6 +26,7 @@ public class LoadData {
             File configFile = new File(this.plugin.getDataFolder() + File.separator + "config.yml");
 
             if (!configFile.exists()) {
+                configFile.mkdirs();
                 copy(this.plugin.getResource("config.yml"), configFile);
             }
 
@@ -44,14 +45,14 @@ public class LoadData {
             File configFile = new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + fileName);
 
             if (!configFile.exists()) {
+                configFile.mkdirs();
 
                 if (copyFile) {
                     copy(this.plugin.getResource(fileName), configFile);
                 }
                 else
                 {
-                configFile.mkdirs();
-                configFile.createNewFile();
+                    configFile.createNewFile();
                 }
             }
 

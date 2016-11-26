@@ -37,7 +37,7 @@ public class EntityHandler implements Listener {
     private final XORShiftRandom random = new XORShiftRandom();
     private final WeatherFronts plugin;
     private final LocationTests locationtest;
-    private final ConcurrentHashMap<Wolf,Boolean> wolvesInRain = new ConcurrentHashMap<Wolf, Boolean>();
+    private final ConcurrentHashMap<Wolf, Boolean> wolvesInRain = new ConcurrentHashMap<Wolf, Boolean>();
     private final FrontsWorld frontsWorld;
     private final World world;
 
@@ -64,7 +64,9 @@ public class EntityHandler implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityBurn(EntityDamageEvent event) {
-        if (event.isCancelled() || event.getCause() != DamageCause.FIRE_TICK) {
+        World world = event.getEntity().getWorld();
+
+        if (world != this.world || event.isCancelled() || event.getCause() != DamageCause.FIRE_TICK) {
             return;
         }
 
@@ -80,7 +82,9 @@ public class EntityHandler implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityCombust(EntityCombustEvent event) {
-        if (event.isCancelled()) {
+        World world = event.getEntity().getWorld();
+
+        if (world != this.world || event.isCancelled()) {
             return;
         }
 
@@ -97,6 +101,12 @@ public class EntityHandler implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
+        World world = event.getPlayer().getWorld();
+
+        if (world != this.world) {
+            return;
+        }
+
         changePlayerWeather();
     }
 

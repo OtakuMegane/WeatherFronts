@@ -57,27 +57,30 @@ public class PrecipitationEffects implements Listener {
             return;
         }
 
-        Block highBlock = this.blocktest.getTopEmptyBlock(new Location(this.world, xz[0], 0, xz[1]));
-
-        if (blockCanHaveSnow(highBlock.getLocation())) {
-            highBlock.setType(Material.SNOW);
-        }
-
         Block lowBlock = this.blocktest.getTopBlock(new Location(this.world, xz[0], 0, xz[1]));
 
         if (this.locationtest.locationIsInRain(lowBlock.getLocation())) {
-            if (lowBlock.getType() == Material.CAULDRON && this.random.nextInt(20) == 0 && lowBlock.getData() < 3) {
-                lowBlock.setData((byte) (lowBlock.getData() + 1));
-            }
-
-            if (lowBlock.getType() == Material.SOIL) {
+            if (lowBlock.getType() == Material.CAULDRON) {
+                if (this.random.nextInt(20) == 0 && lowBlock.getData() < 3) {
+                    lowBlock.setData((byte) (lowBlock.getData() + 1));
+                }
+            } else if (lowBlock.getType() == Material.SOIL) {
                 this.farmland.put(lowBlock, true);
             }
+
+            return;
+        }
+
+        Block highBlock = lowBlock.getRelative(BlockFace.UP);
+
+        if (blockCanHaveSnow(highBlock)) {
+            highBlock.setType(Material.SNOW);
+            return;
         }
     }
 
-    private Boolean blockCanHaveSnow(Location location) {
-        Block block = location.getBlock();
+    private Boolean blockCanHaveSnow(Block block) {
+        Location location = block.getLocation();
 
         if (!this.blocktest.blockIsCold(location) || !this.locationtest.locationIsAboveground(location)
                 || block.getType() != Material.AIR) {
@@ -85,8 +88,8 @@ public class PrecipitationEffects implements Listener {
         }
 
         Block block2 = block.getRelative(BlockFace.DOWN);
-        return this.blocktest.blockTypeCanFormSnow(block2.getRelative(BlockFace.DOWN).getType())
-                && block.getLightFromBlocks() < 10;
+
+        return this.blocktest.blockTypeCanFormSnow(block2.getType()) && block.getLightFromBlocks() < 10;
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

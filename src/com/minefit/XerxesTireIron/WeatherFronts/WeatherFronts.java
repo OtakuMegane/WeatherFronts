@@ -55,7 +55,8 @@ public class WeatherFronts extends JavaPlugin {
     public void onEnable() {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.mainConfig = this.load.loadMainConfig();
-        this.dynmap.initDynmap();
+        //this.dynmap.initDynmap();
+        this.getServer().getPluginManager().registerEvents(this.dynmap, this);
         this.getServer().getPluginManager().registerEvents(this.weatherListener, this);
         this.getServer().getPluginManager().registerEvents(this.worldListener, this);
 
@@ -87,6 +88,11 @@ public class WeatherFronts extends JavaPlugin {
         for (Entry<String, FrontsWorld> entry : this.worlds.entrySet()) {
             entry.getValue().shutdown();
         }
+    }
+
+    public DynmapFunctions getDynmap()
+    {
+        return this.dynmap;
     }
 
     public PacketHandler getPacketHandler()

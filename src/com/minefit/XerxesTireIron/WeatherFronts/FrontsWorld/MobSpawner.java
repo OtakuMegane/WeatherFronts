@@ -29,14 +29,12 @@ public class MobSpawner {
     private final WeatherFronts plugin;
     private final LocationTests locationtest;
     private final BlockTests blocktest;
-    private final FrontsWorld frontsWorld;
     private final World world;
 
     public MobSpawner(WeatherFronts instance, FrontsWorld frontsWorld) {
         this.plugin = instance;
         this.locationtest = new LocationTests(instance);
         this.blocktest = new BlockTests(instance);
-        this.frontsWorld = frontsWorld;
         this.world = frontsWorld.getWorld();
     }
 
@@ -92,8 +90,8 @@ public class MobSpawner {
             {
                 int baseX = chunk.getX() << 4;
                 int baseZ = chunk.getZ() << 4;
-                int x = random.nextIntRange(baseX, baseX + 15);
-                int z = random.nextIntRange(baseZ, baseZ + 15);
+                int x = this.random.nextIntRange(baseX, baseX + 15);
+                int z = this.random.nextIntRange(baseZ, baseZ + 15);
                 Block block = this.blocktest.getTopSolidBlock(new Location(this.world, x, 0, z));
 
                 if (!this.locationtest.locationIsInWeather(block.getLocation())
@@ -220,7 +218,7 @@ public class MobSpawner {
 
     public EntityType randomHostile() {
         // From BiomeBase.java, hostile mob weights (minus slime for now) totals 415
-        int roll = random.nextInt(415);
+        int roll = this.random.nextInt(415);
 
         if (roll < 100) {
             return EntityType.SPIDER;

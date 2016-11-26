@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.minefit.XerxesTireIron.WeatherFronts.BlockTests;
 import com.minefit.XerxesTireIron.WeatherFronts.LocationTests;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
+import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Functions;
 
 public class LightningGen {
@@ -25,6 +26,7 @@ public class LightningGen {
     private double weightedLPM;
     private double lightningPerCheck;
     private boolean hasLightning;
+    private final XORShiftRandom random;
 
     public LightningGen(WeatherFronts instance, YamlConfiguration config, Front front) {
         this.plugin = instance;
@@ -34,6 +36,7 @@ public class LightningGen {
         this.functions = new Functions(instance);
         this.blocktest = new BlockTests(instance);
         this.locationtest = new LocationTests(instance);
+        this.random = new XORShiftRandom();
 
         if (this.frontConfig.getDouble("lightning-per-minute") <= 0.0) {
             this.hasLightning = false;
@@ -51,11 +54,11 @@ public class LightningGen {
 
     private void weight(int threshold) {
         if (this.frontConfig.getInt("radius-x") > threshold) {
-            this.weightedLPM *= this.frontConfig.getInt("radius-x") / 160;
+            this.weightedLPM *= this.frontConfig.getInt("radius-x") / threshold;
         }
 
         if (this.frontConfig.getInt("radius-z") > threshold) {
-            this.weightedLPM *= this.frontConfig.getInt("radius-z") / 160;
+            this.weightedLPM *= this.frontConfig.getInt("radius-z") / threshold;
         }
     }
 
@@ -70,15 +73,13 @@ public class LightningGen {
             return;
         }
 
-        Chunk[] validChunks = world.getLoadedChunks();
-
-        while (accumulator >= 1.0) {
-            randomStrike(world, validChunks);
+        while (accumulator >= 1.0 && this.random.nextBoolean()) {
+            randomStrike(world);
             this.accumulator -= 1.0;
         }
     }
 
-    private void randomStrike(World world, Chunk[] validChunks) {
+    private void randomStrike(World world) {
         int[] xz = this.functions.randomXYInFront(this.front.getDimSpeed());
 
         if (!this.locationtest.locationIsLoaded(world, xz[0], xz[1])) {
@@ -95,13 +96,12 @@ public class LightningGen {
             return;
         }
 
-        Location highLoc = highBlock.getRelative(BlockFace.UP).getLocation();
         Biome biome = highBlock.getBiome();
 
         if ((!this.functions.biomeIsDry(biome) && !this.functions.biomeIsCold(biome))
                 || (this.functions.biomeIsDry(biome) && lightningDry)
                 || (this.functions.biomeIsCold(biome) && lightningCold)) {
-            world.strikeLightning(highLoc);
+            world.strikeLightning(highBlock.getLocation());
         }
     }
 }
