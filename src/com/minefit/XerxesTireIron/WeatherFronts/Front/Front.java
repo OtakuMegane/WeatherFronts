@@ -57,7 +57,7 @@ public class Front {
         return this.data;
     }
 
-    public FrontLocation getLocation()
+    public FrontLocation getFrontLocation()
     {
         FrontLocation location = new FrontLocation(this.simulator);
         location.updatePosition(this.data.getInt("center-x"), this.data.getInt("center-z"));
@@ -117,7 +117,7 @@ public class Front {
             this.name = newName;
         }
 
-        return newName;
+        return this.name;
     }
 
     public boolean isInFront(int x, int z) {

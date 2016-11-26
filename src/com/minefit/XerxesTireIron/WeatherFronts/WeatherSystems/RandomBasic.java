@@ -3,10 +3,20 @@ package com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
+import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
+import com.minefit.XerxesTireIron.WeatherFronts.Simulator.GenerateFrontData;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class RandomBasic implements WeatherSystem {
+    private final WeatherFronts plugin;
+    private final Simulator simulator;
+
+    public RandomBasic(WeatherFronts instance, Simulator simulator)
+    {
+        this.plugin = instance;
+        this.simulator = simulator;
+    }
 
     @Override
     public void moveFront(Front front) {
@@ -24,7 +34,7 @@ public class RandomBasic implements WeatherSystem {
             return true;
         }
 
-        FrontLocation frontLocation = front.getLocation();
+        FrontLocation frontLocation = front.getFrontLocation();
 
         if (!simulator.isInSimulator(frontLocation.getPositionX(), frontLocation.getPositionZ())) {
             return true;
@@ -38,6 +48,14 @@ public class RandomBasic implements WeatherSystem {
     {
         int age = front.currentAge() + 1;
         front.changeAge(age);
+    }
+
+    @Override
+    public Front createFront(YamlConfiguration config)
+    {
+        GenerateFrontData generate = new GenerateFrontData(this.plugin, this.simulator, config);
+        Front front = new Front(this.plugin, this.simulator, generate.generateValues(), generate.frontName());
+        return front;
     }
 
 }

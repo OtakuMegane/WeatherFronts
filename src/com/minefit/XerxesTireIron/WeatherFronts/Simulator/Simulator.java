@@ -67,12 +67,16 @@ public class Simulator {
         }
     }
 
+    public void addFront(Front front)
+    {
+        this.fronts.put(front.getName(), front);
+    }
+
     public Front createFront(YamlConfiguration config, boolean command) {
         if (canCreateFront(command)) {
-            GenerateFrontData generate = new GenerateFrontData(this.plugin, this, config);
-            String name = generate.frontName();
-            this.fronts.put(name, new Front(this.plugin, this, generate.generateValues(), name));
-            return this.fronts.get(name);
+            Front front = this.system.createFront(config);
+            addFront(front);
+            return front;
         }
 
         return null;
@@ -112,8 +116,9 @@ public class Simulator {
 
     public boolean renameFront(String originalName, String newName) {
         if (simulatorHasFront(originalName) && newName != null) {
-            this.fronts.get(originalName).changeName(newName);
-            this.fronts.put(newName, this.fronts.get(originalName));
+            Front front = this.fronts.get(originalName);
+            front.changeName(newName);
+            this.fronts.put(front.getName(), front);
             return true;
         }
 
