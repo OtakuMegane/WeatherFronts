@@ -1,9 +1,11 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
+import java.awt.geom.Point2D;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.World;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,8 +33,7 @@ public class DynmapFunctions implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPluginEnable(PluginEnableEvent event) {
-        if(event.getPlugin().getName().equals("dynmap"))
-        {
+        if (event.getPlugin().getName().equals("dynmap")) {
             this.dynmapEnabled = initDynmap();
         }
     }
@@ -59,21 +60,19 @@ public class DynmapFunctions implements Listener {
 
     }
 
-    public void addMarker(String worldName, String frontName, int[] dimSpeed) {
+    public void addMarker(String worldName, String frontName, Point2D[] boundaries) {
         if (!this.dynmapEnabled) {
             return;
         }
 
         double[] x = new double[4];
         double[] z = new double[4];
-        x[0] = dimSpeed[0] + dimSpeed[2];
-        x[1] = dimSpeed[0] + dimSpeed[2];
-        x[2] = dimSpeed[0] - dimSpeed[2];
-        x[3] = dimSpeed[0] - dimSpeed[2];
-        z[0] = dimSpeed[1] + dimSpeed[3];
-        z[1] = dimSpeed[1] - dimSpeed[3];
-        z[2] = dimSpeed[1] - dimSpeed[3];
-        z[3] = dimSpeed[1] + dimSpeed[3];
+
+        for (int i = 0; i < boundaries.length; ++i) {
+            x[i] = boundaries[i].getX();
+            z[i] = boundaries[i].getY();
+        }
+
         AreaMarker newMarker = this.frontMarkers.createAreaMarker(frontName, frontName, false, worldName, x, z, false);
 
         if (newMarker == null) {
@@ -84,7 +83,7 @@ public class DynmapFunctions implements Listener {
         newMarker.setFillStyle(0.40000000000000002D, 0xffffff);
     }
 
-    public void moveMarker(String worldName, String frontName, int[] dimSpeed) {
+    public void moveMarker(String worldName, String frontName, Point2D[] boundaries) {
         if (!this.dynmapEnabled) {
             return;
         }
@@ -92,20 +91,15 @@ public class DynmapFunctions implements Listener {
         if (this.frontMarkers.findAreaMarker(frontName) != null) {
             double[] x = new double[4];
             double[] z = new double[4];
-            x[0] = dimSpeed[0] + dimSpeed[2];
-            x[1] = dimSpeed[0] + dimSpeed[2];
-            x[2] = dimSpeed[0] - dimSpeed[2];
-            x[3] = dimSpeed[0] - dimSpeed[2];
-            z[0] = dimSpeed[1] + dimSpeed[3];
-            z[1] = dimSpeed[1] - dimSpeed[3];
-            z[2] = dimSpeed[1] - dimSpeed[3];
-            z[3] = dimSpeed[1] + dimSpeed[3];
+
+            for (int i = 0; i < boundaries.length; ++i) {
+                x[i] = boundaries[i].getX();
+                z[i] = boundaries[i].getY();
+            }
 
             this.frontMarkers.findAreaMarker(frontName).setCornerLocations(x, z);
-        }
-        else
-        {
-            addMarker(worldName, frontName, dimSpeed);
+        } else {
+            addMarker(worldName, frontName, boundaries);
         }
     }
 

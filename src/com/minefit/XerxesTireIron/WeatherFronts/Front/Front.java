@@ -1,5 +1,7 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Front;
 
+import java.awt.geom.Point2D;
+
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -18,7 +20,6 @@ public class Front {
     private final Simulator simulator;
     private final LightningGen lightning;
     private final PrecipitationEffects precipitation;
-    private final int[] dimSpeed;
     private final DynmapFunctions dynmap;
     private WeatherSystem system;
 
@@ -31,38 +32,16 @@ public class Front {
         this.lightning = new LightningGen(instance, simulator.getSimulatorConfig(), this);
         this.precipitation = new PrecipitationEffects(instance, this);
         this.plugin.getServer().getPluginManager().registerEvents(precipitation, plugin);
-        this.dimSpeed = new int[6];
-        updateDimSpeed();
         this.dynmap = this.plugin.getDynmap();
-        this.dynmap.addMarker(this.world.getName(), name, this.dimSpeed);
-    }
-
-    // center, radius and velocity are very commonly accessed and used in calculations
-    // This way we can pass and access them easier
-    private void updateDimSpeed() {
-        dimSpeed[0] = this.data.getInt("center-x");
-        dimSpeed[1] = this.data.getInt("center-z");
-        dimSpeed[2] = this.data.getInt("radius-x");
-        dimSpeed[3] = this.data.getInt("radius-z");
-        dimSpeed[4] = this.data.getInt("velocity-x");
-        dimSpeed[5] = this.data.getInt("velocity-z");
-    }
-
-    public int[] getDimSpeed()
-    {
-        return this.dimSpeed;
+        this.dynmap.addMarker(this.world.getName(), this.name, getFrontBoundaries());
     }
 
     public YamlConfiguration getData() {
         return this.data;
     }
 
-    public FrontLocation getFrontLocation()
-    {
-        FrontLocation location = new FrontLocation(this.simulator);
-        location.updatePosition(this.data.getInt("center-x"), this.data.getInt("center-z"));
-        location.updateVelocity(this.data.getInt("velocity-x"), this.data.getInt("velocity-z"));
-        return location;
+    public FrontLocation getFrontLocation() {
+        return new FrontLocation(this.simulator, this.data.getInt("center-x"), this.data.getInt("center-z"));
     }
 
     public void updatePosition(int x, int z) {
@@ -78,18 +57,19 @@ public class Front {
         return this.world;
     }
 
-    public int ageLimit()
-    {
+    public Simulator getSimulator() {
+        return this.simulator;
+    }
+
+    public int ageLimit() {
         return this.data.getInt("age-limit");
     }
 
-    public int currentAge()
-    {
+    public int currentAge() {
         return this.data.getInt("age");
     }
 
-    public void changeAge(int age)
-    {
+    public void changeAge(int age) {
         this.data.set("age", age);
     }
 
@@ -98,8 +78,7 @@ public class Front {
     }
 
     public void update() {
-        updateDimSpeed();
-        this.dynmap.moveMarker(this.world.getName(), this.name, this.dimSpeed);
+        this.dynmap.moveMarker(this.world.getName(), this.name, getFrontBoundaries());
     }
 
     public void genLightning() {
@@ -120,17 +99,23 @@ public class Front {
         return this.name;
     }
 
+    public Point2D[] getFrontBoundaries() {
+        Point2D[] boundaries = new Point2D[4];
+        boundaries[0].setLocation(this.data.getInt("center-x") - this.data.getInt("radius-x"),
+                this.data.getInt("center-z") - this.data.getInt("radius-z"));
+        boundaries[1].setLocation(this.data.getInt("center-x") + this.data.getInt("radius-x"),
+                this.data.getInt("center-z") - this.data.getInt("radius-z"));
+        boundaries[2].setLocation(this.data.getInt("center-x") + this.data.getInt("radius-x"),
+                this.data.getInt("center-z") + this.data.getInt("radius-z"));
+        boundaries[3].setLocation(this.data.getInt("center-x") - this.data.getInt("radius-x"),
+                this.data.getInt("center-z") + this.data.getInt("radius-z"));
+        return boundaries;
+    }
+
     public boolean isInFront(int x, int z) {
-        int fx = this.data.getInt("center-x");
-        int fz = this.data.getInt("center-z");
-        int frx = this.data.getInt("radius-x");
-        int frz = this.data.getInt("radius-z");
-
-        if (x > fx + frx || x < fx - frx || z > fz + frz || z < fz - frz) {
-            return false;
-        }
-
-        return true;
+        Point2D[] boundaries = getFrontBoundaries();
+        return x > boundaries[0].getX() || x < boundaries[1].getX() || z > boundaries[1].getY()
+                || z < boundaries[2].getY();
     }
 
 }

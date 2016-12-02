@@ -9,6 +9,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.XerxesTireIron.WeatherFronts.BlockTests;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.LocationTests;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
@@ -80,17 +81,17 @@ public class LightningGen {
     }
 
     private void randomStrike(World world) {
-        int[] xz = this.functions.randomXYInFront(this.front.getDimSpeed());
+        FrontLocation location = this.functions.randomXYInFront(this.front.getSimulator(),
+                this.front.getFrontBoundaries());
 
-        if (!this.locationtest.locationIsLoaded(world, xz[0], xz[1])) {
+        if (!location.isLoaded()) {
             return;
         }
 
-        int x = xz[0];
-        int z = xz[1];
         boolean lightningDry = this.simulatorConfig.getBoolean("lightning-in-dry-biomes");
         boolean lightningCold = this.simulatorConfig.getBoolean("lightning-in-cold-biomes");
-        Block highBlock = this.blocktest.getTopLightningBlock(new Location(world, x, 0, z));
+        Block highBlock = this.blocktest
+                .getTopLightningBlock(new Location(world, location.getPositionX(), 0, location.getPositionZ()));
 
         if (highBlock == null) {
             return;

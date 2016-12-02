@@ -1,13 +1,15 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
+import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
+
+import java.awt.geom.Point2D;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Functions {
     private WeatherFronts plugin;
@@ -18,11 +20,10 @@ public class Functions {
         this.random = new XORShiftRandom();
     }
 
-    public int[] randomXYInFront(int[] values) {
-        int[] xz = new int[2];
-        xz[0] = this.random.nextIntRange(values[0] - values[2], values[0] + values[2]);
-        xz[1] = this.random.nextIntRange(values[1] - values[3], values[1] + values[3]);
-        return xz;
+    public FrontLocation randomXYInFront(Simulator simulator, Point2D[] boundaries) {
+        double x = this.random.nextIntRange(boundaries[0].getX(), boundaries[1].getX());
+        double z = this.random.nextIntRange(boundaries[1].getY(), boundaries[2].getY());
+        return new FrontLocation(simulator, x, z);
     }
 
     public Block findHighestBlock(Location location, int start, boolean isSolid, boolean isLiquid) {

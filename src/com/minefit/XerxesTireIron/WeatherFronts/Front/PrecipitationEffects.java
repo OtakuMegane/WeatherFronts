@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFadeEvent;
 
 import com.minefit.XerxesTireIron.WeatherFronts.BlockTests;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.LocationTests;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
@@ -51,13 +52,15 @@ public class PrecipitationEffects implements Listener {
     }
 
     private void alterBlock() {
-        int[] xz = this.functions.randomXYInFront(this.front.getDimSpeed());
+        FrontLocation location = this.functions.randomXYInFront(this.front.getSimulator(),
+                this.front.getFrontBoundaries());
 
-        if (!this.locationtest.locationIsLoaded(this.world, xz[0], xz[1])) {
+        if (!location.isLoaded()) {
             return;
         }
 
-        Block lowBlock = this.blocktest.getTopBlock(new Location(this.world, xz[0], 0, xz[1]));
+        Block lowBlock = this.blocktest
+                .getTopBlock(new Location(this.world, location.getPositionX(), 0, location.getPositionZ()));
 
         if (this.locationtest.locationIsInRain(lowBlock.getLocation())) {
             if (lowBlock.getType() == Material.CAULDRON) {
