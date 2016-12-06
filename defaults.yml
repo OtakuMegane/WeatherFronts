@@ -140,10 +140,10 @@ weight-radius-threshold: 256
 
 # Minimum lightning strikes per minute
 # Value must be 1 or higher
-minimum-lightning-per-minute: 1.0
+minimum-lightning-per-minute: 1
 
 # Maximum lightning strikes per minute
-maximum-lightning-per-minute: 50.0
+maximum-lightning-per-minute: 50
 
 # Minimum speed of a front on X-axis East/West (blocks/s)
 minimum-velocity-x: 3

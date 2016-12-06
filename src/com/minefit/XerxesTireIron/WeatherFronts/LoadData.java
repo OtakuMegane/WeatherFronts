@@ -45,7 +45,7 @@ public class LoadData {
             File configFile = new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + fileName);
 
             if (!configFile.exists()) {
-                configFile.mkdirs();
+//                configFile.mkdirs();
 
                 if (copyFile) {
                     copy(this.plugin.getResource(fileName), configFile);

@@ -36,7 +36,7 @@ public class WeatherFronts extends JavaPlugin {
 
     public WeatherFronts() {
         this.compatibleVersions = Arrays.asList("v1_7_R1", "v1_7_R2", "v1_7_R3", "v1_7_R4", "v1_8_R1", "V1_8_R2",
-                "v1_8_R3", "v1_9_R1", "v1_9_R2", "v1_10_R1");
+                "v1_8_R3", "v1_9_R1", "v1_9_R2", "v1_10_R1", "v1_11_R1");
 
         if (!this.serverVersion.compatibleVersion(this.compatibleVersions)) {
             this.logger.info(

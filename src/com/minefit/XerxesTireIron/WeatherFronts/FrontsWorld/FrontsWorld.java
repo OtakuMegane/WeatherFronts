@@ -22,8 +22,6 @@ public class FrontsWorld {
     private final LoadData load;
     private final Map<String, Simulator> simulators = new HashMap<String, Simulator>();
     private final SaveData save;
-    private final BukkitTask oneTick;
-    private final BukkitTask fiveTick;
     private final BukkitTask twentyTick;
     private final BukkitTask sixHundredTick;
     private YamlConfiguration worldSimulatorConfigs;
@@ -35,8 +33,6 @@ public class FrontsWorld {
         this.load = new LoadData(instance);
         this.save = new SaveData(instance);
         loadSimulators();
-        this.oneTick = new Runnable1Tick(instance, this).runTaskTimer(instance, 0, 1);
-        this.fiveTick = new Runnable5Tick(instance, this).runTaskTimer(instance, 0, 5);
         this.twentyTick = new Runnable20Tick(instance, this).runTaskTimer(instance, 0, 20);
         this.sixHundredTick = new Runnable600Tick(instance, this).runTaskTimer(instance, 0, 600);
     }
@@ -88,12 +84,10 @@ public class FrontsWorld {
 
     public String locationInWhichFront(int x, int z) {
         for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            if (entry.getValue().isInSimulator(x, z)) {
-                for (Entry<String, Front> entry2 : entry.getValue().getFronts().entrySet()) {
-                    if (entry2.getValue().isInFront(x, z)) {
-                        return entry2.getValue().getName();
-                    }
-                }
+            String frontName = entry.getValue().locationInWhichFront(x, z);
+            if(frontName != null)
+            {
+                return frontName;
             }
         }
 
@@ -149,11 +143,17 @@ public class FrontsWorld {
         this.save.saveToYamlFile(worldName, "fronts.yml", allFronts);
     }
 
+    public void shutdownSimulators()
+    {
+        for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
+            entry.getValue().shutdown();
+        }
+    }
+
     public void shutdown() {
         saveSimulators();
         saveFronts();
-        this.oneTick.cancel();
-        this.fiveTick.cancel();
+        shutdownSimulators();
         this.twentyTick.cancel();
         this.sixHundredTick.cancel();
     }

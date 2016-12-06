@@ -6,6 +6,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 
 import java.awt.geom.Point2D;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -24,6 +25,14 @@ public class Functions {
         double x = this.random.nextIntRange(boundaries[0].getX(), boundaries[1].getX());
         double z = this.random.nextIntRange(boundaries[1].getY(), boundaries[2].getY());
         return new FrontLocation(simulator, x, z);
+    }
+
+    public FrontLocation randomXYInFrontChunk(Simulator simulator, Chunk chunk) {
+        int x = chunk.getX() * 16;
+        int z = chunk.getZ() * 16;
+        int x2 = this.random.nextIntRange(x, x + 15);
+        int z2 = this.random.nextIntRange(z, z + 15);
+        return new FrontLocation(simulator, x2, z2);
     }
 
     public Block findHighestBlock(Location location, int start, boolean isSolid, boolean isLiquid) {

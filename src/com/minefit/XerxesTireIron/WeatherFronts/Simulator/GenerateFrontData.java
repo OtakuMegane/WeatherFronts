@@ -33,7 +33,7 @@ public class GenerateFrontData {
         return this.frontValues;
     }
 
-    public String frontName() {
+    public void frontName() {
         String name = "";
 
         if (!this.frontValues.contains("name")) {
@@ -49,8 +49,6 @@ public class GenerateFrontData {
 
             this.frontValues.set("name", name);
         }
-
-        return name;
     }
 
     private void frontLocation() {
@@ -97,16 +95,15 @@ public class GenerateFrontData {
 
     private void frontShape() {
         if (!this.frontValues.contains("shape")) {
-            this.frontValues.set("shape", "rectangle"); // Only shape right now
-                                                        // is rectangle
+            this.frontValues.set("shape", "rectangle"); // Only shape right now is rectangle
         }
     }
 
     private void lightningRate() {
         if (!this.frontValues.contains("lightning-per-minute")) {
-            double minL = this.simulatorConfig.getDouble("minimum-lightning-per-minute");
-            double maxL = this.simulatorConfig.getDouble("maximum-lightning-per-minute");
-            this.frontValues.set("lightning-per-minute", this.random.nextDoubleRange(minL, maxL));
+            int minL = this.simulatorConfig.getInt("minimum-lightning-per-minute");
+            int maxL = this.simulatorConfig.getInt("maximum-lightning-per-minute");
+            this.frontValues.set("lightning-per-minute", this.random.nextIntRange(minL, maxL));
         }
     }
 

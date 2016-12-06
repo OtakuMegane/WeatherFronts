@@ -1,4 +1,4 @@
-package com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld;
+package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,23 +29,21 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import com.minefit.XerxesTireIron.WeatherFronts.LocationTests;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 
 public class EntityHandler implements Listener {
     private final XORShiftRandom random = new XORShiftRandom();
     private final WeatherFronts plugin;
-    private final LocationTests locationtest;
     private final ConcurrentHashMap<Wolf, Boolean> wolvesInRain = new ConcurrentHashMap<Wolf, Boolean>();
-    private final FrontsWorld frontsWorld;
+    private final Simulator simulator;
     private final World world;
 
-    public EntityHandler(WeatherFronts instance, FrontsWorld frontsWorld) {
+    public EntityHandler(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
-        this.locationtest = new LocationTests(instance);
-        this.frontsWorld = frontsWorld;
-        this.world = frontsWorld.getWorld();
+        this.simulator = simulator;
+        this.world = simulator.getWorld();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -71,9 +69,13 @@ public class EntityHandler implements Listener {
         }
 
         Entity entity = event.getEntity();
-        Location entityLoc = entity.getLocation();
+        FrontLocation location = this.simulator.newFrontLocation(entity.getLocation());
 
-        if (this.locationtest.locationIsInFront(entityLoc) && this.locationtest.locationIsInRain(entityLoc)) {
+        if (!location.isInFront()) {
+            return;
+        }
+
+        if (location.isInRain()) {
             entity.setFireTicks(0);
             event.setCancelled(true);
             return;
@@ -89,9 +91,13 @@ public class EntityHandler implements Listener {
         }
 
         Entity entity = event.getEntity();
-        Location entityLoc = entity.getLocation();
+        FrontLocation location = this.simulator.newFrontLocation(entity.getLocation());
 
-        if (this.locationtest.locationIsInRain(entityLoc) && !(event instanceof EntityCombustByEntityEvent)
+        if (!location.isInFront()) {
+            return;
+        }
+
+        if (location.isInRain() && !(event instanceof EntityCombustByEntityEvent)
                 && !(event instanceof EntityCombustByBlockEvent)) {
             entity.setFireTicks(0);
             event.setCancelled(true);
@@ -112,9 +118,9 @@ public class EntityHandler implements Listener {
 
     public void changePlayerWeather() {
         for (Player player : this.world.getPlayers()) {
-            Location playerLoc = player.getLocation();
+            FrontLocation location = this.simulator.newFrontLocation(player.getLocation());
 
-            if (!this.locationtest.locationIsInFront(playerLoc)) {
+            if (!location.isInFront()) {
                 if (player.getPlayerWeather() == null || !player.getPlayerWeather().equals(WeatherType.CLEAR)) {
                     player.setPlayerWeather(WeatherType.CLEAR);
                 }
@@ -123,8 +129,7 @@ public class EntityHandler implements Listener {
                     player.setPlayerWeather(WeatherType.DOWNFALL);
                 }
 
-                String front = this.frontsWorld.locationInWhichFront(playerLoc.getBlockX(), playerLoc.getBlockZ());
-                this.plugin.getPacketHandler().changeWeather(player, front);
+                this.plugin.getPacketHandler().changeWeather(player, location.inWhichFront());
             }
         }
     }
@@ -133,9 +138,9 @@ public class EntityHandler implements Listener {
         Collection<Arrow> allArrows = this.world.getEntitiesByClass(Arrow.class);
 
         for (Arrow arrow : allArrows) {
-            Location arrowLoc = arrow.getLocation();
+            FrontLocation location = this.simulator.newFrontLocation(arrow.getLocation());
 
-            if (this.locationtest.locationIsInRain(arrowLoc) && this.locationtest.locationIsLoaded(arrowLoc)) {
+            if (location.isInRain()) {
                 arrow.setFireTicks(0);
             }
         }
@@ -145,9 +150,9 @@ public class EntityHandler implements Listener {
         Collection<Blaze> allBlazes = this.world.getEntitiesByClass(Blaze.class);
 
         for (Blaze blaze : allBlazes) {
-            Location blazeLoc = blaze.getLocation();
+            FrontLocation location = this.simulator.newFrontLocation(blaze.getLocation());
 
-            if (this.locationtest.locationIsInRain(blazeLoc) && this.locationtest.locationIsLoaded(blazeLoc)) {
+            if (location.isInRain()) {
                 blaze.damage(1.0);
             }
         }
@@ -157,9 +162,9 @@ public class EntityHandler implements Listener {
         Collection<Snowman> allSnowmen = this.world.getEntitiesByClass(Snowman.class);
 
         for (Snowman snowman : allSnowmen) {
-            Location snowmanLoc = snowman.getLocation();
+            FrontLocation location = this.simulator.newFrontLocation(snowman.getLocation());
 
-            if (this.locationtest.locationIsInRain(snowmanLoc) && this.locationtest.locationIsLoaded(snowmanLoc)) {
+            if (location.isInRain()) {
                 snowman.damage(1.0);
             }
         }
@@ -169,9 +174,9 @@ public class EntityHandler implements Listener {
         Collection<Enderman> allEndermen = this.world.getEntitiesByClass(Enderman.class);
 
         for (Enderman enderman : allEndermen) {
-            Location endermanLoc = enderman.getLocation();
+            FrontLocation location = this.simulator.newFrontLocation(enderman.getLocation());
 
-            if (!this.locationtest.locationIsInRain(endermanLoc) || !this.locationtest.locationIsLoaded(endermanLoc)) {
+            if (!location.isInRain()) {
                 continue;
             }
 
@@ -181,12 +186,12 @@ public class EntityHandler implements Listener {
             int i = 0;
 
             while (!flag && i < 64) {
-                int x = endermanLoc.getBlockX() + this.random.nextInt(64) - 32;
-                int y = endermanLoc.getBlockY() - this.random.nextInt(32);
-                int z = endermanLoc.getBlockZ() + this.random.nextInt(64) - 32;
-                Location newLoc = new Location(world, x, y, z);
+                int x = location.getFrontX() + this.random.nextInt(64) - 32;
+                int y = location.getFrontY() - this.random.nextInt(32);
+                int z = location.getFrontZ() + this.random.nextInt(64) - 32;
+                FrontLocation newLoc = this.simulator.newFrontLocation(x, y, z);
 
-                if (!this.locationtest.locationIsLoaded(newLoc)) {
+                if (!newLoc.isLoaded()) {
                     continue;
                 }
 
@@ -198,11 +203,11 @@ public class EntityHandler implements Listener {
                             && block.getRelative(BlockFace.UP).isEmpty()
                             && block.getRelative(BlockFace.UP).getRelative(BlockFace.UP).isEmpty()) {
                         if (enderman.isInsideVehicle() && enderman.getVehicle().getType() == EntityType.MINECART) {
-                            world.playSound(endermanLoc, Sound.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
+                            world.playSound(location, Sound.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
                             break;
                         }
 
-                        world.playSound(endermanLoc, Sound.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
+                        world.playSound(location, Sound.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
                         enderman.teleport(new Location(world, x, y, z));
                         flag2 = true;
                         flag = true;
@@ -220,16 +225,16 @@ public class EntityHandler implements Listener {
         Collection<Wolf> allWolves = this.world.getEntitiesByClass(Wolf.class);
 
         for (Wolf wolf : allWolves) {
-            Location wolfLoc = wolf.getLocation();
+            FrontLocation location = this.simulator.newFrontLocation(wolf.getLocation());
 
-            if (this.locationtest.locationIsInRain(wolfLoc) && !wolvesInRain.contains(wolf)) {
+            if (location.isInRain()) {
                 wolvesInRain.put(wolf, true);
-            }
-
-            if (!this.locationtest.locationIsInRain(wolfLoc) && wolvesInRain.contains(wolf)) {
-                wolvesInRain.remove(wolf);
-                wolf.playEffect(EntityEffect.WOLF_SHAKE);
-                world.playSound(wolfLoc, Sound.ENTITY_WOLF_SHAKE, 0.4F, 1.0F);
+            } else {
+                if (wolvesInRain.contains(wolf)) {
+                    wolvesInRain.remove(wolf);
+                    wolf.playEffect(EntityEffect.WOLF_SHAKE);
+                    world.playSound(location, Sound.ENTITY_WOLF_SHAKE, 0.4F, 1.0F);
+                }
             }
         }
     }

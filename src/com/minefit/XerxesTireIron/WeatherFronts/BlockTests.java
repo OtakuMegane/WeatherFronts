@@ -6,14 +6,17 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Functions;
+import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class BlockTests {
     private final WeatherFronts plugin;
     private final Functions functions;
+    private final Simulator simulator;
 
-    public BlockTests(WeatherFronts instance) {
+    public BlockTests(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
         this.functions = new Functions(instance);
+        this.simulator = simulator;
     }
 
     public Block getTopBlock(Location location) {
@@ -41,12 +44,11 @@ public class BlockTests {
     }
 
     public boolean adjacentBlockExposed(Block block) {
-        Location eastLoc = block.getRelative(BlockFace.EAST).getLocation();
-        Location westLoc = block.getRelative(BlockFace.WEST).getLocation();
-        Location northLoc = block.getRelative(BlockFace.NORTH).getLocation();
-        Location southLoc = block.getRelative(BlockFace.SOUTH).getLocation();
-        return getTopBlockY(northLoc) >= northLoc.getY() && getTopBlockY(southLoc) >= southLoc.getY()
-                && getTopBlockY(eastLoc) >= eastLoc.getY() && getTopBlockY(westLoc) >= westLoc.getY();
+        FrontLocation eastLoc = this.simulator.newFrontLocation(block.getRelative(BlockFace.EAST));
+        FrontLocation westLoc = this.simulator.newFrontLocation(block.getRelative(BlockFace.WEST));
+        FrontLocation northLoc = this.simulator.newFrontLocation(block.getRelative(BlockFace.NORTH));
+        FrontLocation southLoc = this.simulator.newFrontLocation(block.getRelative(BlockFace.SOUTH));
+        return eastLoc.isInRain() || westLoc.isInRain() || northLoc.isInRain() || southLoc.isInRain();
     }
 
     public Boolean blockIsCold(Location location) {

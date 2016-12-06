@@ -1,17 +1,25 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.minefit.XerxesTireIron.WeatherFronts.DynmapFunctions;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.LoadData;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
+import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.RandomBasic;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.WeatherSystem;
 
 public class Simulator {
@@ -24,6 +32,7 @@ public class Simulator {
     private final LoadData load;
     private final DynmapFunctions dynmap;
     private WeatherSystem system;
+    private final BukkitTask oneTick;
 
     public Simulator(World world, WeatherFronts instance, YamlConfiguration config, String name) {
         this.simulatorConfig = config;
@@ -33,7 +42,9 @@ public class Simulator {
         this.load = new LoadData(instance);
         this.frontsData = this.load.loadConfigForWorld(world.getName(), "fronts.yml", false);
         this.dynmap = this.plugin.getDynmap();
+        this.system = new RandomBasic(instance, this);
         loadFronts();
+        this.oneTick = new MainTickCycle(instance, this).runTaskTimer(instance, 0, 1);
     }
 
     public World getWorld() {
@@ -46,6 +57,39 @@ public class Simulator {
 
     public Map<String, Front> getFronts() {
         return this.fronts;
+    }
+
+    public WeatherFronts getPlugin() {
+        return this.plugin;
+    }
+
+    public FrontLocation newFrontLocation(double x, double y, double z) {
+        return new FrontLocation(this, x, y, z);
+    }
+
+    public FrontLocation newFrontLocation(Location location) {
+        return new FrontLocation(this, location);
+    }
+
+    public FrontLocation newFrontLocation(Block block) {
+        return new FrontLocation(this, block);
+    }
+
+    public String locationInWhichFront(int x, int z) {
+        if (isInSimulator(x, z)) {
+            for (Entry<String, Front> entry : this.fronts.entrySet()) {
+                if (entry.getValue().isInFront(x, z)) {
+                    return entry.getValue().getName();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public String locationInWhichFront(FrontLocation location)
+    {
+        return locationInWhichFront(location.getBlockX(), location.getBlockZ());
     }
 
     public void updateFronts() {
@@ -61,14 +105,18 @@ public class Simulator {
     }
 
     private void loadFronts() {
+        if(this.frontsData.getKeys(false).size() == 0)
+        {
+            return;
+        }
+
         for (String frontName : this.frontsData.getKeys(false)) {
             this.fronts.put(frontName,
                     new Front(this.plugin, this, this.load.loadFrontData(frontName, this.frontsData), frontName));
         }
     }
 
-    public void addFront(Front front)
-    {
+    public void addFront(Front front) {
         this.fronts.put(front.getName(), front);
     }
 
@@ -114,6 +162,11 @@ public class Simulator {
         return this.fronts.containsKey(frontName);
     }
 
+    public Front getFront(String frontName)
+    {
+        return this.fronts.get(frontName);
+    }
+
     public boolean renameFront(String originalName, String newName) {
         if (simulatorHasFront(originalName) && newName != null) {
             Front front = this.fronts.get(originalName);
@@ -133,7 +186,10 @@ public class Simulator {
         YamlConfiguration allFronts = new YamlConfiguration();
 
         for (Entry<String, Front> entry : this.fronts.entrySet()) {
-            allFronts.set(entry.getKey(), getFrontData(entry.getKey()));
+            if(!entry.getKey().isEmpty())
+            {
+                allFronts.set(entry.getKey(), getFrontData(entry.getKey()));
+            }
         }
 
         return allFronts;
@@ -163,5 +219,9 @@ public class Simulator {
         }
 
         return true;
+    }
+
+    public void shutdown() {
+        this.oneTick.cancel();
     }
 }

@@ -54,7 +54,7 @@ public class RandomBasic implements WeatherSystem {
     public Front createFront(YamlConfiguration config)
     {
         GenerateFrontData generate = new GenerateFrontData(this.plugin, this.simulator, config);
-        Front front = new Front(this.plugin, this.simulator, generate.generateValues(), generate.frontName());
+        Front front = new Front(this.plugin, this.simulator, generate.generateValues(), "");
         return front;
     }
 

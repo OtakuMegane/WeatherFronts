@@ -1,16 +1,13 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Front;
 
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.XerxesTireIron.WeatherFronts.BlockTests;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
-import com.minefit.XerxesTireIron.WeatherFronts.LocationTests;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Functions;
@@ -22,7 +19,6 @@ public class LightningGen {
     private final YamlConfiguration simulatorConfig;
     private final Functions functions;
     private final BlockTests blocktest;
-    private final LocationTests locationtest;
     private double accumulator = 0.0;
     private double weightedLPM;
     private double lightningPerCheck;
@@ -35,21 +31,20 @@ public class LightningGen {
         this.frontConfig = front.getData();
         this.simulatorConfig = config;
         this.functions = new Functions(instance);
-        this.blocktest = new BlockTests(instance);
-        this.locationtest = new LocationTests(instance);
+        this.blocktest = new BlockTests(instance, front.getSimulator());
         this.random = new XORShiftRandom();
 
-        if (this.frontConfig.getDouble("lightning-per-minute") <= 0.0) {
+        if (this.frontConfig.getInt("lightning-per-minute") <= 0) {
             this.hasLightning = false;
         } else {
             this.hasLightning = true;
-            this.weightedLPM = this.frontConfig.getDouble("lightning-per-minute");
+            this.weightedLPM = this.frontConfig.getInt("lightning-per-minute");
 
             if (this.simulatorConfig.getBoolean("use-weighted-lightning")) {
                 weight(this.simulatorConfig.getInt("weight-radius-threshold"));
             }
 
-            this.lightningPerCheck = this.weightedLPM / 240;
+            this.lightningPerCheck = this.weightedLPM / (60 * 20);
         }
     }
 
@@ -81,17 +76,17 @@ public class LightningGen {
     }
 
     private void randomStrike(World world) {
-        FrontLocation location = this.functions.randomXYInFront(this.front.getSimulator(),
+        FrontLocation frontLocation = this.functions.randomXYInFront(this.front.getSimulator(),
                 this.front.getFrontBoundaries());
 
-        if (!location.isLoaded()) {
+        if (!frontLocation.isLoaded()) {
             return;
         }
 
         boolean lightningDry = this.simulatorConfig.getBoolean("lightning-in-dry-biomes");
         boolean lightningCold = this.simulatorConfig.getBoolean("lightning-in-cold-biomes");
         Block highBlock = this.blocktest
-                .getTopLightningBlock(new Location(world, location.getPositionX(), 0, location.getPositionZ()));
+                .getTopLightningBlock(new Location(world, frontLocation.getPositionX(), 0, frontLocation.getPositionZ()));
 
         if (highBlock == null) {
             return;

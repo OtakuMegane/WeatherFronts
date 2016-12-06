@@ -1,9 +1,8 @@
-package com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld;
+package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -19,54 +18,49 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
 
 import com.minefit.XerxesTireIron.WeatherFronts.BlockTests;
-import com.minefit.XerxesTireIron.WeatherFronts.LocationTests;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
-import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
 
 public class FireHandler implements Listener {
     private final Random random = new XORShiftRandom();
     private final WeatherFronts plugin;
     private final ConcurrentHashMap<Block, Integer> fireBlocks = new ConcurrentHashMap<Block, Integer>();
-    private final LocationTests locationtest;
     private final BlockTests blocktest;
+    private final Simulator simulator;
 
-    public FireHandler(WeatherFronts instance) {
+    public FireHandler(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
-        this.locationtest = new LocationTests(instance);
-        this.blocktest = new BlockTests(instance);
+        this.blocktest = new BlockTests(instance, simulator);
+        this.simulator = simulator;
     }
 
     public void extinguishFire() {
         for (Block block : fireBlocks.keySet()) {
-            Location location = block.getLocation();
+            FrontLocation location = this.simulator.newFrontLocation(block);
 
-            if (!this.locationtest.locationIsLoaded(location) || block.getType() != Material.FIRE
+            if (!location.isLoaded() || block.getType() != Material.FIRE
                     || block.getRelative(BlockFace.DOWN).getType() == Material.NETHERRACK) {
                 fireBlocks.remove(block);
                 continue;
             }
+            if(actOnBlock(block))
+            {
+            int age = block.getData();
 
-            if (actOnBlock(block)) {
-                int age = block.getData();
-
-                if (age < 15) {
-                    age += Integer.valueOf(this.random.nextInt(12) / 2); // Adjusted for 5 tick interval
-                    if (age > 15) {
-                        age = 15;
-                    }
-                    block.setData((byte) age);
-                } else {
-                    if (this.random.nextInt(4) == 0) {
-                        block.setType(Material.AIR);
-                        fireBlocks.remove(block);
-                    }
+            if (age < 15) {
+                age += Integer.valueOf(this.random.nextInt(3) / 2);
+                if (age > 15) {
+                    age = 15;
                 }
+                block.setData((byte) age);
             } else {
-                if (fireBlocks.get(block) > 0) {
+                if (random.nextInt(4) == 0) {
                     block.setType(Material.AIR);
                     fireBlocks.remove(block);
                 }
+            }
             }
         }
     }
@@ -78,18 +72,15 @@ public class FireHandler implements Listener {
         }
 
         Block block = event.getBlock();
-        World world = block.getWorld();
-        Location location = block.getLocation();
-        Simulator simulator = this.plugin.getWorldHandle(world).getSimulatorByLocation(location);
+        FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
 
-        if(simulator == null)
-        {
+        if (!this.simulator.isInSimulator(location.getFrontX(), location.getFrontZ())) {
             return;
         }
 
-        YamlConfiguration simulatorConfig = simulator.getSimulatorConfig();
+        YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
 
-        if (event.getCause() == IgniteCause.LIGHTNING && this.locationtest.locationInSpawnChunk(location)
+        if (event.getCause() == IgniteCause.LIGHTNING && location.inSpawnChunk()
                 && !simulatorConfig.getBoolean("lightning-fire-in-spawn-chunk")) {
             event.setCancelled(true);
             return;
@@ -122,7 +113,7 @@ public class FireHandler implements Listener {
 
         Block block = event.getBlock();
 
-        if (actOnBlock(block)) {
+        if (block.getType() == Material.FIRE && actOnBlock(block)) {
             event.setCancelled(true);
             addFireBlock(block, true);
         }
@@ -135,17 +126,14 @@ public class FireHandler implements Listener {
             return;
         }
 
-        Location location = event.getLightning().getLocation();
         Block block = event.getLightning().getLocation().getBlock();
+        FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
 
-        Simulator simulator = this.plugin.getWorldHandle(world).getSimulatorByLocation(location);
-
-        if(simulator == null)
-        {
+        if (this.simulator.isInSimulator(location.getFrontX(), location.getFrontZ())) {
             return;
         }
 
-        YamlConfiguration simulatorConfig = simulator.getSimulatorConfig();
+        YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
 
         if (!simulatorConfig.getBoolean("create-fulgurites")) {
             return;
@@ -198,9 +186,9 @@ public class FireHandler implements Listener {
         FrontsWorld frontsWorld = this.plugin.getWorldHandle(block.getWorld());
         YamlConfiguration simulatorConfig = frontsWorld.getSimulatorByLocation(block.getLocation())
                 .getSimulatorConfig();
+        FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
 
-        if (this.locationtest.locationInSpawnChunk(block.getLocation())
-                && !simulatorConfig.getBoolean("fulgurite-in-spawn-chunk")) {
+        if (location.inSpawnChunk() && !simulatorConfig.getBoolean("fulgurite-in-spawn-chunk")) {
             return;
         }
 
@@ -247,6 +235,7 @@ public class FireHandler implements Listener {
     }
 
     private boolean actOnBlock(Block block) {
-        return this.locationtest.locationIsInRain(block.getLocation()) || this.blocktest.adjacentBlockExposed(block);
+        FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
+        return location.isInRain() || this.blocktest.adjacentBlockExposed(block);
     }
 }
