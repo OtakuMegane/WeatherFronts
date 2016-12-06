@@ -1,11 +1,8 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
 import java.awt.geom.Point2D;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.World;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -14,10 +11,6 @@ import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
-
-import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
-import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
-import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class DynmapFunctions implements Listener {
     private final WeatherFronts plugin;

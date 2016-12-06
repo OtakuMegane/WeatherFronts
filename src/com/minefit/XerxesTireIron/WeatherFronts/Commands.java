@@ -1,7 +1,6 @@
 package com.minefit.XerxesTireIron.WeatherFronts;
 
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -17,7 +16,6 @@ import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 public class Commands implements CommandExecutor {
     private final WeatherFronts plugin;
     private final SaveData save;
-    private Logger logger = Logger.getLogger("Minecraft");
 
     public Commands(WeatherFronts instance) {
         this.plugin = instance;

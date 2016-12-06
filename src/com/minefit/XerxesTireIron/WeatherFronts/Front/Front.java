@@ -12,7 +12,6 @@ import com.minefit.XerxesTireIron.WeatherFronts.DynmapFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
-import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.WeatherSystem;
 
 public class Front {
 
@@ -24,9 +23,8 @@ public class Front {
     private final LightningGen lightning;
     private final DynmapFunctions dynmap;
     private boolean hostileSpawn;
-    private WeatherSystem system;
-    private Point2D[] boundaries;
-    private Set<Chunk> frontChunks;
+    private final Point2D[] boundaries;
+    private final Set<Chunk> frontChunks;
     private final ChunkTick chunkTick;
     private final FrontListener listener;
 

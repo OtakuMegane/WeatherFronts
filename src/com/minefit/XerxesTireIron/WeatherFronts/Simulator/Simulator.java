@@ -1,13 +1,10 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -87,8 +84,7 @@ public class Simulator {
         return null;
     }
 
-    public String locationInWhichFront(FrontLocation location)
-    {
+    public String locationInWhichFront(FrontLocation location) {
         return locationInWhichFront(location.getBlockX(), location.getBlockZ());
     }
 
@@ -105,8 +101,7 @@ public class Simulator {
     }
 
     private void loadFronts() {
-        if(this.frontsData.getKeys(false).size() == 0)
-        {
+        if (this.frontsData.getKeys(false).size() == 0) {
             return;
         }
 
@@ -162,8 +157,7 @@ public class Simulator {
         return this.fronts.containsKey(frontName);
     }
 
-    public Front getFront(String frontName)
-    {
+    public Front getFront(String frontName) {
         return this.fronts.get(frontName);
     }
 
@@ -186,8 +180,7 @@ public class Simulator {
         YamlConfiguration allFronts = new YamlConfiguration();
 
         for (Entry<String, Front> entry : this.fronts.entrySet()) {
-            if(!entry.getKey().isEmpty())
-            {
+            if (!entry.getKey().isEmpty()) {
                 allFronts.set(entry.getKey(), getFrontData(entry.getKey()));
             }
         }

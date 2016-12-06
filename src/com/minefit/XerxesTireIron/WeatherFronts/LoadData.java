@@ -42,16 +42,15 @@ public class LoadData {
         YamlConfiguration config = new YamlConfiguration();
 
         try {
-            File configFile = new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + fileName);
+            File configFile = new File(
+                    this.plugin.getDataFolder() + File.separator + worldName + File.separator + fileName);
 
             if (!configFile.exists()) {
-//                configFile.mkdirs();
+                //                configFile.mkdirs();
 
                 if (copyFile) {
                     copy(this.plugin.getResource(fileName), configFile);
-                }
-                else
-                {
+                } else {
                     configFile.createNewFile();
                 }
             }

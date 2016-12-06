@@ -14,7 +14,6 @@ import com.minefit.XerxesTireIron.WeatherFronts.LoadData;
 import com.minefit.XerxesTireIron.WeatherFronts.SaveData;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
-import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 
 public class FrontsWorld {
     private final WeatherFronts plugin;
@@ -23,7 +22,6 @@ public class FrontsWorld {
     private final Map<String, Simulator> simulators = new HashMap<String, Simulator>();
     private final SaveData save;
     private final BukkitTask twentyTick;
-    private final BukkitTask sixHundredTick;
     private YamlConfiguration worldSimulatorConfigs;
     private final XORShiftRandom random = new XORShiftRandom();
 
@@ -33,8 +31,7 @@ public class FrontsWorld {
         this.load = new LoadData(instance);
         this.save = new SaveData(instance);
         loadSimulators();
-        this.twentyTick = new Runnable20Tick(instance, this).runTaskTimer(instance, 0, 20);
-        this.sixHundredTick = new Runnable600Tick(instance, this).runTaskTimer(instance, 0, 600);
+        this.twentyTick = new TickFrontUpdates(instance, this).runTaskTimer(instance, 0, 20);
     }
 
     public void updateSimulators() {
@@ -53,8 +50,7 @@ public class FrontsWorld {
         }
     }
 
-    public Simulator randomSimulator()
-    {
+    public Simulator randomSimulator() {
         int length = this.simulators.size();
         Object[] values = this.simulators.values().toArray();
         return (Simulator) values[random.nextInt(length)];
@@ -85,8 +81,8 @@ public class FrontsWorld {
     public String locationInWhichFront(int x, int z) {
         for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
             String frontName = entry.getValue().locationInWhichFront(x, z);
-            if(frontName != null)
-            {
+
+            if (frontName != null) {
                 return frontName;
             }
         }
@@ -119,11 +115,13 @@ public class FrontsWorld {
 
         // Set up new simulator here
         for (String simulatorName : worldSimulatorConfigs.getKeys(false)) {
-            this.simulators.put(simulatorName, new Simulator(this.world, this.plugin,
-                    this.load.combineConfigDefaults(simulatorName, worldDefaults, this.worldSimulatorConfigs), simulatorName));
-            this.save.saveToYamlFile(worldName, "simulators-mod.yml", this.load.combineConfigDefaults(simulatorName, worldDefaults, this.worldSimulatorConfigs));
+            this.simulators.put(simulatorName,
+                    new Simulator(this.world, this.plugin,
+                            this.load.combineConfigDefaults(simulatorName, worldDefaults, this.worldSimulatorConfigs),
+                            simulatorName));
+            this.save.saveToYamlFile(worldName, "simulators-mod.yml",
+                    this.load.combineConfigDefaults(simulatorName, worldDefaults, this.worldSimulatorConfigs));
         }
-
 
     }
 
@@ -143,8 +141,7 @@ public class FrontsWorld {
         this.save.saveToYamlFile(worldName, "fronts.yml", allFronts);
     }
 
-    public void shutdownSimulators()
-    {
+    public void shutdownSimulators() {
         for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
             entry.getValue().shutdown();
         }
@@ -155,7 +152,6 @@ public class FrontsWorld {
         saveFronts();
         shutdownSimulators();
         this.twentyTick.cancel();
-        this.sixHundredTick.cancel();
     }
 
 }

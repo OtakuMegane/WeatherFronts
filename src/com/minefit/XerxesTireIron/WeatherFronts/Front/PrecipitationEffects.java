@@ -1,12 +1,10 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Front;
 
-import java.awt.geom.Point2D;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -46,14 +44,6 @@ public class PrecipitationEffects implements Listener {
     }
 
     public void precipitationBlockEffects() {
-        /*int loopLimit = (int) Math.ceil(((this.frontConfig.getInt("radius-x") + this.frontConfig.getInt("radius-z"))
-                * this.frontConfig.getInt("precipitation-intensity")) / 200);
-        Point2D[] boundaries = this.front.getFrontBoundaries();
-
-        for (int i = 0; i < loopLimit; i++) {
-            alterBlock(frontChunks);
-        }*/
-
         Set<Chunk> frontChunks = this.front.getFrontChunks();
         int loopLimit = (int) Math.ceil(this.frontConfig.getInt("precipitation-intensity") / 10);
 

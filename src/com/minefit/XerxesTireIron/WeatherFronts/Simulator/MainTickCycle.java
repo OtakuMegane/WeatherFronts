@@ -6,7 +6,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
-import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
 
 public class MainTickCycle extends BukkitRunnable {
     private final WeatherFronts plugin;

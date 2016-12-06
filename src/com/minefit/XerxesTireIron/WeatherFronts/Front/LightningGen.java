@@ -85,8 +85,8 @@ public class LightningGen {
 
         boolean lightningDry = this.simulatorConfig.getBoolean("lightning-in-dry-biomes");
         boolean lightningCold = this.simulatorConfig.getBoolean("lightning-in-cold-biomes");
-        Block highBlock = this.blocktest
-                .getTopLightningBlock(new Location(world, frontLocation.getPositionX(), 0, frontLocation.getPositionZ()));
+        Block highBlock = this.blocktest.getTopLightningBlock(
+                new Location(world, frontLocation.getPositionX(), 0, frontLocation.getPositionZ()));
 
         if (highBlock == null) {
             return;
