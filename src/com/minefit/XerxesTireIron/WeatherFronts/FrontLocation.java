@@ -10,9 +10,6 @@ import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 public class FrontLocation extends Location {
     private Simulator simulator;
     private World world;
-    private int x;
-    private int y;
-    private int z;
     private final BlockFunctions blockFunction;
     private final BiomeData biomeData;
 
@@ -37,7 +34,7 @@ public class FrontLocation extends Location {
     }
 
     public boolean isLoaded() {
-        return this.simulator.getWorld().isChunkLoaded(this.x >> 4, this.z >> 4);
+        return this.simulator.getWorld().isChunkLoaded(this.getBlockX() >> 4, this.getBlockZ() >> 4);
     }
 
     public boolean isInFront() {
@@ -45,7 +42,7 @@ public class FrontLocation extends Location {
     }
 
     public String inWhichFront() {
-        return this.simulator.locationInWhichFront(this.x, this.z);
+        return this.simulator.locationInWhichFront(this.getBlockX(), this.getBlockZ());
     }
 
     public boolean canSpawnHostile() {
@@ -53,7 +50,7 @@ public class FrontLocation extends Location {
     }
 
     public boolean isInWeather() {
-        return isInFront() && this.y > this.blockFunction.getTopShelterBlock(this).getY();
+        return isInFront() && this.getBlockY() > this.blockFunction.getTopShelterBlock(this).getY();
     }
 
     public boolean isInRain() {
@@ -71,7 +68,7 @@ public class FrontLocation extends Location {
     }
 
     public Location getBukkitLocation() {
-        return new Location(this.world, this.x, this.y, this.z);
+        return new Location(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
     }
 
     public Block getBlock() {
@@ -92,8 +89,8 @@ public class FrontLocation extends Location {
 
     public boolean inSpawnChunk() {
         Location spawn = this.world.getSpawnLocation();
-        return this.x < (spawn.getX() + 128 + 8) && this.x > (spawn.getX() - 128 - 8)
-                && this.z < (spawn.getZ() + 128 + 8) && this.z > (spawn.getZ() - 128 - 8);
+        return this.getBlockX() < (spawn.getX() + 128 + 8) && this.getBlockX() > (spawn.getX() - 128 - 8)
+                && this.getBlockZ() < (spawn.getZ() + 128 + 8) && this.getBlockZ() > (spawn.getZ() - 128 - 8);
     }
 
     public boolean isCold() {

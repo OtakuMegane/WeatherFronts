@@ -20,14 +20,12 @@ public class BlockFunctions {
     }
 
     public Block findHighestBlock(Location location, int start) {
-        int i = 255;
-
-        if (start < 256 && start > 0) {
-            i = start;
+        if (start > 256) {
+            start = 255;
         }
 
-        for (; i > 0; --i) {
-            Block block = this.world.getBlockAt(location.getBlockX(), i, location.getBlockZ());
+        for (; start > 0; --start) {
+            Block block = this.world.getBlockAt(location.getBlockX(), start, location.getBlockZ());
 
             if (!block.isEmpty()) {
                 return block;
@@ -42,11 +40,14 @@ public class BlockFunctions {
     }
 
     public Block getTopShelterBlock(Location location) {
-        int start = 255;
-        Block block = findHighestBlock(location, start);
+        Block block = findHighestBlock(location, 255);
 
-        while (!isShelter(block)) {
-            start = block.getY();
+        for (int start = block.getY(); start > 0; --start) {
+            if (isShelter(block)) {
+                return block;
+            }
+
+            start = block.getY() - 1;
             block = findHighestBlock(location, start);
         }
 
@@ -54,11 +55,14 @@ public class BlockFunctions {
     }
 
     public Block getTopLiquidBlock(Location location) {
-        int start = 255;
-        Block block = findHighestBlock(location, start);
+        Block block = findHighestBlock(location, 255);
 
-        while (!block.isLiquid()) {
-            start = block.getY();
+        for (int start = block.getY(); start > 0; --start) {
+            if (block.isLiquid()) {
+                return block;
+            }
+
+            start = block.getY() - 1;
             block = findHighestBlock(location, start);
         }
 
@@ -66,11 +70,13 @@ public class BlockFunctions {
     }
 
     public Block getTopSolidBlock(Location location) {
-        int start = 255;
-        Block block = findHighestBlock(location, start);
+        Block block = findHighestBlock(location, 255);
 
-        while (!block.getType().isSolid()) {
-            start = block.getY();
+        for (int start = block.getY(); start > 0; --start) {
+            if (block.getType().isSolid()) {
+                return block;
+            }
+
             block = findHighestBlock(location, start);
         }
 
@@ -78,15 +84,18 @@ public class BlockFunctions {
     }
 
     public Block getTopBlockLightningValid(Location location) {
-        int start = 255;
-        Block block = findHighestBlock(location, start);
+        Block block = findHighestBlock(location, 255);
 
-        while (!block.getType().isSolid() && !block.isLiquid()) {
-            start = block.getY();
+        for (int start = block.getY(); start > 0; --start) {
+            if ((block.getType().isSolid() || block.isLiquid())
+                    && (block.getRelative(BlockFace.UP).isEmpty() || !isShelter(block))) {
+                return block;
+            }
+
             block = findHighestBlock(location, start);
         }
 
-        return block.getRelative(BlockFace.UP);
+        return block;
     }
 
     public Block getTopEmptyBlock(Location location) {

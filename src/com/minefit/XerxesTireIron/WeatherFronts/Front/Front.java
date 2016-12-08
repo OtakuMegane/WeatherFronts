@@ -29,6 +29,7 @@ public class Front {
     private final ChunkTick chunkTick;
     private final FrontListener listener;
     private final XORShiftRandom random;
+    private boolean hasLightning;
 
     public Front(WeatherFronts instance, Simulator simulator, YamlConfiguration data, String name) {
         this.plugin = instance;
@@ -46,6 +47,7 @@ public class Front {
         this.listener = new FrontListener(instance, this);
         this.plugin.getServer().getPluginManager().registerEvents(listener, this.plugin);
         this.random = new XORShiftRandom();
+        this.hasLightning = this.data.getInt("lightning-per-minute") <= 0;
         updateFrontBoundaries();
         updateFrontChunks();
     }
@@ -103,7 +105,9 @@ public class Front {
     }
 
     public void genLightning() {
-        this.lightning.lightningGen(world);
+        if (this.hasLightning) {
+            this.lightning.lightningGen(world);
+        }
     }
 
     public String changeName(String newName) {

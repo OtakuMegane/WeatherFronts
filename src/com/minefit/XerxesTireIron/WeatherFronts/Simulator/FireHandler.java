@@ -45,22 +45,21 @@ public class FireHandler implements Listener {
                 fireBlocks.remove(block);
                 continue;
             }
-            if(actOnBlock(block))
-            {
-            int age = block.getData();
+            if (actOnBlock(block)) {
+                int age = block.getData();
 
-            if (age < 15) {
-                age += Integer.valueOf(this.random.nextInt(3) / 2);
-                if (age > 15) {
-                    age = 15;
+                if (age < 15) {
+                    age += Integer.valueOf(this.random.nextInt(3) / 2);
+                    if (age > 15) {
+                        age = 15;
+                    }
+                    block.setData((byte) age);
+                } else {
+                    if (random.nextInt(4) == 0) {
+                        block.setType(Material.AIR);
+                        fireBlocks.remove(block);
+                    }
                 }
-                block.setData((byte) age);
-            } else {
-                if (random.nextInt(4) == 0) {
-                    block.setType(Material.AIR);
-                    fireBlocks.remove(block);
-                }
-            }
             }
         }
     }
@@ -125,11 +124,11 @@ public class FireHandler implements Listener {
         if (event.isCancelled() || !this.plugin.worldEnabled(world)) {
             return;
         }
-
+        this.plugin.logger.info("strike event");
         Block block = event.getLightning().getLocation().getBlock();
         FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
 
-        if (this.simulator.isInSimulator(location.getBlockX(), location.getBlockZ())) {
+        if (!this.simulator.isInSimulator(location)) {
             return;
         }
 
@@ -139,7 +138,7 @@ public class FireHandler implements Listener {
             return;
         }
 
-        if (this.random.nextInt(100) < simulatorConfig.getInt("fulgurite-chance")
+        if (this.random.nextInt(1) < simulatorConfig.getInt("fulgurite-chance")
                 || simulatorConfig.getInt("fulgurite-chance") == 100) {
             generateFulgurite(block);
         }
@@ -182,7 +181,6 @@ public class FireHandler implements Listener {
     }
 
     public void generateFulgurite(Block block) {
-
         FrontsWorld frontsWorld = this.plugin.getWorldHandle(block.getWorld());
         YamlConfiguration simulatorConfig = frontsWorld.getSimulatorByLocation(block.getLocation())
                 .getSimulatorConfig();
@@ -192,15 +190,16 @@ public class FireHandler implements Listener {
             return;
         }
 
-        Material blockType = convertBlock(block.getType());
+        Block blockDown = block.getRelative(BlockFace.DOWN);
+        Material blockType = convertBlock(blockDown.getType());
 
         if (blockType == null) {
             return;
         }
 
-        block.setType(blockType);
+        blockDown.setType(blockType);
         int limit = random.nextInt(simulatorConfig.getInt("fulgurite-max-size"));
-        Block baseBlock = block;
+        Block baseBlock = blockDown;
         int i = 0;
         BlockFace[] faces = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.DOWN };
 

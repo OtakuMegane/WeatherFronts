@@ -18,7 +18,6 @@ public class LightningGen {
     private double accumulator = 0.0;
     private double weightedLPM;
     private double lightningPerCheck;
-    private boolean hasLightning;
     private final XORShiftRandom random;
 
     public LightningGen(WeatherFronts instance, YamlConfiguration config, Front front) {
@@ -29,18 +28,14 @@ public class LightningGen {
         this.blockFunction = new BlockFunctions(instance, front.getSimulator());
         this.random = new XORShiftRandom();
 
-        if (this.frontConfig.getInt("lightning-per-minute") <= 0) {
-            this.hasLightning = false;
-        } else {
-            this.hasLightning = true;
-            this.weightedLPM = this.frontConfig.getInt("lightning-per-minute");
+        this.weightedLPM = this.frontConfig.getInt("lightning-per-minute");
 
-            if (this.simulatorConfig.getBoolean("use-weighted-lightning")) {
-                weight(this.simulatorConfig.getInt("weight-radius-threshold"));
-            }
-
-            this.lightningPerCheck = this.weightedLPM / (60 * 20);
+        if (this.simulatorConfig.getBoolean("use-weighted-lightning")) {
+            weight(this.simulatorConfig.getInt("weight-radius-threshold"));
         }
+
+        this.lightningPerCheck = this.weightedLPM / (60 * 20);
+
     }
 
     private void weight(int threshold) {
@@ -54,19 +49,17 @@ public class LightningGen {
     }
 
     public void lightningGen(World world) {
-        if (!this.hasLightning) {
-            return;
-        }
-
         this.accumulator += this.lightningPerCheck;
 
         if (this.accumulator < 1.0) {
             return;
         }
 
-        while (accumulator >= 1.0 && this.random.nextBoolean()) {
-            randomStrike(world);
-            this.accumulator -= 1.0;
+        while (accumulator >= 1.0) {
+            if (this.random.nextBoolean()) {
+                randomStrike(world);
+                this.accumulator -= 1.0;
+            }
         }
     }
 
