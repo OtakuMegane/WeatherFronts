@@ -17,11 +17,12 @@ public class TickFrontUpdates extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (genDelay >= 30) {
+        if (this.genDelay >= 30) {
             this.frontsWorld.autoGenFronts();
+            this.genDelay = 0;
         }
 
         this.frontsWorld.updateSimulators();
-        ++genDelay;
+        ++this.genDelay;
     }
 }
