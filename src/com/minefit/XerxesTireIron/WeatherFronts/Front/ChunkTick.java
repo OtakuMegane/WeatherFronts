@@ -98,15 +98,16 @@ public class ChunkTick {
     private void formSnow(Block block) {
         Block upperBlock = block.getRelative(BlockFace.UP);
 
-        if (blockCanHaveSnow(block)) {
+        if (blockCanHaveSnow(block, upperBlock)) {
             upperBlock.setType(Material.SNOW);
         }
 
     }
 
-    private Boolean blockCanHaveSnow(Block block) {
-        return block.getRelative(BlockFace.UP).getType() == Material.AIR
-                && this.blockFunction.canFormSnow(block.getType()) && block.getLightFromBlocks() < 10;
+    private Boolean blockCanHaveSnow(Block block, Block upperBlock) {
+        return upperBlock.getType() == Material.AIR
+                && this.blockFunction.canFormSnow(block.getType()) && upperBlock.getLightFromBlocks() < 10;
+
     }
 
     private FrontLocation randomLocationInChunk(Simulator simulator, Chunk chunk) {

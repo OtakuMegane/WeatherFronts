@@ -50,7 +50,7 @@ public class FrontLocation extends Location {
     }
 
     public boolean isInWeather() {
-        return isInFront() && this.getBlockY() > this.blockFunction.getTopShelterBlock(this).getY();
+        return isInFront() && this.getBlockY() >= this.blockFunction.getTopShelterBlock(this).getY();
     }
 
     public boolean isInRain() {
