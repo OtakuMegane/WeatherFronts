@@ -1,7 +1,8 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
@@ -28,6 +29,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.util.Vector;
 
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
@@ -36,7 +38,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 public class EntityHandler implements Listener {
     private final XORShiftRandom random = new XORShiftRandom();
     private final WeatherFronts plugin;
-    private final ConcurrentHashMap<Wolf, Boolean> wolvesInRain = new ConcurrentHashMap<Wolf, Boolean>();
+    private final Set<Wolf> wolvesInRain = new HashSet<Wolf>();
     private final Simulator simulator;
     private final World world;
 
@@ -186,9 +188,9 @@ public class EntityHandler implements Listener {
             int i = 0;
 
             while (!flag && i < 64) {
-                int x = location.getFrontX() + this.random.nextInt(64) - 32;
-                int y = location.getFrontY() - this.random.nextInt(32);
-                int z = location.getFrontZ() + this.random.nextInt(64) - 32;
+                int x = location.getBlockX() + this.random.nextInt(64) - 32;
+                int y = location.getBlockY() - this.random.nextInt(32);
+                int z = location.getBlockZ() + this.random.nextInt(64) - 32;
                 FrontLocation newLoc = this.simulator.newFrontLocation(x, y, z);
 
                 if (!newLoc.isLoaded()) {
@@ -228,14 +230,18 @@ public class EntityHandler implements Listener {
             FrontLocation location = this.simulator.newFrontLocation(wolf.getLocation());
 
             if (location.isInRain()) {
-                wolvesInRain.put(wolf, true);
+                this.wolvesInRain.add(wolf);
             } else {
-                if (wolvesInRain.contains(wolf)) {
-                    wolvesInRain.remove(wolf);
+                if (this.wolvesInRain.contains(wolf) && !entityIsMoving(wolf.getVelocity())) {
+                    this.wolvesInRain.remove(wolf);
                     wolf.playEffect(EntityEffect.WOLF_SHAKE);
                     world.playSound(location, Sound.ENTITY_WOLF_SHAKE, 0.4F, 1.0F);
                 }
             }
         }
+    }
+
+    public boolean entityIsMoving(Vector vector) {
+        return vector.getX() != 0 || vector.getZ() != 0;
     }
 }

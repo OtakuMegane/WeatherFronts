@@ -5,7 +5,6 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 
-import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Functions;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class FrontLocation extends Location {
@@ -14,17 +13,14 @@ public class FrontLocation extends Location {
     private int x;
     private int y;
     private int z;
-    private final BlockTests blocktest;
+    private final BlockFunctions blockFunction;
     private final BiomeData biomeData;
 
     public FrontLocation(Simulator simulator, double x, double y, double z) {
         super(simulator.getWorld(), x, y, z);
         this.simulator = simulator;
         this.world = simulator.getWorld();
-        this.x = (int) x;
-        this.y = (int) y;
-        this.z = (int) z;
-        this.blocktest = new BlockTests(simulator.getPlugin(), simulator);
+        this.blockFunction = new BlockFunctions(simulator.getPlugin(), simulator);
         this.biomeData = new BiomeData();
     }
 
@@ -38,18 +34,6 @@ public class FrontLocation extends Location {
 
     public FrontLocation(Simulator simulator, Block block) {
         this(simulator, block.getLocation());
-    }
-
-    public int getFrontX() {
-        return this.x;
-    }
-
-    public int getFrontY() {
-        return this.y;
-    }
-
-    public int getFrontZ() {
-        return this.z;
     }
 
     public boolean isLoaded() {
@@ -68,25 +52,22 @@ public class FrontLocation extends Location {
         return isInWeather() && this.simulator.getFront(inWhichFront()).spawnHostile();
     }
 
-    public boolean isAboveground() {
-        return isLoaded() && this.y >= this.blocktest.getTopBlockY(getBukkitLocation());
-    }
-
     public boolean isInWeather() {
-        return isInFront() && isAboveground();
+        return isInFront() && this.y > this.blockFunction.getTopShelterBlock(this).getY();
     }
 
     public boolean isInRain() {
-        Location location = getBukkitLocation();
         Block block = getBlock();
-        return isInWeather() && !this.biomeData.isDry(block) && !this.biomeData.isFrozen(block)
-                && !this.blocktest.blockIsCold(location);
+        return isInWeather() && !this.biomeData.isDry(block) && !this.biomeData.isFrozen(block) && !isCold();
     }
 
     public boolean isInSnow() {
-        Location location = getBukkitLocation();
         Block block = getBlock();
-        return isInWeather() && (this.biomeData.isCold(block) || this.blocktest.blockIsCold(location));
+        return isInWeather() && !this.biomeData.isDry(block) && (this.biomeData.isCold(block) || isCold());
+    }
+
+    public boolean isDry() {
+        return this.biomeData.isDry(getBlock());
     }
 
     public Location getBukkitLocation() {
@@ -109,34 +90,24 @@ public class FrontLocation extends Location {
         return this.simulator;
     }
 
-    public void updatePosition(int x, int z) {
-        updatePositionX(x);
-        updatePositionZ(z);
-    }
-
-    public void updatePositionX(int x) {
-        this.x = x;
-    }
-
-    public void updatePositionZ(int z) {
-        this.z = z;
-    }
-
-    public int getPositionX() {
-        return this.x;
-    }
-
-    public int getPositionZ() {
-        return this.z;
-    }
-
-    public int[] getPosition() {
-        return new int[] { x, z };
-    }
-
     public boolean inSpawnChunk() {
         Location spawn = this.world.getSpawnLocation();
         return this.x < (spawn.getX() + 128 + 8) && this.x > (spawn.getX() - 128 - 8)
                 && this.z < (spawn.getZ() + 128 + 8) && this.z > (spawn.getZ() - 128 - 8);
+    }
+
+    public boolean isCold() {
+        return getTemperature() < 0.15;
+    }
+
+    public double getTemperature() {
+        double temp = getBlock().getTemperature();
+
+        // Taken from the NMS BiomeBase calculation
+        if (this.getY() > 64) {
+            temp = temp - (this.getY() - 64) * 0.05F / 30.0F;
+        }
+
+        return temp;
     }
 }

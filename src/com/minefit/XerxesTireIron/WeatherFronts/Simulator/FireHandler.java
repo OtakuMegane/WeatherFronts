@@ -17,7 +17,7 @@ import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
 
-import com.minefit.XerxesTireIron.WeatherFronts.BlockTests;
+import com.minefit.XerxesTireIron.WeatherFronts.BlockFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
@@ -27,12 +27,12 @@ public class FireHandler implements Listener {
     private final Random random = new XORShiftRandom();
     private final WeatherFronts plugin;
     private final ConcurrentHashMap<Block, Integer> fireBlocks = new ConcurrentHashMap<Block, Integer>();
-    private final BlockTests blocktest;
+    private final BlockFunctions blockFunction;
     private final Simulator simulator;
 
     public FireHandler(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
-        this.blocktest = new BlockTests(instance, simulator);
+        this.blockFunction = new BlockFunctions(instance, simulator);
         this.simulator = simulator;
     }
 
@@ -74,7 +74,7 @@ public class FireHandler implements Listener {
         Block block = event.getBlock();
         FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
 
-        if (!this.simulator.isInSimulator(location.getFrontX(), location.getFrontZ())) {
+        if (!this.simulator.isInSimulator(location.getBlockX(), location.getBlockZ())) {
             return;
         }
 
@@ -129,7 +129,7 @@ public class FireHandler implements Listener {
         Block block = event.getLightning().getLocation().getBlock();
         FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
 
-        if (this.simulator.isInSimulator(location.getFrontX(), location.getFrontZ())) {
+        if (this.simulator.isInSimulator(location.getBlockX(), location.getBlockZ())) {
             return;
         }
 
@@ -236,6 +236,6 @@ public class FireHandler implements Listener {
 
     private boolean actOnBlock(Block block) {
         FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
-        return location.isInRain() || this.blocktest.adjacentBlockExposed(block);
+        return location.isInRain() || this.blockFunction.adjacentBlockExposed(block);
     }
 }

@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.minefit.XerxesTireIron.WeatherFronts.DynmapFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
+import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class Front {
@@ -24,9 +25,10 @@ public class Front {
     private final DynmapFunctions dynmap;
     private boolean hostileSpawn;
     private final Point2D[] boundaries;
-    private final Set<Chunk> frontChunks;
+    private Set<Chunk> frontChunks;
     private final ChunkTick chunkTick;
     private final FrontListener listener;
+    private final XORShiftRandom random;
 
     public Front(WeatherFronts instance, Simulator simulator, YamlConfiguration data, String name) {
         this.plugin = instance;
@@ -43,6 +45,7 @@ public class Front {
         this.chunkTick = new ChunkTick(instance, this);
         this.listener = new FrontListener(instance, this);
         this.plugin.getServer().getPluginManager().registerEvents(listener, this.plugin);
+        this.random = new XORShiftRandom();
         updateFrontBoundaries();
         updateFrontChunks();
     }
@@ -103,11 +106,6 @@ public class Front {
         this.lightning.lightningGen(world);
     }
 
-    /*public void precipitationEffects() {
-        this.precipitation.hydrateFarmland();
-        this.precipitation.precipitationBlockEffects();
-    }*/
-
     public String changeName(String newName) {
 
         if (newName != null) {
@@ -155,9 +153,9 @@ public class Front {
     }
 
     public void updateFrontChunks() {
-        Chunk[] loadedChunks = this.world.getLoadedChunks();
+        Set<Chunk> newChunks = new HashSet<Chunk>();
 
-        for (Chunk chunk : loadedChunks) {
+        for (Chunk chunk : this.world.getLoadedChunks()) {
             int chunkX = chunk.getX();
             int chunkZ = chunk.getZ();
             int blockX = chunkX * 16;
@@ -171,15 +169,22 @@ public class Front {
 
             for (FrontLocation location : locations) {
                 if (isInFront(location)) {
-                    this.frontChunks.add(chunk);
+                    newChunks.add(chunk);
                     break;
                 }
             }
         }
+
+        this.frontChunks = newChunks;
     }
 
     public void tickFrontChunks() {
         this.chunkTick.tickDispatch();
     }
 
+    public FrontLocation randomLocationInFront() {
+        double x = this.random.nextIntRange(boundaries[0].getX(), boundaries[1].getX());
+        double z = this.random.nextIntRange(boundaries[1].getY(), boundaries[2].getY());
+        return new FrontLocation(simulator, x, z);
+    }
 }

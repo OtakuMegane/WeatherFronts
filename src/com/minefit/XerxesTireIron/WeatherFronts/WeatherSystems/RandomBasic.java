@@ -2,7 +2,6 @@ package com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.GenerateFrontData;
@@ -34,9 +33,7 @@ public class RandomBasic implements WeatherSystem {
             return true;
         }
 
-        FrontLocation frontLocation = front.getFrontLocation();
-
-        if (!simulator.isInSimulator(frontLocation.getPositionX(), frontLocation.getPositionZ())) {
+        if (!simulator.isInSimulator(front.getFrontLocation())) {
             return true;
         }
 

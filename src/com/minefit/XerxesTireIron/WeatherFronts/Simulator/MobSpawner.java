@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -17,7 +16,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
-import com.minefit.XerxesTireIron.WeatherFronts.BlockTests;
+import com.minefit.XerxesTireIron.WeatherFronts.BlockFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
@@ -26,13 +25,13 @@ public class MobSpawner {
 
     private final XORShiftRandom random = new XORShiftRandom();
     private final WeatherFronts plugin;
-    private final BlockTests blocktest;
+    private final BlockFunctions blockFunction;
     private final World world;
     private final Simulator simulator;
 
     public MobSpawner(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
-        this.blocktest = new BlockTests(instance, simulator);
+        this.blockFunction = new BlockFunctions(instance, simulator);
         this.simulator = simulator;
         this.world = simulator.getWorld();
     }
@@ -101,10 +100,10 @@ public class MobSpawner {
             int baseZ = chunk.getZ() << 4;
             int x = this.random.nextIntRange(baseX, baseX + 15);
             int z = this.random.nextIntRange(baseZ, baseZ + 15);
-            Block block = this.blocktest.getTopSolidBlock(new Location(this.world, x, 0, z));
+            Block block = this.blockFunction.getTopSolidBlock(this.simulator.newFrontLocation(x, 0, z));
             FrontLocation location = this.simulator.newFrontLocation(block);
 
-            if (!location.canSpawnHostile() || !this.blocktest.blockTypeCanSpawnHostile(block.getType())
+            if (!location.canSpawnHostile() || !this.blockFunction.blockTypeCanSpawnHostile(block.getType())
                     || block.getLightFromBlocks() > 7) {
                 continue;
             }
@@ -151,7 +150,7 @@ public class MobSpawner {
 
             Block block = location.getBlock();
 
-            if (!this.blocktest.blockTypeCanSpawnHostile(block.getRelative(BlockFace.DOWN).getType())
+            if (!this.blockFunction.blockTypeCanSpawnHostile(block.getRelative(BlockFace.DOWN).getType())
                     || !block.isEmpty() || !block.getRelative(BlockFace.UP).isEmpty()) {
                 continue;
             }

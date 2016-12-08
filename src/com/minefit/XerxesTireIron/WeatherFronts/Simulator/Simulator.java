@@ -91,6 +91,7 @@ public class Simulator {
     public void updateFronts() {
         for (Entry<String, Front> entry : this.fronts.entrySet()) {
             Front front = entry.getValue();
+            front.update();
             this.system.moveFront(front);
             this.system.ageFront(front);
 
@@ -212,6 +213,10 @@ public class Simulator {
         }
 
         return true;
+    }
+
+    public boolean isInSimulator(FrontLocation location) {
+        return isInSimulator(location.getBlockX(), location.getBlockZ());
     }
 
     public void shutdown() {
