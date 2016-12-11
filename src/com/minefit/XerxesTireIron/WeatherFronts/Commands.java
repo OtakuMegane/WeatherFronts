@@ -59,7 +59,7 @@ public class Commands implements CommandExecutor {
                 return true;
             }
 
-            Front newFront = frontsWorld.randomSimulator().createFront(new YamlConfiguration(), true);
+            Front newFront = frontsWorld.randomSimulator().createFront(new YamlConfiguration(), true, false);
 
             if (newFront != null) {
                 player.sendMessage("New front named " + newFront.getName() + " has randomly formed in world "
@@ -150,7 +150,7 @@ public class Commands implements CommandExecutor {
                 return true;
             }
 
-            Front newFront = simulator.createFront(newFrontConfig, true);
+            Front newFront = simulator.createFront(newFrontConfig, true, false);
             YamlConfiguration frontData = newFront.getData();
 
             player.sendMessage("New front named " + newFront.getName() + " has formed in world " + newFrontWorldName

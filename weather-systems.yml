@@ -1,0 +1,11 @@
+#
+# This is where we create and name weather systems
+# It also contains optional system-specific overrides to the default settings
+# Any setting not specified here will use the value in the corresponding defaults file for the system
+#
+# To add more systems just create a new node with the system name
+# Then add the system-type setting for which weather engine you want to use
+#
+
+random-basic1:
+  system-type: random-basic

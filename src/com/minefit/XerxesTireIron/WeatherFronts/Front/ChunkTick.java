@@ -30,15 +30,16 @@ public class ChunkTick {
         this.simulator = front.getSimulator();
         this.blockFunction = new BlockFunctions(instance, this.simulator);
         this.intensity = this.front.getPrecipitationIntensity();
-
-        if (this.intensity > 100) {
-            this.intensity = 100;
-        }
     }
 
     public void tickDispatch() {
         this.frontChunks = this.front.getFrontChunks();
         this.intensity = this.front.getPrecipitationIntensity();
+
+        if (this.intensity > 100) {
+            this.intensity = 100;
+        }
+
         precipitationEffects();
     }
 

@@ -31,7 +31,7 @@ public class Front {
     private final XORShiftRandom random;
     private boolean hasLightning;
 
-    public Front(WeatherFronts instance, Simulator simulator, YamlConfiguration data, String name) {
+    public Front(WeatherFronts instance, Simulator simulator, YamlConfiguration data) {
         this.plugin = instance;
         this.simulator = simulator;
         this.world = simulator.getWorld();
@@ -40,15 +40,15 @@ public class Front {
         this.lightning = new LightningGen(instance, simulator.getSimulatorConfig(), this);
         this.hostileSpawn = data.getInt("lightning-per-minute") > 0;
         this.dynmap = this.plugin.getDynmap();
-        this.dynmap.addMarker(this.world.getName(), this.name, getFrontBoundaries());
         this.boundaries = new Point2D[4];
         this.frontChunks = new HashSet<Chunk>();
         this.chunkTick = new ChunkTick(instance, this);
         this.listener = new FrontListener(instance, this);
         this.plugin.getServer().getPluginManager().registerEvents(listener, this.plugin);
         this.random = new XORShiftRandom();
-        this.hasLightning = this.data.getInt("lightning-per-minute") <= 0;
+        this.hasLightning = this.data.getInt("lightning-per-minute") >= 0;
         updateFrontBoundaries();
+        this.dynmap.addMarker(this.world.getName(), this.name, getFrontBoundaries());
         updateFrontChunks();
     }
 

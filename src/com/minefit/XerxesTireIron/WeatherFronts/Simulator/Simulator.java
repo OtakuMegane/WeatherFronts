@@ -16,32 +16,33 @@ import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.LoadData;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
-import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.RandomBasic;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.WeatherSystem;
+import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.RandomBasic.RandomBasic;
 
 public class Simulator {
     private final World world;
     private final YamlConfiguration simulatorConfig;
-    private final YamlConfiguration frontsData;
     private final WeatherFronts plugin;
     private String name;
     private final ConcurrentMap<String, Front> fronts = new ConcurrentHashMap<String, Front>();
-    private final LoadData load;
+    private final LoadData loadData;
     private final DynmapFunctions dynmap;
-    private WeatherSystem system;
-    private final BukkitTask oneTick;
+    private final WeatherSystem system;
+    private final BukkitTask mainTickCycle;
+    private final BukkitTask tickUpdates;
 
     public Simulator(World world, WeatherFronts instance, YamlConfiguration config, String name) {
         this.simulatorConfig = config;
         this.plugin = instance;
         this.world = world;
         this.name = name;
-        this.load = new LoadData(instance);
-        this.frontsData = this.load.loadConfigForWorld(world.getName(), "fronts.yml", false);
+        this.loadData = new LoadData(instance);
         this.dynmap = this.plugin.getDynmap();
         this.system = new RandomBasic(instance, this);
         loadFronts();
-        this.oneTick = new MainTickCycle(instance, this).runTaskTimer(instance, 0, 1);
+        this.mainTickCycle = new MainTickCycle(instance, this).runTaskTimer(instance, 0, 1);
+        this.tickUpdates = new TickUpdates(instance, this).runTaskTimer(instance, 0, 20);
+
     }
 
     public World getWorld() {
@@ -58,6 +59,10 @@ public class Simulator {
 
     public WeatherFronts getPlugin() {
         return this.plugin;
+    }
+
+    public WeatherSystem getWeatherSystem() {
+        return this.system;
     }
 
     public FrontLocation newFrontLocation(double x, double y, double z) {
@@ -92,23 +97,25 @@ public class Simulator {
         for (Entry<String, Front> entry : this.fronts.entrySet()) {
             Front front = entry.getValue();
             front.update();
-            this.system.moveFront(front);
-            this.system.ageFront(front);
+            boolean dead = this.system.updateFront(front);
 
-            if (this.system.shouldDie(front, this)) {
+            if (dead) {
                 removeFront(entry.getKey());
             }
         }
     }
 
     private void loadFronts() {
-        if (this.frontsData.getKeys(false).size() == 0) {
+        YamlConfiguration fronts = this.loadData.loadConfigForWorld(world.getName(), "fronts.yml", false);
+        YamlConfiguration simulatorFronts = this.loadData.getSectionAsConfig(fronts, getName());
+
+        if (fronts.getKeys(false).size() == 0) {
             return;
         }
 
-        for (String frontName : this.frontsData.getKeys(false)) {
-            this.fronts.put(frontName,
-                    new Front(this.plugin, this, this.load.loadFrontData(frontName, this.frontsData), frontName));
+        for (String frontName : simulatorFronts.getKeys(false)) {
+            YamlConfiguration frontData = this.loadData.getSectionAsConfig(simulatorFronts, frontName);
+            this.fronts.put(frontName, new Front(this.plugin, this, frontData));
         }
     }
 
@@ -116,8 +123,8 @@ public class Simulator {
         this.fronts.put(front.getName(), front);
     }
 
-    public Front createFront(YamlConfiguration config, boolean command) {
-        if (canCreateFront(command)) {
+    public Front createFront(YamlConfiguration config, boolean command, boolean autogen) {
+        if (canCreateFront(command, autogen)) {
             Front front = this.system.createFront(config);
             addFront(front);
             return front;
@@ -131,8 +138,14 @@ public class Simulator {
         this.dynmap.deleteMarker(world, this.name, frontName);
     }
 
-    private boolean canCreateFront(boolean command) {
+    private boolean canCreateFront(boolean command, boolean autogen) {
         int frontsMax = this.simulatorConfig.getInt("maximum-fronts");
+        boolean autogenActive = this.system.getConfig().getBoolean("generate-fronts");
+
+        if (autogen && !autogenActive) {
+            return false;
+        }
+
         if (this.fronts.size() >= frontsMax && !command) {
             if (this.simulatorConfig.getBoolean("unending-does-not-count")) {
                 int permanent = 0;
@@ -192,12 +205,8 @@ public class Simulator {
     public YamlConfiguration getFrontData(String frontName) {
         YamlConfiguration data = new YamlConfiguration();
 
-        if (frontName != null) {
-            if (this.fronts.containsKey(frontName)) {
-                data = this.fronts.get(frontName).getData();
-            }
-        } else {
-            data = this.frontsData;
+        if (frontName != null && this.fronts.containsKey(frontName)) {
+            data = this.fronts.get(frontName).getData();
         }
 
         return data;
@@ -220,6 +229,7 @@ public class Simulator {
     }
 
     public void shutdown() {
-        this.oneTick.cancel();
+        this.mainTickCycle.cancel();
+        this.tickUpdates.cancel();
     }
 }

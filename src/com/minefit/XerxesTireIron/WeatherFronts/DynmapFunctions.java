@@ -72,6 +72,7 @@ public class DynmapFunctions implements Listener {
             this.plugin.logger.info("[WeatherFronts] An error occurred while creating the marker for " + frontName);
             return;
         }
+
         newMarker.setLineStyle(1, 1.0D, 0xffffff);
         newMarker.setFillStyle(0.40000000000000002D, 0xffffff);
     }

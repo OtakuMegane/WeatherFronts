@@ -143,7 +143,7 @@ public class PacketHandler {
             }
 
             if (simConfig.getBoolean("use-intensity-for-light-level")) {
-                int maxIntensity = simConfig.getInt("maximum-precipitation-intensity");
+                int maxIntensity = worldHandle.getSimulatorByFront(front).getWeatherSystem().getConfig().getInt("maximum-precipitation-intensity");
 
                 if (maxIntensity > 100) {
                     maxIntensity = 100;

@@ -69,19 +69,20 @@ public class MobSpawner {
             for (int x = playerChunk.getX() - mobRange; x <= maxX; ++x) {
                 for (int z = playerChunk.getZ() - mobRange; z <= maxZ; ++z) {
 
-                    if (this.world.isChunkInUse(x, z)) {
-                        Chunk chunk = this.world.getChunkAt(x, z);
-                        playerChunks.add(chunk);
+                    if (!this.world.isChunkInUse(x, z)) {
+                        continue;
+                    }
 
-                        for (Entity entity : chunk.getEntities()) {
-                            if (entity instanceof Monster) {
-                                ++totalHostiles;
-                            }
+                    Chunk chunk = this.world.getChunkAt(x, z);
+                    playerChunks.add(chunk);
+
+                    for (Entity entity : chunk.getEntities()) {
+                        if (entity instanceof Monster) {
+                            ++totalHostiles;
                         }
                     }
                 }
             }
-
         }
 
         int worldHostileCap = (int) ((this.world.getMonsterSpawnLimit() * playerChunks.size()) / 256) + 1;

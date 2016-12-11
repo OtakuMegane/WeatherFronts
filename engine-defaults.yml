@@ -1,6 +1,0 @@
-#
-# These are the default settings for Weather Systems
-# They determine the nature and behavior of the fronts within a simulator
-#
-RandomBasic:
-    generate-fronts: true

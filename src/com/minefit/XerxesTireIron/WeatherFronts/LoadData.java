@@ -26,7 +26,6 @@ public class LoadData {
             File configFile = new File(this.plugin.getDataFolder() + File.separator + "config.yml");
 
             if (!configFile.exists()) {
-                configFile.mkdirs();
                 copy(this.plugin.getResource("config.yml"), configFile);
             }
 
@@ -42,11 +41,12 @@ public class LoadData {
         YamlConfiguration config = new YamlConfiguration();
 
         try {
+
             File configFile = new File(
                     this.plugin.getDataFolder() + File.separator + worldName + File.separator + fileName);
 
             if (!configFile.exists()) {
-                //                configFile.mkdirs();
+                new File(this.plugin.getDataFolder() + File.separator + worldName).mkdirs();
 
                 if (copyFile) {
                     copy(this.plugin.getResource(fileName), configFile);
@@ -82,19 +82,15 @@ public class LoadData {
         return combined;
     }
 
-    public YamlConfiguration loadSimulatorFrontsData(String simulatorName, YamlConfiguration worldFrontsData) {
-        YamlConfiguration simulatorFronts = (YamlConfiguration) worldFrontsData.getConfigurationSection(simulatorName);
-        return simulatorFronts;
-    }
+    public YamlConfiguration getSectionAsConfig(YamlConfiguration config, String path) {
+        YamlConfiguration newConfig = new YamlConfiguration();
+        ConfigurationSection section = config.getConfigurationSection(path);
 
-    public YamlConfiguration loadFrontData(String frontName, YamlConfiguration simulatorFrontsData) {
-        YamlConfiguration frontData = new YamlConfiguration();
-        ConfigurationSection frontSection = simulatorFrontsData.getConfigurationSection(frontName);
-        for (String key : frontSection.getKeys(true)) {
-            frontData.set(key, frontSection.get(key));
+        for (String key : section.getKeys(true)) {
+            newConfig.set(key, section.get(key));
         }
 
-        return frontData;
+        return newConfig;
     }
 
     private void copy(InputStream in, File file) {

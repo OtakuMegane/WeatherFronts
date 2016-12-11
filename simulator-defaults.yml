@@ -1,10 +1,15 @@
 # These are the default settings for a simulator
 # The defaults should on most small-medium servers and create similar amount of rain as the vanilla Minecraft weather
 # If you have a large server world you will likely want to adjust things
-# To apply custom settings to individual worlds edit world-settings.yml
+# Do not modify this file as it may be overwritten during updates
+# Use simulators.yml to apply custom settings to each simulator
 
-# Whether to create and remove weather fronts automatically. Manual creation will work regardless
-generate-fronts: true
+# Which weather system you want to use
+weather-system: random-basic1
+
+# Choose whether to use dynmap (if available) for this simulator
+# If use-dynmap in config.yml is set to false it will ignore this setting in simulator configs
+use-dynmap: true
 
 # The size in blocks of area to simulate fronts in. Default will cover a 40k x 40k block map
 # Fronts will simply die out when/if the center leaves the simulation area
@@ -20,10 +25,10 @@ simulation-center-x: 0
 simulation-center-z: 0
 
 # Maximum number of fronts to automatically create (you can manually add more than this)
-maximum-fronts: 8
+maximum-fronts: 6
 
-# This will apply the front intensity to the light level in fronts
-# With a front intensity of 1 you will get about the light level of vanilla rain
+# This will apply the precipitation intensity to the light level in fronts
+# With an intensity of 1 you will get about the light level of vanilla rain
 # An intensity equal to maximum-intensity will be the light level of a vanilla thunderstorm
 # (This setting is purely aesthetic)
 use-intensity-for-light-level: true
@@ -78,81 +83,3 @@ mob-spawn-range: 8
 # This controls whether the parameters given during manual front creation will be forced to comply with those of the simulator config
 ## Currently Unused ##
 manual-creation-limits: false
-
-# Shape of the front. Currently only rectangle
-front-shape: rectangle
-
-# Smallest x-axis radius for a front
-minimum-radius-x: 500
-
-# Largest x-axis radius for a front
-maximum-radius-x: 2500
-
-# Smallest z-axis radius for a front
-minimum-radius-z: 500
-
-# Largest z-axis radius for a front
-maximum-radius-z: 2500
-
-# Minimum time before a front dies out (in seconds)
-minimum-age-limit: 180
-
-# Maximum time before a front dies out (in seconds)
-maximum-age-limit: 1800
-
-# Chance of a front being rain only. Set to 100 for no thunderstorms
-rain-only-chance: 70
-
-# Is it possible for rain to change to a thunderstorm
-rain-to-thunder: true
-
-# Percent chance of a rain to thunder change
-chance-rain-to-thunder: 10
-
-# Is it possible for thunderstorm to change to only rain
-thunder-to-rain: true
-
-# Percent chance of a rain to thunder change
-chance-thunder-to-rain: 5
-
-# Changes between rain and thunder can happen more than once in a single front
-## UNUSED ##
-multiple-storm-changes: true
-
-# Precipitation intensity is the amount of precipitation from a front. Ranges from 1-100.
-# At present it affects the rate of snow formation, cauldrons being filled, farmland hydration and optionally the light level
-# An intensity of 10 is approximately the same as vanilla rain
-#
-# Minimum intensity of precipitation
-minimum-precipitation-intensity: 1
-
-# The maximum intensity of precipitation
-maximum-precipitation-intensity: 30
-
-# Whether to use weighted lightning for larger storms
-# The lightning values will be weighted by the front engine for a more consistent experience in larger fronts
-# For example a player inside a front with setting of 10 will witness approximately 10 strikes per minute
-# However the total number of strikes occurring throughout the entire front each minute may be higher in order to achieve that
-use-weighted-lightning: true
-
-# The minimum radius to activate weight calculations for lightning
-weight-radius-threshold: 256
-
-# Minimum lightning strikes per minute
-# Value must be 1 or higher
-minimum-lightning-per-minute: 1
-
-# Maximum lightning strikes per minute
-maximum-lightning-per-minute: 50
-
-# Minimum speed of a front on X-axis East/West (blocks/s)
-minimum-velocity-x: 3
-
-# Maximum speed of a front on X-axis East/West (blocks/s)
-maximum-velocity-x: 12
-
-# Minimum speed of a front on Z-axis North/South (blocks/s)
-minimum-velocity-z: 3
-
-# Maximum speed of a front on Z-axis North/South (blocks/s)
-maximum-velocity-z: 12

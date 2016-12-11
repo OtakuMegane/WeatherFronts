@@ -1,0 +1,93 @@
+#
+# These are the default settings for the Random Basic weather system
+# They determine the nature and behavior of the fronts and weather patterns within a simulator
+# Do not modify this file as it may be overwritten during updates
+# Use weather-systems.yml for customized settings
+#
+
+# Whether to create and remove weather fronts automatically. Manual creation will work regardless
+generate-fronts: true
+
+# Whether to use weighted lightning for larger storms
+# The lightning values will be weighted by the front engine for a more consistent experience in larger fronts
+# For example a player inside a front with setting of 10 will witness approximately 10 strikes per minute
+# However the total number of strikes occurring throughout the entire front each minute may be higher in order to achieve that
+use-weighted-lightning: true
+
+# The minimum radius to activate weight calculations for lightning
+weight-radius-threshold: 256
+
+# Shape of the front. Currently only rectangle
+front-shape: rectangle
+
+# Smallest x-axis radius for a front
+minimum-radius-x: 500
+
+# Largest x-axis radius for a front
+maximum-radius-x: 2500
+
+# Smallest z-axis radius for a front
+minimum-radius-z: 500
+
+# Largest z-axis radius for a front
+maximum-radius-z: 2500
+
+# Minimum time before a front dies out (in seconds)
+minimum-age-limit: 180
+
+# Maximum time before a front dies out (in seconds)
+maximum-age-limit: 1800
+
+# Chance of a front being rain only. Set to 100 for no thunderstorms
+rain-only-chance: 70
+
+# Is it possible for rain to change to a thunderstorm
+## UNUSED ##
+rain-to-thunder: true
+
+# Percent chance of a rain to thunder change
+## UNUSED ##
+chance-rain-to-thunder: 10
+
+# Is it possible for thunderstorm to change to only rain
+## UNUSED ##
+thunder-to-rain: true
+
+# Percent chance of a thunder to rain change
+## UNUSED ##
+chance-thunder-to-rain: 5
+
+# Changes between rain and thunder can happen more than once in a single front
+## UNUSED ##
+multiple-storm-changes: true
+
+# Precipitation intensity is the amount of precipitation from a front. Scale ranges from 1-100.
+# At present it affects the rate of snow formation, cauldrons being filled, farmland hydration and optionally the light level
+# An intensity of 10 is approximately the same as vanilla rain
+# An intensity of 1 is 1/10th the precipitation of vanilla rain; intensity of 100 is 10x the precipitation
+# Greater intensities will consume more CPU time so be careful of using high settings
+
+# Minimum intensity of precipitation
+minimum-precipitation-intensity: 1
+
+# The maximum intensity of precipitation
+maximum-precipitation-intensity: 30
+
+# Minimum lightning strikes per minute
+# Value must be 1 or higher
+minimum-lightning-per-minute: 1
+
+# Maximum lightning strikes per minute
+maximum-lightning-per-minute: 50
+
+# Minimum speed of a front on X-axis East/West (blocks/s)
+minimum-velocity-x: 3
+
+# Maximum speed of a front on X-axis East/West (blocks/s)
+maximum-velocity-x: 12
+
+# Minimum speed of a front on Z-axis North/South (blocks/s)
+minimum-velocity-z: 3
+
+# Maximum speed of a front on Z-axis North/South (blocks/s)
+maximum-velocity-z: 12

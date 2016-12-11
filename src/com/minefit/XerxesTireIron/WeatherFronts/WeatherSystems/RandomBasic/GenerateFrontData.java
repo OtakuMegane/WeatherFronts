@@ -1,23 +1,26 @@
-package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
+package com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.RandomBasic;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
+import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.WeatherSystem;
 
 public class GenerateFrontData {
     private final WeatherFronts plugin;
     private final YamlConfiguration frontValues;
     private final XORShiftRandom random;
+    private final WeatherSystem system;
+    private final YamlConfiguration systemConfig;
     private final YamlConfiguration simulatorConfig;
-    private final Simulator simulator;
 
-    public GenerateFrontData(WeatherFronts instance, Simulator simulator, YamlConfiguration config) {
+    public GenerateFrontData(WeatherFronts instance, WeatherSystem system, YamlConfiguration config) {
         this.plugin = instance;
         this.random = new XORShiftRandom();
-        this.simulator = simulator;
-        this.simulatorConfig = simulator.getSimulatorConfig();
         this.frontValues = config;
+        this.system = system;
+        this.systemConfig = system.getConfig();
+        this.simulatorConfig = system.getSimulator().getSimulatorConfig();
     }
 
     public YamlConfiguration generateValues() {
@@ -33,7 +36,7 @@ public class GenerateFrontData {
         return this.frontValues;
     }
 
-    public void frontName() {
+    private void frontName() {
         String name = "";
 
         if (!this.frontValues.contains("name")) {
@@ -42,7 +45,7 @@ public class GenerateFrontData {
             while (!validId) {
                 name = "front" + this.random.nextInt(1000);
 
-                if (!this.simulator.simulatorHasFront(name)) {
+                if (!this.system.getSimulator().simulatorHasFront(name)) {
                     validId = true;
                 }
             }
@@ -101,9 +104,7 @@ public class GenerateFrontData {
 
     private void lightningRate() {
         if (!this.frontValues.contains("lightning-per-minute")) {
-            int minL = this.simulatorConfig.getInt("minimum-lightning-per-minute");
-            int maxL = this.simulatorConfig.getInt("maximum-lightning-per-minute");
-            this.frontValues.set("lightning-per-minute", this.random.nextIntRange(minL, maxL));
+            this.frontValues.set("lightning-per-minute", intFromMinMax("lightning-per-minute"));
         }
     }
 
@@ -114,8 +115,8 @@ public class GenerateFrontData {
     }
 
     private int intFromMinMax(String setting) {
-        int min = this.simulatorConfig.getInt("minimum-" + setting);
-        int max = this.simulatorConfig.getInt("maximum-" + setting);
+        int min = this.systemConfig.getInt("minimum-" + setting);
+        int max = this.systemConfig.getInt("maximum-" + setting);
         return this.random.nextIntRange(min, max);
     }
 }
