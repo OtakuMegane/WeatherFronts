@@ -35,7 +35,7 @@ public class WeatherFronts extends JavaPlugin {
     private ProtocolManager protocolManager;
 
     public WeatherFronts() {
-        this.compatibleVersions = Arrays.asList("v1_7_R1", "v1_7_R2", "v1_7_R3", "v1_7_R4", "v1_8_R1", "V1_8_R2",
+        this.compatibleVersions = Arrays.asList("v1_8_R1", "V1_8_R2",
                 "v1_8_R3", "v1_9_R1", "v1_9_R2", "v1_10_R1", "v1_11_R1");
 
         if (!this.serverVersion.compatibleVersion(this.compatibleVersions)) {
@@ -44,7 +44,7 @@ public class WeatherFronts extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
         }
 
-        if (this.serverVersion.getMajor().equals("7") || this.serverVersion.getMajor().equals("8")) {
+        if (this.serverVersion.getMajor().equals("8")) {
             this.oldPacket = true;
         } else {
             this.oldPacket = false;

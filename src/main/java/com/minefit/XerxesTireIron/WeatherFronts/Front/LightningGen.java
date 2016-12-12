@@ -21,7 +21,6 @@ public class LightningGen {
     private double lightningPerCheck;
     private boolean weighted = false;
     private final XORShiftRandom random;
-    private int randomDelay = 0;
 
     public LightningGen(WeatherFronts instance, YamlConfiguration config, Front front) {
         this.plugin = instance;
@@ -32,7 +31,6 @@ public class LightningGen {
         this.blockFunction = new BlockFunctions(instance, front.getSimulator());
         this.random = new XORShiftRandom();
         this.weightedLPM = this.frontConfig.getInt("lightning-per-minute");
-        this.randomDelay = this.frontConfig.getInt("lightning-per-minute") * 8;
 
         if (this.systemConfig.getBoolean("use-weighted-lightning")) {
             weight(this.systemConfig.getInt("weight-radius-threshold"));
@@ -44,26 +42,27 @@ public class LightningGen {
 
     private void weight(int threshold) {
         if (this.frontConfig.getInt("radius-x") > threshold) {
-            this.weightedLPM *= (this.frontConfig.getInt("radius-x") * 2) / threshold;
+            this.weightedLPM *= this.frontConfig.getInt("radius-x") / threshold;
             this.weighted = true;
         }
 
         if (this.frontConfig.getInt("radius-z") > threshold) {
-            this.weightedLPM *= (this.frontConfig.getInt("radius-z") * 2) / threshold;
+            this.weightedLPM *= this.frontConfig.getInt("radius-z") / threshold;
             this.weighted = true;
         }
     }
 
     public void lightningGen(World world) {
         this.accumulator += this.lightningPerCheck;
+        int randomDelay = this.frontConfig.getInt("lightning-per-minute") * 8;
 
-        // Add some randomness to small fronts so strikes aren't quite so predictable for players
+        // Add some randomness to small fronts so strikes aren't quite so predictable
         // Larger weighted fronts have an inherently more random experience
         if (!this.weighted) {
             if (this.random.nextBoolean()) {
-                this.accumulator += this.lightningPerCheck + (this.random.nextDouble() / this.randomDelay);
+                this.accumulator += this.lightningPerCheck + (this.random.nextDouble() / randomDelay);
             } else {
-                this.accumulator -= this.lightningPerCheck + (this.random.nextDouble() / this.randomDelay);
+                this.accumulator -= this.lightningPerCheck + (this.random.nextDouble() / randomDelay);
             }
         }
 
@@ -83,6 +82,11 @@ public class LightningGen {
 
     private void randomStrike(World world) {
         FrontLocation location = this.front.randomLocationInFront();
+
+        /*if (location.getBlockX() > -192 && location.getBlockX() < 192 && location.getBlockZ() > -192
+                && location.getBlockZ() < 192) {
+            this.plugin.logger.info("within range");
+        }*/
 
         if (!location.isLoaded()) {
             return;

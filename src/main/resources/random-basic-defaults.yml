@@ -15,7 +15,7 @@ generate-fronts: true
 use-weighted-lightning: true
 
 # The minimum radius to activate weight calculations for lightning
-weight-radius-threshold: 256
+weight-radius-threshold: 192
 
 # Shape of the front. Currently only rectangle
 front-shape: rectangle
