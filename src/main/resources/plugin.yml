@@ -1,10 +1,10 @@
 name: WeatherFronts
 main: com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts
 version: 0.9.4
-website: http://www.minefit.com
+website: https://github.com/OtakuMegane/WeatherFronts
 author: XerxesTireIron
 description: Change vanilla Minecraft weather into weather fronts.
-load: startup
+load: postworld
 depend: [ProtocolLib]
 softdepend: [dynmap]
 

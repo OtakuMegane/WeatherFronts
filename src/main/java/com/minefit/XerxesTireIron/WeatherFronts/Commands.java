@@ -100,23 +100,34 @@ public class Commands implements CommandExecutor {
                     newFrontConfig.set("center-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-z")) {
                     newFrontConfig.set("center-z", Integer.parseInt(currentValue));
+                } else if (currentArgument.equalsIgnoreCase("-xz")) {
+                    newFrontConfig.set("center-x", Integer.parseInt(currentValue));
+                    newFrontConfig.set("center-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-rx")) {
                     newFrontConfig.set("radius-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-rz")) {
+                    newFrontConfig.set("radius-z", Integer.parseInt(currentValue));
+                } else if (currentArgument.equalsIgnoreCase("-rxz")) {
+                    newFrontConfig.set("radius-x", Integer.parseInt(currentValue));
                     newFrontConfig.set("radius-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-vx")) {
                     newFrontConfig.set("velocity-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-vz")) {
                     newFrontConfig.set("velocity-z", Integer.parseInt(currentValue));
+                } else if (currentArgument.equalsIgnoreCase("-vxz")) {
+                    newFrontConfig.set("velocity-x", Integer.parseInt(currentValue));
+                    newFrontConfig.set("velocity-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-i")) {
                     newFrontConfig.set("precipitation-intensity", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-ro")) {
-                    newFrontConfig.set("lightning-per-minute", 0.0);
+                    newFrontConfig.set("lightning-per-minute", 0);
                     continue;
                 } else if (currentArgument.equalsIgnoreCase("-lpm")) {
                     newFrontConfig.set("lightning-per-minute", Double.parseDouble(currentValue));
-                } else if (currentArgument.equalsIgnoreCase("-a")) {
+                } else if (currentArgument.equalsIgnoreCase("-al")) {
                     newFrontConfig.set("age-limit", Integer.parseInt(currentValue));
+                } else if (currentArgument.equalsIgnoreCase("-a")) {
+                    newFrontConfig.set("age", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-shp")) {
                     newFrontConfig.set("shape", currentValue);
                 } else if (currentArgument.equalsIgnoreCase("-sim")) {
@@ -304,9 +315,9 @@ public class Commands implements CommandExecutor {
             player.sendMessage("-x [front location (x-axis)]   -z [front location (z-axis)]");
             player.sendMessage("-rx [front radius (x-axis)]   -rz [front radius (z-axis)]");
             player.sendMessage("-vx [front velocity (x-axis)]   -vz [front velocity (z-axis)]");
-            player.sendMessage("-i [intensity]    -ro [rain only]");
-            player.sendMessage("-lpm [lightning per minute]    -a [maximum age of front]");
-            player.sendMessage("-shp [front shape]");
+            player.sendMessage("-pi [precipitation intensity]    -ro [rain only]");
+            player.sendMessage("-lpm [lightning per minute]    -a [starting age of front]");
+            player.sendMessage("-al [maximum age of front]    -shp [front shape]");
         } else if (arguments[1].equalsIgnoreCase("addrandom")) {
             player.sendMessage("Usage: /fronts addrandom [-w world name]");
             player.sendMessage("Adds a random front in your current world");
