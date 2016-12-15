@@ -310,7 +310,7 @@ public class Commands implements CommandExecutor {
             player.sendMessage("Type /fronts help <command> for specific command help");
         } else if (arguments[1].equalsIgnoreCase("add")) {
             player.sendMessage("Usage: /fronts add [parameters]");
-            player.sendMessage("Requires at least one parameter. Possible parameters");
+            player.sendMessage("Requires at least one parameter. Possible parameters:");
             player.sendMessage("-w [world name]    -n [front name]");
             player.sendMessage("-x [front location (x-axis)]   -z [front location (z-axis)]");
             player.sendMessage("-rx [front radius (x-axis)]   -rz [front radius (z-axis)]");
