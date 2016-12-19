@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.util.Vector;
 
+import com.minefit.XerxesTireIron.WeatherFronts.BlockFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
@@ -41,11 +42,13 @@ public class EntityHandler implements Listener {
     private final Set<Wolf> wolvesInRain = new HashSet<Wolf>();
     private final Simulator simulator;
     private final World world;
+    private final BlockFunctions blockFunction;
 
     public EntityHandler(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
         this.simulator = simulator;
         this.world = simulator.getWorld();
+        this.blockFunction = new BlockFunctions(instance, simulator);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -73,11 +76,11 @@ public class EntityHandler implements Listener {
         Entity entity = event.getEntity();
         FrontLocation location = this.simulator.newFrontLocation(entity.getLocation());
 
-        if (!location.isInFront()) {
+        if (!location.isLoaded() || !location.isInFront()) {
             return;
         }
 
-        if (location.isInRain()) {
+        if (this.blockFunction.isInRain(location)) {
             entity.setFireTicks(0);
             event.setCancelled(true);
             return;
@@ -95,11 +98,11 @@ public class EntityHandler implements Listener {
         Entity entity = event.getEntity();
         FrontLocation location = this.simulator.newFrontLocation(entity.getLocation());
 
-        if (!location.isInFront()) {
+        if (!location.isLoaded() || !location.isInFront()) {
             return;
         }
 
-        if (location.isInRain() && !(event instanceof EntityCombustByEntityEvent)
+        if (this.blockFunction.isInRain(location) && !(event instanceof EntityCombustByEntityEvent)
                 && !(event instanceof EntityCombustByBlockEvent)) {
             entity.setFireTicks(0);
             event.setCancelled(true);
@@ -142,7 +145,7 @@ public class EntityHandler implements Listener {
         for (Arrow arrow : allArrows) {
             FrontLocation location = this.simulator.newFrontLocation(arrow.getLocation());
 
-            if (location.isInRain()) {
+            if (this.blockFunction.isInRain(location)) {
                 arrow.setFireTicks(0);
             }
         }
@@ -154,7 +157,7 @@ public class EntityHandler implements Listener {
         for (Blaze blaze : allBlazes) {
             FrontLocation location = this.simulator.newFrontLocation(blaze.getLocation());
 
-            if (location.isInRain()) {
+            if (this.blockFunction.isInRain(location)) {
                 blaze.damage(1.0);
             }
         }
@@ -166,7 +169,7 @@ public class EntityHandler implements Listener {
         for (Snowman snowman : allSnowmen) {
             FrontLocation location = this.simulator.newFrontLocation(snowman.getLocation());
 
-            if (location.isInRain()) {
+            if (this.blockFunction.isInRain(location)) {
                 snowman.damage(1.0);
             }
         }
@@ -178,7 +181,7 @@ public class EntityHandler implements Listener {
         for (Enderman enderman : allEndermen) {
             FrontLocation location = this.simulator.newFrontLocation(enderman.getLocation());
 
-            if (!location.isInRain()) {
+            if (!this.blockFunction.isInRain(location)) {
                 continue;
             }
 
@@ -229,7 +232,7 @@ public class EntityHandler implements Listener {
         for (Wolf wolf : allWolves) {
             FrontLocation location = this.simulator.newFrontLocation(wolf.getLocation());
 
-            if (location.isInRain()) {
+            if (this.blockFunction.isInRain(location)) {
                 this.wolvesInRain.add(wolf);
             } else {
                 if (this.wolvesInRain.contains(wolf) && !entityIsMoving(wolf.getVelocity())) {

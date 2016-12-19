@@ -3,6 +3,7 @@ package com.minefit.XerxesTireIron.WeatherFronts;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
@@ -12,11 +13,17 @@ public class BlockFunctions {
     private final World world;
     private final WeatherFronts plugin;
     private final Simulator simulator;
+    private final BiomeData biomeData;
 
     public BlockFunctions(WeatherFronts instance, Simulator simulator) {
         this.world = simulator.getWorld();
         this.simulator = simulator;
+        this.biomeData = new BiomeData();
         this.plugin = instance;
+    }
+
+    public FrontLocation getFrontLocation(Block block) {
+        return this.simulator.newFrontLocation(block);
     }
 
     public Block findHighestBlock(Location location, int start) {
@@ -52,6 +59,10 @@ public class BlockFunctions {
         }
 
         return block;
+    }
+
+    public Block getTopShelterBlock(Block block) {
+        return getTopShelterBlock(block.getLocation());
     }
 
     public Block getTopLiquidBlock(Location location) {
@@ -103,15 +114,13 @@ public class BlockFunctions {
     }
 
     public boolean adjacentBlockExposed(Block block) {
-        FrontLocation eastLoc = this.simulator.newFrontLocation(block.getRelative(BlockFace.EAST));
-        FrontLocation westLoc = this.simulator.newFrontLocation(block.getRelative(BlockFace.WEST));
-        FrontLocation northLoc = this.simulator.newFrontLocation(block.getRelative(BlockFace.NORTH));
-        FrontLocation southLoc = this.simulator.newFrontLocation(block.getRelative(BlockFace.SOUTH));
-        return eastLoc.isInRain() || westLoc.isInRain() || northLoc.isInRain() || southLoc.isInRain();
+        return isInRain(block.getRelative(BlockFace.EAST)) || isInRain(block.getRelative(BlockFace.WEST))
+                || isInRain(block.getRelative(BlockFace.NORTH)) || isInRain(block.getRelative(BlockFace.SOUTH));
     }
 
-    public boolean blockTypeCanSpawnHostile(Material material) {
-        return material.isOccluding() && material != Material.ENDER_PORTAL_FRAME;
+    public boolean hostileCanSpawnInBlock(Block block) {
+        return block.getType().isTransparent() && !block.isLiquid() && block.getLightFromBlocks() <= 7
+                && isInWeather(block) && block.getRelative(BlockFace.DOWN).getType().isOccluding();
     }
 
     public boolean isShelter(Block block) {
@@ -129,4 +138,45 @@ public class BlockFunctions {
                         || material == Material.LEAVES_2 || material == Material.CACTUS);
     }
 
+    public boolean isInWeather(Block block) {
+        FrontLocation location = getFrontLocation(block);
+        return location.isInFront() && block.getY() >= getTopShelterBlock(location).getY();
+    }
+
+    public boolean isInWeather(FrontLocation location)
+    {
+        return isInWeather(location.getBlock());
+    }
+
+    public boolean isInRain(Block block) {
+        return isInWeather(block) && !this.biomeData.isDry(block) && !this.biomeData.isFrozen(block) && !isCold(block);
+    }
+
+    public boolean isInRain(FrontLocation location)
+    {
+        return isInRain(location.getBlock());
+    }
+
+    public boolean isInSnow(Block block) {
+        return isInWeather(block) && !this.biomeData.isDry(block) && (this.biomeData.isCold(block) || isCold(block));
+    }
+
+    public boolean isDry(Block block) {
+        return this.biomeData.isDry(block);
+    }
+
+    public boolean isCold(Block block) {
+        return getBlockTemperature(block) < 0.15;
+    }
+
+    public double getBlockTemperature(Block block) {
+        double temp = block.getTemperature();
+
+        // Taken from the NMS BiomeBase calculation
+        if (block.getY() > 64) {
+            temp = temp - (block.getY() - 64) * 0.05F / 30.0F;
+        }
+
+        return temp;
+    }
 }

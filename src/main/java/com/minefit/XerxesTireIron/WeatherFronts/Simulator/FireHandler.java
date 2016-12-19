@@ -231,7 +231,6 @@ public class FireHandler implements Listener {
     }
 
     private boolean actOnBlock(Block block) {
-        FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
-        return location.isInRain() || this.blockFunction.adjacentBlockExposed(block);
+        return this.blockFunction.isInRain(block) || this.blockFunction.adjacentBlockExposed(block);
     }
 }

@@ -83,11 +83,6 @@ public class LightningGen {
     private void randomStrike(World world) {
         FrontLocation location = this.front.randomLocationInFront();
 
-        /*if (location.getBlockX() > -192 && location.getBlockX() < 192 && location.getBlockZ() > -192
-                && location.getBlockZ() < 192) {
-            this.plugin.logger.info("within range");
-        }*/
-
         if (!location.isLoaded()) {
             return;
         }
@@ -95,10 +90,10 @@ public class LightningGen {
         boolean lightningDry = this.simulatorConfig.getBoolean("lightning-in-dry-biomes");
         boolean lightningCold = this.simulatorConfig.getBoolean("lightning-in-cold-biomes");
         Block block = this.blockFunction.getTopBlockLightningValid(location);
-        FrontLocation location2 = this.front.getSimulator().newFrontLocation(block);
 
-        if ((!location2.isDry() && !location2.isCold()) || (location2.isDry() && lightningDry)
-                || (location2.isCold() && lightningCold)) {
+        if ((!this.blockFunction.isDry(block) && !this.blockFunction.isCold(block))
+                || (this.blockFunction.isDry(block) && lightningDry)
+                || (this.blockFunction.isCold(block) && lightningCold)) {
             world.strikeLightning(block.getLocation());
         }
     }

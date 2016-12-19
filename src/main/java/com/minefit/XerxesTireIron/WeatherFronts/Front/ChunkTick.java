@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import com.minefit.XerxesTireIron.WeatherFronts.BlockFunctions;
+import com.minefit.XerxesTireIron.WeatherFronts.ChunkFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
@@ -20,6 +21,7 @@ public class ChunkTick {
     private final XORShiftRandom random;
     private final Simulator simulator;
     private final BlockFunctions blockFunction;
+    private final ChunkFunctions chunkFunction;
     private double tickDelay;
     private int intensity;
 
@@ -29,6 +31,7 @@ public class ChunkTick {
         this.random = new XORShiftRandom();
         this.simulator = front.getSimulator();
         this.blockFunction = new BlockFunctions(instance, this.simulator);
+        this.chunkFunction = new ChunkFunctions(instance);
         this.intensity = this.front.getPrecipitationIntensity();
     }
 
@@ -56,16 +59,16 @@ public class ChunkTick {
                     continue;
                 }
 
-                FrontLocation location = randomLocationInChunk(this.simulator, chunk);
+                FrontLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, chunk);
 
-                if (!this.front.isInFront(location) || location.isDry()) {
+                if (!location.isLoaded() || !this.front.isInFront(location)) {
                     continue;
                 }
 
                 Block block = this.blockFunction.getTopBlock(location);
                 FrontLocation location2 = this.simulator.newFrontLocation(block);
 
-                if (location2.isInRain()) {
+                if (this.blockFunction.isDry(location2.getBlock())) {
                     if (block.getType() == Material.CAULDRON) {
                         fillCauldron(block);
                     } else if (block.getType() == Material.SOIL) {
@@ -75,7 +78,7 @@ public class ChunkTick {
                     continue;
                 }
 
-                if (location2.isInSnow()) {
+                if (this.blockFunction.isInSnow(location2.getBlock())) {
                     formSnow(block);
                     continue;
                 }
@@ -89,7 +92,6 @@ public class ChunkTick {
         if (block.getData() < 3) {
             block.setData((byte) (block.getData() + 1));
         }
-
     }
 
     private void hydrateFarmland(Block block) {
@@ -109,13 +111,5 @@ public class ChunkTick {
         return upperBlock.getType() == Material.AIR
                 && this.blockFunction.canFormSnow(block.getType()) && upperBlock.getLightFromBlocks() < 10;
 
-    }
-
-    private FrontLocation randomLocationInChunk(Simulator simulator, Chunk chunk) {
-        int x = chunk.getX() * 16;
-        int z = chunk.getZ() * 16;
-        int x2 = this.random.nextIntRange(x, x + 15);
-        int z2 = this.random.nextIntRange(z, z + 15);
-        return new FrontLocation(simulator, x2, z2);
     }
 }

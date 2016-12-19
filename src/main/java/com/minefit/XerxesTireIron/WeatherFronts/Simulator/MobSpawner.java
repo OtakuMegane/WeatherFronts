@@ -17,6 +17,7 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
 import com.minefit.XerxesTireIron.WeatherFronts.BlockFunctions;
+import com.minefit.XerxesTireIron.WeatherFronts.ChunkFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
@@ -26,12 +27,14 @@ public class MobSpawner {
     private final XORShiftRandom random = new XORShiftRandom();
     private final WeatherFronts plugin;
     private final BlockFunctions blockFunction;
+    private final ChunkFunctions chunkFunction;
     private final World world;
     private final Simulator simulator;
 
     public MobSpawner(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
         this.blockFunction = new BlockFunctions(instance, simulator);
+        this.chunkFunction = new ChunkFunctions(instance);
         this.simulator = simulator;
         this.world = simulator.getWorld();
     }
@@ -97,15 +100,15 @@ public class MobSpawner {
                 continue;
             }
 
-            int baseX = chunk.getX() << 4;
-            int baseZ = chunk.getZ() << 4;
-            int x = this.random.nextIntRange(baseX, baseX + 15);
-            int z = this.random.nextIntRange(baseZ, baseZ + 15);
-            Block block = this.blockFunction.getTopSolidBlock(this.simulator.newFrontLocation(x, 0, z));
-            FrontLocation location = this.simulator.newFrontLocation(block);
+            FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk);
 
-            if (!location.canSpawnHostile() || !this.blockFunction.blockTypeCanSpawnHostile(block.getType())
-                    || block.getLightFromBlocks() > 7) {
+            if (!location.isLoaded()) {
+                continue;
+            }
+
+            Block block = this.blockFunction.getTopSolidBlock(location);
+
+            if (!this.blockFunction.hostileCanSpawnInBlock(block)) {
                 continue;
             }
 
@@ -125,13 +128,13 @@ public class MobSpawner {
         }
     }
 
-    private int spawnPack(Block centerBlock) {
+    private int spawnPack(Block block) {
         int packMobs = 0;
         int packSize = 4;
         int packTries = 12;
-        int centerX = centerBlock.getX();
-        int centerY = centerBlock.getY();
-        int centerZ = centerBlock.getZ();
+        int centerX = block.getX();
+        int centerY = block.getY();
+        int centerZ = block.getZ();
         EntityType mob = randomHostile();
         int randomRange = 11;
 
@@ -145,14 +148,13 @@ public class MobSpawner {
             centerZ += this.random.nextInt(randomRange) - this.random.nextInt(randomRange);
             FrontLocation location = this.simulator.newFrontLocation(centerX, centerY, centerZ);
 
-            if (!location.isInWeather()) {
+            if (!location.isLoaded() || !blockFunction.isInWeather(block)) {
                 continue;
             }
 
-            Block block = location.getBlock();
+            Block block2 = location.getBlock();
 
-            if (!this.blockFunction.blockTypeCanSpawnHostile(block.getRelative(BlockFace.DOWN).getType())
-                    || !block.isEmpty() || !block.getRelative(BlockFace.UP).isEmpty()) {
+            if (!this.blockFunction.hostileCanSpawnInBlock(block2)) {
                 continue;
             }
 
@@ -174,7 +176,7 @@ public class MobSpawner {
             int mobWidth = 1;
 
             if (mob == EntityType.SPIDER) {
-                mobHeight = 1;
+                mobHeight = 2;
                 mobWidth = 3;
             }
 
@@ -182,7 +184,7 @@ public class MobSpawner {
                 mobHeight = 3;
             }
 
-            if (overworldHostileCanSpawn(block, mobWidth, mobHeight)) {
+            if (overworldHostileCanSpawn(block2, mobWidth, mobHeight)) {
                 this.world.spawnEntity(location, mob);
                 ++packMobs;
             }

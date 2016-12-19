@@ -117,7 +117,7 @@ public class Commands implements CommandExecutor {
                 } else if (currentArgument.equalsIgnoreCase("-vxz")) {
                     newFrontConfig.set("velocity-x", Integer.parseInt(currentValue));
                     newFrontConfig.set("velocity-z", Integer.parseInt(currentValue));
-                } else if (currentArgument.equalsIgnoreCase("-i")) {
+                } else if (currentArgument.equalsIgnoreCase("-pi")) {
                     newFrontConfig.set("precipitation-intensity", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-ro")) {
                     newFrontConfig.set("lightning-per-minute", 0);
