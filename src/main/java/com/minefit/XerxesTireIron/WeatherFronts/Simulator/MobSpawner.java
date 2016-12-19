@@ -100,7 +100,7 @@ public class MobSpawner {
                 continue;
             }
 
-            FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk);
+            FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, false);
 
             if (!location.isLoaded()) {
                 continue;
@@ -136,7 +136,7 @@ public class MobSpawner {
         int centerY = block.getY();
         int centerZ = block.getZ();
         EntityType mob = randomHostile();
-        int randomRange = 11;
+        int randomRange = 11; // NMS gives ~99% chance of spawning within 10 blocks of center
 
         for (int i = 0; i < packTries; ++i) {
             if (packMobs >= packSize) {
@@ -197,6 +197,13 @@ public class MobSpawner {
         int x = block.getX();
         int y = block.getY();
         int z = block.getZ();
+        int startPoint = 0;
+        int endPoint = width;
+
+        if (width == 3) {
+            startPoint = -1;
+            endPoint = width - 1;
+        }
 
         if (block.getLightFromSky() > this.random.nextInt(32)) {
             return false;
@@ -208,12 +215,12 @@ public class MobSpawner {
             }
         }
 
-        for (int xx = 0; xx < width; ++xx) {
-            for (int zz = 0; zz < width; ++zz) {
+        for (int xx = startPoint; xx < endPoint; ++xx) {
+            for (int zz = startPoint; zz < endPoint; ++zz) {
                 for (int yy = 0; yy < height; ++yy) {
                     Block testBlock = this.world.getBlockAt(x + width, y + height, z + width);
 
-                    if (testBlock.getType().isSolid() || testBlock.isLiquid()) {
+                    if (!this.blockFunction.hostileCanSpawnInBlock(testBlock)) {
                         return false;
                     }
                 }

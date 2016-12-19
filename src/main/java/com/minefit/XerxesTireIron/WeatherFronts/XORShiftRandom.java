@@ -33,6 +33,14 @@ public class XORShiftRandom extends Random {
     }
 
     public int nextIntRange(int min, int max) {
+        return this.nextInt(max - min) + min;
+    }
+
+    public int nextIntRange(double min, double max) {
+        return nextIntRange((int) min, (int) max);
+    }
+
+    public int nextIntRangeInclusive(int min, int max) {
         if (max == Integer.MAX_VALUE) {
             max = max - 1;
         }
@@ -40,8 +48,8 @@ public class XORShiftRandom extends Random {
         return this.nextInt((max - min) + 1) + min;
     }
 
-    public int nextIntRange(double min, double max) {
-        return nextIntRange((int) min, (int) max);
+    public int nextIntRangeInclusive(double min, double max) {
+        return nextIntRangeInclusive((int) min, (int) max);
     }
 
     public double nextDoubleRange(double min, double max) {

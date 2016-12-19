@@ -160,10 +160,8 @@ public class Front {
         Set<Chunk> newChunks = new HashSet<Chunk>();
 
         for (Chunk chunk : this.world.getLoadedChunks()) {
-            int chunkX = chunk.getX();
-            int chunkZ = chunk.getZ();
-            int blockX = chunkX * 16;
-            int blockZ = chunkZ * 16;
+            int blockX = chunk.getX() << 4;
+            int blockZ = chunk.getZ() << 4;
             FrontLocation[] locations = new FrontLocation[5];
             locations[0] = new FrontLocation(this.simulator, blockX + 8, blockZ + 8); // Center
             locations[1] = new FrontLocation(this.simulator, blockX, blockZ); // NW
@@ -187,8 +185,8 @@ public class Front {
     }
 
     public FrontLocation randomLocationInFront() {
-        double x = this.random.nextIntRange(boundaries[0].getX(), boundaries[1].getX());
-        double z = this.random.nextIntRange(boundaries[1].getY(), boundaries[2].getY());
+        double x = this.random.nextIntRangeInclusive(boundaries[0].getX(), boundaries[1].getX());
+        double z = this.random.nextIntRangeInclusive(boundaries[1].getY(), boundaries[2].getY());
         return new FrontLocation(simulator, x, z);
     }
 }

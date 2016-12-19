@@ -158,7 +158,7 @@ public class BlockFunctions {
     }
 
     public boolean isInSnow(Block block) {
-        return isInWeather(block) && !this.biomeData.isDry(block) && (this.biomeData.isCold(block) || isCold(block));
+        return isInWeather(block) && !isDry(block) && (this.biomeData.isFrozen(block) || isCold(block));
     }
 
     public boolean isDry(Block block) {

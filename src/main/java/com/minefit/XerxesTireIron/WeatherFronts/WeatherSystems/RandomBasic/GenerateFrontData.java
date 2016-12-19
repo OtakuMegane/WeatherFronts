@@ -60,13 +60,13 @@ public class GenerateFrontData {
         if (!this.frontValues.contains("center-x")) {
             int minX = this.simulatorConfig.getInt("simulation-center-x") - simRadius;
             int maxX = this.simulatorConfig.getInt("simulation-center-x") + simRadius;
-            this.frontValues.set("center-x", this.random.nextIntRange(minX, maxX));
+            this.frontValues.set("center-x", this.random.nextIntRangeInclusive(minX, maxX));
         }
 
         if (!this.frontValues.contains("center-z")) {
             int minZ = this.simulatorConfig.getInt("simulation-center-z") - simRadius;
             int maxZ = this.simulatorConfig.getInt("simulation-center-z") + simRadius;
-            this.frontValues.set("center-z", this.random.nextIntRange(minZ, maxZ));
+            this.frontValues.set("center-z", this.random.nextIntRangeInclusive(minZ, maxZ));
         }
     }
 
@@ -117,6 +117,6 @@ public class GenerateFrontData {
     private int intFromMinMax(String setting) {
         int min = this.systemConfig.getInt("minimum-" + setting);
         int max = this.systemConfig.getInt("maximum-" + setting);
-        return this.random.nextIntRange(min, max);
+        return this.random.nextIntRangeInclusive(min, max);
     }
 }

@@ -59,16 +59,15 @@ public class ChunkTick {
                     continue;
                 }
 
-                FrontLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, chunk);
+                FrontLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, chunk, true);
 
                 if (!location.isLoaded() || !this.front.isInFront(location)) {
                     continue;
                 }
 
                 Block block = this.blockFunction.getTopBlock(location);
-                FrontLocation location2 = this.simulator.newFrontLocation(block);
 
-                if (this.blockFunction.isDry(location2.getBlock())) {
+                if (this.blockFunction.isDry(block)) {
                     if (block.getType() == Material.CAULDRON) {
                         fillCauldron(block);
                     } else if (block.getType() == Material.SOIL) {
@@ -78,7 +77,7 @@ public class ChunkTick {
                     continue;
                 }
 
-                if (this.blockFunction.isInSnow(location2.getBlock())) {
+                if (this.blockFunction.isInSnow(block)) {
                     formSnow(block);
                     continue;
                 }
