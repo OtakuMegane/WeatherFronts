@@ -3,7 +3,6 @@ package com.minefit.XerxesTireIron.WeatherFronts;
 import java.util.List;
 
 public class ServerVersion {
-
     private final WeatherFronts plugin;
     private final String nmsVersion;
     private final String major;

@@ -152,7 +152,7 @@ public class BlockFunctions {
         return isInWeather(block) && !this.biomeData.isDry(block) && !this.biomeData.isFrozen(block) && !isCold(block);
     }
 
-    public boolean isInRain(FrontLocation location)
+    public boolean isInRain(Location location)
     {
         return isInRain(location.getBlock());
     }

@@ -86,8 +86,10 @@ public class LoadData {
         YamlConfiguration newConfig = new YamlConfiguration();
         ConfigurationSection section = config.getConfigurationSection(path);
 
-        for (String key : section.getKeys(true)) {
-            newConfig.set(key, section.get(key));
+        if (section != null) {
+            for (String key : section.getKeys(true)) {
+                newConfig.set(key, section.get(key));
+            }
         }
 
         return newConfig;

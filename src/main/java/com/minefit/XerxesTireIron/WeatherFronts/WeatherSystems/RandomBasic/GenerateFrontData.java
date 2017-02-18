@@ -104,7 +104,11 @@ public class GenerateFrontData {
 
     private void lightningRate() {
         if (!this.frontValues.contains("lightning-per-minute")) {
-            this.frontValues.set("lightning-per-minute", intFromMinMax("lightning-per-minute"));
+            if (this.random.nextInt(100) >= this.systemConfig.getInt("rain-only-chance")) {
+                this.frontValues.set("lightning-per-minute", intFromMinMax("lightning-per-minute"));
+            } else {
+                this.frontValues.set("lightning-per-minute", 0);
+            }
         }
     }
 

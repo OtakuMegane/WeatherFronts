@@ -24,12 +24,12 @@ public class DynmapFunctions implements Listener {
         this.dynmapAPI = (DynmapAPI) this.plugin.getServer().getPluginManager().getPlugin("dynmap");
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    /*@EventHandler(priority = EventPriority.NORMAL)
     public void onPluginEnable(PluginEnableEvent event) {
         if (event.getPlugin().getName().equals("dynmap")) {
             this.dynmapEnabled = initDynmap();
         }
-    }
+    }*/
 
     public boolean initDynmap() {
         if (this.dynmapAPI == null) {
@@ -47,6 +47,8 @@ public class DynmapFunctions implements Listener {
             } else {
                 this.frontMarkers = this.markerAPI.createMarkerSet("Weather", "Weather", null, false);
             }
+
+            this.dynmapEnabled = true;
         }
 
         return true;

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -20,7 +19,6 @@ public class FrontsWorld {
     private final LoadData load;
     private final Map<String, Simulator> simulators = new HashMap<String, Simulator>();
     private final SaveData save;
-    private YamlConfiguration worldSimulatorConfigs;
     private final XORShiftRandom random = new XORShiftRandom();
 
     public FrontsWorld(WeatherFronts instance, World world) {
@@ -86,12 +84,12 @@ public class FrontsWorld {
     public void loadSimulators() {
         String worldName = this.world.getName();
         YamlConfiguration simulatorDefaults = this.load.loadConfigForWorld(worldName, "simulator-defaults.yml", true);
-        this.worldSimulatorConfigs = this.load.loadConfigForWorld(worldName, "simulators.yml", true);
+        YamlConfiguration simulatorConfigs = this.load.loadConfigForWorld(worldName, "simulators.yml", true);
 
         // Set up new simulator here
-        for (String simulatorName : worldSimulatorConfigs.getKeys(false)) {
+        for (String simulatorName : simulatorConfigs.getKeys(false)) {
             YamlConfiguration config = this.load.combineConfigDefaults(simulatorName, simulatorDefaults,
-                    this.worldSimulatorConfigs);
+                    simulatorConfigs);
             this.simulators.put(simulatorName, new Simulator(this.world, this.plugin, config, simulatorName));
             /*this.save.saveToYamlFile(worldName, "simulators-mod.yml",
                     this.load.combineConfigDefaults(simulatorName, simulatorDefaults, this.worldSimulatorConfigs));*/

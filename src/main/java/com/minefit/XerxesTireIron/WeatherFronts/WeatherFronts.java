@@ -28,15 +28,15 @@ public class WeatherFronts extends JavaPlugin {
     private final ServerVersion serverVersion = new ServerVersion(this);
     public final Logger logger = Logger.getLogger("Minecraft");
     private final boolean oldPacket;
-    private final Map<String, FrontsWorld> worlds = new HashMap<String, FrontsWorld>();
+    private final Map<String, FrontsWorld> worlds = new HashMap<>();
     private YamlConfiguration mainConfig;
     private final LoadData load = new LoadData(this);
     private final List<String> compatibleVersions;
     private ProtocolManager protocolManager;
 
     public WeatherFronts() {
-        this.compatibleVersions = Arrays.asList("v1_8_R1", "V1_8_R2",
-                "v1_8_R3", "v1_9_R1", "v1_9_R2", "v1_10_R1", "v1_11_R1");
+        this.compatibleVersions = Arrays.asList("v1_8_R1", "V1_8_R2", "v1_8_R3", "v1_9_R1", "v1_9_R2", "v1_10_R1",
+                "v1_11_R1");
 
         if (!this.serverVersion.compatibleVersion(this.compatibleVersions)) {
             this.logger.info(
@@ -55,7 +55,6 @@ public class WeatherFronts extends JavaPlugin {
     public void onEnable() {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.mainConfig = this.load.loadMainConfig();
-        this.getServer().getPluginManager().registerEvents(this.dynmap, this);
         this.getServer().getPluginManager().registerEvents(this.weatherListener, this);
         this.getServer().getPluginManager().registerEvents(this.worldListener, this);
 
@@ -75,6 +74,10 @@ public class WeatherFronts extends JavaPlugin {
 
         for (String worldName : this.mainConfig.getConfigurationSection("worlds-enabled").getKeys(false)) {
             addWorld(worldName);
+        }
+
+        if (this.mainConfig.getBoolean("use-dynmap", true)) {
+            dynmap.initDynmap();
         }
 
         getCommand("fronts").setExecutor(this.commands);

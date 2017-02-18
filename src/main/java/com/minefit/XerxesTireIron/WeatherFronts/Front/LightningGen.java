@@ -17,6 +17,7 @@ public class LightningGen {
     private final YamlConfiguration systemConfig;
     private final BlockFunctions blockFunction;
     private double accumulator = 0.0;
+    private double baseLPM;
     private double weightedLPM;
     private double lightningPerCheck;
     private boolean weighted = false;
@@ -30,7 +31,8 @@ public class LightningGen {
         this.systemConfig = front.getSimulator().getWeatherSystem().getConfig();
         this.blockFunction = new BlockFunctions(instance, front.getSimulator());
         this.random = new XORShiftRandom();
-        this.weightedLPM = this.frontConfig.getInt("lightning-per-minute");
+        this.baseLPM = this.frontConfig.getInt("lightning-per-minute");
+        this.weightedLPM = this.baseLPM;
 
         if (this.systemConfig.getBoolean("use-weighted-lightning")) {
             weight(this.systemConfig.getInt("weight-radius-threshold"));
@@ -54,11 +56,12 @@ public class LightningGen {
 
     public void lightningGen(World world) {
         this.accumulator += this.lightningPerCheck;
-        int randomDelay = this.frontConfig.getInt("lightning-per-minute") * 8;
 
         // Add some randomness to small fronts so strikes aren't quite so predictable
         // Larger weighted fronts have an inherently more random experience
         if (!this.weighted) {
+            int randomDelay = (int) (this.baseLPM * 8);
+
             if (this.random.nextBoolean()) {
                 this.accumulator += this.lightningPerCheck + (this.random.nextDouble() / randomDelay);
             } else {

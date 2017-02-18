@@ -143,9 +143,7 @@ public class EntityHandler implements Listener {
         Collection<Arrow> allArrows = this.world.getEntitiesByClass(Arrow.class);
 
         for (Arrow arrow : allArrows) {
-            FrontLocation location = this.simulator.newFrontLocation(arrow.getLocation());
-
-            if (this.blockFunction.isInRain(location)) {
+            if (this.blockFunction.isInRain(arrow.getLocation())) {
                 arrow.setFireTicks(0);
             }
         }
@@ -155,9 +153,7 @@ public class EntityHandler implements Listener {
         Collection<Blaze> allBlazes = this.world.getEntitiesByClass(Blaze.class);
 
         for (Blaze blaze : allBlazes) {
-            FrontLocation location = this.simulator.newFrontLocation(blaze.getLocation());
-
-            if (this.blockFunction.isInRain(location)) {
+            if (this.blockFunction.isInRain(blaze.getLocation())) {
                 blaze.damage(1.0);
             }
         }
@@ -167,9 +163,7 @@ public class EntityHandler implements Listener {
         Collection<Snowman> allSnowmen = this.world.getEntitiesByClass(Snowman.class);
 
         for (Snowman snowman : allSnowmen) {
-            FrontLocation location = this.simulator.newFrontLocation(snowman.getLocation());
-
-            if (this.blockFunction.isInRain(location)) {
+            if (this.blockFunction.isInRain(snowman.getLocation())) {
                 snowman.damage(1.0);
             }
         }
