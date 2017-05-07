@@ -1,18 +1,19 @@
 # These are the default settings for a simulator
-# The defaults should on most small-medium servers and create similar amount of rain as the vanilla Minecraft weather
+# The defaults should work well on most small-medium servers and create similar amounts of rain as the vanilla Minecraft weather
 # If you have a large server world you will likely want to adjust things
 # Do not modify this file as it may be overwritten during updates
 # Use simulators.yml to apply custom settings to each simulator
 
 # Which weather system you want to use
+# This corresponds to a name in weather-systems.yml
 weather-system: random-basic1
 
 # Choose whether to use dynmap (if available) for this simulator
 # If use-dynmap in config.yml is set to false it will ignore this setting in simulator configs
 use-dynmap: true
 
-# The size in blocks of area to simulate fronts in. Default will cover a 40k x 40k block map
-# Fronts will simply die out when/if the center leaves the simulation area
+# The radius in blocks of area to simulate fronts in. Default will cover a 40k x 40k block map
+# Fronts will simply die out if the center leaves the simulation area
 simulation-radius: 20000
 
 # The simulation will be centered around 0,0 by default unless the simulation-center values below are changed

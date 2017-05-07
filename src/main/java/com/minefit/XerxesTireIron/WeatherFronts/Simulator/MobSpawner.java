@@ -44,6 +44,7 @@ public class MobSpawner {
         if ((this.world.getTime() > 13187 && this.world.getTime() < 22812)
                 || this.world.getDifficulty() == Difficulty.PEACEFUL) {
             return;
+
         }
 
         List<Player> allPlayers = this.world.getPlayers();
@@ -52,7 +53,7 @@ public class MobSpawner {
             return;
         }
 
-        Set<Chunk> playerChunks = new HashSet<Chunk>();
+        Set<Chunk> playerChunks = new HashSet<>();
         int totalHostiles = 0;
         int mobRange = 8;
 
@@ -71,7 +72,6 @@ public class MobSpawner {
 
             for (int x = playerChunk.getX() - mobRange; x <= maxX; ++x) {
                 for (int z = playerChunk.getZ() - mobRange; z <= maxZ; ++z) {
-
                     if (!this.world.isChunkInUse(x, z)) {
                         continue;
                     }
@@ -106,11 +106,12 @@ public class MobSpawner {
                 continue;
             }
 
-            Block block = this.blockFunction.getTopSolidBlock(location);
+            Block block = this.blockFunction.getTopSolidBlock(location).getRelative(BlockFace.UP);
 
             if (!this.blockFunction.hostileCanSpawnInBlock(block)) {
                 continue;
             }
+
 
             Block centerBlock = block.getRelative(BlockFace.UP);
 
@@ -186,6 +187,7 @@ public class MobSpawner {
 
             if (overworldHostileCanSpawn(block2, mobWidth, mobHeight)) {
                 this.world.spawnEntity(location, mob);
+                this.plugin.logger.info("spawned " + location);
                 ++packMobs;
             }
         }

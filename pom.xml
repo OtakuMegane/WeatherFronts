@@ -4,8 +4,9 @@
   <artifactId>weatherfronts</artifactId>
   <version>0.9.4</version>
   <name>WeatherFronts</name>
-  
+
   <build>
+    <finalName>WeatherFronts-${project.version}</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
