@@ -84,3 +84,6 @@ mob-spawn-range: 8
 # This controls whether the parameters given during manual front creation will be forced to comply with those of the simulator config
 ## Currently Unused ##
 manual-creation-limits: false
+
+# Whether rain will put out fire quickly as it did before 1.9 (true) or slower and more random as in later MC versions (false)
+fast-extinguish-fire: true

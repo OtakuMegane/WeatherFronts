@@ -187,7 +187,6 @@ public class MobSpawner {
 
             if (overworldHostileCanSpawn(block2, mobWidth, mobHeight)) {
                 this.world.spawnEntity(location, mob);
-                this.plugin.logger.info("spawned " + location);
                 ++packMobs;
             }
         }

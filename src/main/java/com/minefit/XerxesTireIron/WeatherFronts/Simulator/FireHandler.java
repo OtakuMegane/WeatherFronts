@@ -25,42 +25,59 @@ import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 public class FireHandler implements Listener {
     private final Random random = new XORShiftRandom();
     private final WeatherFronts plugin;
-    private final ConcurrentHashMap<Block, Integer> fireBlocks = new ConcurrentHashMap<Block, Integer>();
+    private final ConcurrentHashMap<Block, Integer> fireBlocks = new ConcurrentHashMap<>();
     private final BlockFunctions blockFunction;
     private final Simulator simulator;
+    private final Boolean fastExtinguish;
 
     public FireHandler(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
         this.blockFunction = new BlockFunctions(instance, simulator);
         this.simulator = simulator;
+        this.fastExtinguish = simulator.getSimulatorConfig().getBoolean("fast-extinguish-fire", false);
     }
 
     public void extinguishFire() {
         for (Block block : fireBlocks.keySet()) {
             FrontLocation location = this.simulator.newFrontLocation(block);
 
-            if (!location.isLoaded() || block.getType() != Material.FIRE
-                    || block.getRelative(BlockFace.DOWN).getType() == Material.NETHERRACK) {
+            if (!location.isLoaded()) {
+                continue;
+            }
+
+            if (!actOnBlock(block)) {
                 this.fireBlocks.remove(block);
                 continue;
             }
-            if (actOnBlock(block)) {
+
+            if (this.fastExtinguish) {
+                fastExtinguishFire(block);
+            } else {
                 int age = block.getData();
 
-                if (age < 15) {
-                    age += Integer.valueOf(this.random.nextInt(3) / 2);
-                    if (age > 15) {
-                        age = 15;
-                    }
-                    block.setData((byte) age);
-                } else {
-                    if (this.random.nextInt(4) == 0) {
-                        block.setType(Material.AIR);
-                        this.fireBlocks.remove(block);
-                    }
+                if (random.nextInt(20) == 0 && random.nextFloat() < 0.2F + (float) age * 0.03F) {
+                    removeFire(block);
                 }
             }
         }
+    }
+
+    public void fastExtinguishFire(Block block) {
+        int age = block.getData();
+        int fireStatus = this.fireBlocks.get(block);
+
+        if (age >= 15 || fireStatus >= 30) {
+            if (random.nextInt(4) == 0) {
+                removeFire(block);
+            }
+        } else {
+            this.fireBlocks.put(block, fireStatus + 1);
+        }
+    }
+
+    private void removeFire(Block block) {
+        block.setType(Material.AIR);
+        this.fireBlocks.remove(block);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -85,7 +102,8 @@ public class FireHandler implements Listener {
         }
 
         if (actOnBlock(block)) {
-            addFireBlock(block, true);
+            addFireBlock(block);
+            addAdjacentFire(block);
         }
     }
 
@@ -98,7 +116,7 @@ public class FireHandler implements Listener {
         Block block = event.getBlock();
 
         if (actOnBlock(block)) {
-            event.setCancelled(true);
+            addFireBlock(block);
             addAdjacentFire(block);
         }
     }
@@ -111,9 +129,9 @@ public class FireHandler implements Listener {
 
         Block block = event.getBlock();
 
-        if (block.getType() == Material.FIRE && actOnBlock(block)) {
-            event.setCancelled(true);
-            addFireBlock(block, true);
+        if (actOnBlock(block)) {
+            addFireBlock(block);
+            addAdjacentFire(block);
         }
     }
 
@@ -145,38 +163,37 @@ public class FireHandler implements Listener {
 
     private void addAdjacentFire(Block block) {
         if (block.getRelative(BlockFace.UP).getType() == Material.FIRE) {
-            this.fireBlocks.put(block.getRelative(BlockFace.UP), 0);
+            addFireBlock(block.getRelative(BlockFace.UP));
         }
 
         if (block.getRelative(BlockFace.DOWN).getType() == Material.FIRE) {
-            this.fireBlocks.put(block.getRelative(BlockFace.DOWN), 0);
+            addFireBlock(block.getRelative(BlockFace.DOWN));
         }
 
         if (block.getRelative(BlockFace.NORTH).getType() == Material.FIRE) {
-            this.fireBlocks.put(block.getRelative(BlockFace.NORTH), 0);
+            addFireBlock(block.getRelative(BlockFace.NORTH));
         }
 
         if (block.getRelative(BlockFace.SOUTH).getType() == Material.FIRE) {
-            this.fireBlocks.put(block.getRelative(BlockFace.SOUTH), 0);
+            addFireBlock(block.getRelative(BlockFace.SOUTH));
         }
 
         if (block.getRelative(BlockFace.EAST).getType() == Material.FIRE) {
-            this.fireBlocks.put(block.getRelative(BlockFace.EAST), 0);
+            addFireBlock(block.getRelative(BlockFace.EAST));
         }
 
         if (block.getRelative(BlockFace.WEST).getType() == Material.FIRE) {
-            this.fireBlocks.put(block.getRelative(BlockFace.WEST), 0);
+            addFireBlock(block.getRelative(BlockFace.WEST));
         }
     }
 
-    private void addFireBlock(Block block, Boolean addNearby) {
+    private void addFireBlock(Block block) {
         if (!this.fireBlocks.containsKey(block)) {
             this.fireBlocks.put(block, 0);
         }
 
-        if (addNearby) {
-            addAdjacentFire(block);
-        }
+        this.plugin.logger.info("" + block.getData());
+        this.plugin.logger.info("" + this.fireBlocks.get(block));
     }
 
     public void generateFulgurite(Block block) {
@@ -231,6 +248,18 @@ public class FireHandler implements Listener {
     }
 
     private boolean actOnBlock(Block block) {
-        return this.blockFunction.isInRain(block) || this.blockFunction.adjacentBlockExposed(block);
+        if(this.blockFunction.isInRain(block) || this.blockFunction.adjacentBlockExposed(block))
+        {
+            return true;
+        }
+
+        Material downType = block.getRelative(BlockFace.DOWN).getType();
+
+        if(downType == Material.NETHERRACK)  // TODO: Add 1.12 magma blocks
+        {
+            return false;
+        }
+
+        return false;
     }
 }
