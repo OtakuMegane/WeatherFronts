@@ -248,15 +248,13 @@ public class FireHandler implements Listener {
     }
 
     private boolean actOnBlock(Block block) {
-        if(this.blockFunction.isInRain(block) || this.blockFunction.adjacentBlockExposed(block))
-        {
+        if (this.blockFunction.isInRain(block) || this.blockFunction.adjacentBlockExposed(block)) {
             return true;
         }
 
         Material downType = block.getRelative(BlockFace.DOWN).getType();
 
-        if(downType == Material.NETHERRACK)  // TODO: Add 1.12 magma blocks
-        {
+        if (downType == Material.NETHERRACK) { // TODO: Add 1.12 magma blocks
             return false;
         }
 
