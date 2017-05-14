@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -17,16 +18,45 @@ public class FrontsWorld {
     private final WeatherFronts plugin;
     private final World world;
     private final LoadData load;
-    private final Map<String, Simulator> simulators = new HashMap<String, Simulator>();
+    private final Map<String, Simulator> simulators = new HashMap<>();
     private final SaveData save;
     private final XORShiftRandom random = new XORShiftRandom();
+    private final boolean isSpigot;
+    private final int mobSpawnRange;
 
     public FrontsWorld(WeatherFronts instance, World world) {
         this.plugin = instance;
         this.world = world;
         this.load = new LoadData(instance);
         this.save = new SaveData(instance);
+        this.isSpigot = checkIsSpigot();
+        int mobRange = 8;
+
+        if (this.isSpigot) {
+            SpigotHandler spigotHandler = new SpigotHandler(world);
+            mobRange = spigotHandler.mobSpawnRange;
+        }
+
+        if (mobRange > Bukkit.getServer().getViewDistance()) {
+            this.mobSpawnRange = Bukkit.getServer().getViewDistance();
+        } else {
+            this.mobSpawnRange = mobRange;
+        }
+
         loadSimulators();
+    }
+
+    private boolean checkIsSpigot() {
+        try {
+            Class.forName("org.spigotmc.SpigotWorldConfig");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    public int getMobSpawnRange() {
+        return this.mobSpawnRange;
     }
 
     public World getWorld() {

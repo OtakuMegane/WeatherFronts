@@ -21,6 +21,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.ChunkFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
+import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
 
 public class MobSpawner {
 
@@ -30,6 +31,7 @@ public class MobSpawner {
     private final ChunkFunctions chunkFunction;
     private final World world;
     private final Simulator simulator;
+    private int delay = 0;
 
     public MobSpawner(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
@@ -40,6 +42,13 @@ public class MobSpawner {
     }
 
     public void spawnMobs() {
+        if (this.delay < 5) {
+            this.delay++;
+            return;
+        } else {
+            this.delay = 0;
+        }
+
         // No point in doing our surface spawn routines at night or on Peaceful
         if ((this.world.getTime() > 13187 && this.world.getTime() < 22812)
                 || this.world.getDifficulty() == Difficulty.PEACEFUL) {
@@ -48,18 +57,52 @@ public class MobSpawner {
         }
 
         List<Player> allPlayers = this.world.getPlayers();
+        int playerListSize = allPlayers.size();
 
-        if (allPlayers.size() == 0) {
+        if (playerListSize == 0) {
             return;
         }
 
-        Set<Chunk> playerChunks = new HashSet<>();
-        int totalHostiles = 0;
-        int mobRange = 8;
+        Set<Chunk> playerChunks = collectPlayerChunks(allPlayers);
+        int totalHostiles = countHostiles(playerChunks);
+        int worldHostileCap = (int) ((this.world.getMonsterSpawnLimit() * playerChunks.size()) / 256) + 2;
 
-        if (mobRange > Bukkit.getServer().getViewDistance()) {
-            mobRange = Bukkit.getServer().getViewDistance();
+        if (totalHostiles >= worldHostileCap) {
+            return;
         }
+
+        for (Chunk chunk : playerChunks) {
+            FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, false);
+
+            if (!location.isLoaded()) {
+                continue;
+            }
+
+            Block block = this.blockFunction.getTopOccludingBlock(location).getRelative(BlockFace.UP);
+
+            if (!this.blockFunction.mobCanSpawnInBlock(block)) {
+                continue;
+            }
+
+            Block centerBlock = block.getRelative(BlockFace.UP);
+
+            if (!centerBlock.isEmpty()) {
+                return;
+            }
+
+            int packAttempts = 3;
+            int mobsSpawned = 0;
+
+            for (int i = 0; i < packAttempts && mobsSpawned < 4; ++i) {
+                mobsSpawned += spawnPack(centerBlock);
+            }
+
+        }
+    }
+
+    private Set<Chunk> collectPlayerChunks(List<Player> allPlayers) {
+        int mobRange = this.plugin.getWorldHandle(world).getMobSpawnRange();
+        Set<Chunk> playerChunks = new HashSet<>();
 
         for (Player player : allPlayers) {
             if (player.getGameMode() == GameMode.SPECTATOR) {
@@ -78,55 +121,25 @@ public class MobSpawner {
 
                     Chunk chunk = this.world.getChunkAt(x, z);
                     playerChunks.add(chunk);
-
-                    for (Entity entity : chunk.getEntities()) {
-                        if (entity instanceof Monster) {
-                            ++totalHostiles;
-                        }
-                    }
                 }
             }
         }
 
-        int worldHostileCap = (int) ((this.world.getMonsterSpawnLimit() * playerChunks.size()) / 256) + 1;
+        return playerChunks;
+    }
 
-        if (totalHostiles >= worldHostileCap) {
-            return;
-        }
+    private int countHostiles(Set<Chunk> playerChunks) {
+        int totalHostiles = 0;
 
         for (Chunk chunk : playerChunks) {
-            // We add a limiter since we're only checking surface locations
-            if (this.random.nextInt(16) != 0) {
-                continue;
+            for (Entity entity : chunk.getEntities()) {
+                if (entity instanceof Monster) {
+                    ++totalHostiles;
+                }
             }
-
-            FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, false);
-
-            if (!location.isLoaded()) {
-                continue;
-            }
-
-            Block block = this.blockFunction.getTopSolidBlock(location).getRelative(BlockFace.UP);
-
-            if (!this.blockFunction.hostileCanSpawnInBlock(block)) {
-                continue;
-            }
-
-
-            Block centerBlock = block.getRelative(BlockFace.UP);
-
-            if (!centerBlock.isEmpty()) {
-                return;
-            }
-
-            int packAttempts = 3;
-            int mobsSpawned = 0;
-
-            for (int i = 0; i < packAttempts && mobsSpawned <= 4; ++i) {
-                mobsSpawned += spawnPack(centerBlock);
-            }
-
         }
+
+        return totalHostiles;
     }
 
     private int spawnPack(Block block) {
@@ -155,7 +168,8 @@ public class MobSpawner {
 
             Block block2 = location.getBlock();
 
-            if (!this.blockFunction.hostileCanSpawnInBlock(block2)) {
+            if (!this.blockFunction.mobCanSpawnInBlock(block2)
+                    || !block2.getRelative(BlockFace.DOWN).getType().isOccluding()) {
                 continue;
             }
 
@@ -187,6 +201,7 @@ public class MobSpawner {
 
             if (overworldHostileCanSpawn(block2, mobWidth, mobHeight)) {
                 this.world.spawnEntity(location, mob);
+                this.plugin.logger.info("SPAWNED!  " + location + "  " + mob);
                 ++packMobs;
             }
         }
@@ -201,27 +216,23 @@ public class MobSpawner {
         int startPoint = 0;
         int endPoint = width;
 
-        if (width == 3) {
+        if (width > 2) {
             startPoint = -1;
             endPoint = width - 1;
         }
 
-        if (block.getLightFromSky() > this.random.nextInt(32)) {
-            return false;
-        } else {
-            byte lightLevel = block.getLightFromBlocks();
+        byte lightLevel = block.getLightFromBlocks();
 
-            if (lightLevel > 7 || lightLevel <= this.random.nextInt(8)) {
-                return false;
-            }
+        if (lightLevel > 7 || lightLevel <= this.random.nextInt(8)) {
+            return false;
         }
 
-        for (int xx = startPoint; xx < endPoint; ++xx) {
-            for (int zz = startPoint; zz < endPoint; ++zz) {
-                for (int yy = 0; yy < height; ++yy) {
-                    Block testBlock = this.world.getBlockAt(x + width, y + height, z + width);
+        for (int xx = startPoint; xx <= endPoint; ++xx) {
+            for (int zz = startPoint; zz <= endPoint; ++zz) {
+                for (int yy = 0; yy <= height; ++yy) {
+                    Block testBlock = this.world.getBlockAt(x + xx, y + yy, z + zz);
 
-                    if (!this.blockFunction.hostileCanSpawnInBlock(testBlock)) {
+                    if (!this.blockFunction.mobCanSpawnInBlock(testBlock)) {
                         return false;
                     }
                 }

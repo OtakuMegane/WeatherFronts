@@ -191,9 +191,6 @@ public class FireHandler implements Listener {
         if (!this.fireBlocks.containsKey(block)) {
             this.fireBlocks.put(block, 0);
         }
-
-        this.plugin.logger.info("" + block.getData());
-        this.plugin.logger.info("" + this.fireBlocks.get(block));
     }
 
     public void generateFulgurite(Block block) {

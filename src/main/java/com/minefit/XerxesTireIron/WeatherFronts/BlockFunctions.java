@@ -94,6 +94,20 @@ public class BlockFunctions {
         return block;
     }
 
+    public Block getTopOccludingBlock(Location location) {
+        Block block = findHighestBlock(location, 255);
+
+        for (int start = block.getY(); start > 0; --start) {
+            if (block.getType().isOccluding()) {
+                return block;
+            }
+
+            block = findHighestBlock(location, start);
+        }
+
+        return block;
+    }
+
     public Block getTopBlockLightningValid(Location location) {
         Block block = findHighestBlock(location, 255);
 
@@ -118,17 +132,13 @@ public class BlockFunctions {
                 || isInRain(block.getRelative(BlockFace.NORTH)) || isInRain(block.getRelative(BlockFace.SOUTH));
     }
 
-    public boolean hostileCanSpawnInBlock(Block block) {
-        return block.getType().isTransparent() && !block.isLiquid() && block.getLightFromBlocks() <= 7
-                && isInWeather(block) && block.getRelative(BlockFace.DOWN).getType().isOccluding();
+    public boolean mobCanSpawnInBlock(Block block) {
+        return block.getType().isTransparent() && !block.isLiquid();
     }
 
     public boolean isShelter(Block block) {
         Material material = block.getType();
-        return material != Material.CARPET && material != Material.DIODE_BLOCK_OFF
-                && material != Material.DIODE_BLOCK_ON && material != Material.FLOWER_POT && material != Material.LADDER
-                && material != Material.SKULL && material != Material.SNOW && material != Material.TORCH
-                && material != Material.VINE && material != Material.WEB;
+        return !material.isTransparent() && material != Material.WEB;
     }
 
     public boolean canFormSnow(Material material) {

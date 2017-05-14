@@ -77,10 +77,6 @@ fulgurite-max-size: 5
 # Create fulgurites in spawn chunks
 fulgurite-in-spawn-chunk: false
 
-# Used when calculating mob spawns in thunderstorms
-# Vanilla and CraftBukkit is 8, Spigot default is 4 (mob-spawn-range in spigot.yml)
-mob-spawn-range: 8
-
 # This controls whether the parameters given during manual front creation will be forced to comply with those of the simulator config
 ## Currently Unused ##
 manual-creation-limits: false

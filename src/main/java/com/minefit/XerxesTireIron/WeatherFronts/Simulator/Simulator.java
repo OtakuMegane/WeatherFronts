@@ -24,7 +24,7 @@ public class Simulator {
     private final YamlConfiguration simulatorConfig;
     private final WeatherFronts plugin;
     private String name;
-    private final ConcurrentMap<String, Front> fronts = new ConcurrentHashMap<String, Front>();
+    private final ConcurrentMap<String, Front> fronts = new ConcurrentHashMap<>();
     private final LoadData loadData;
     private final DynmapFunctions dynmap;
     private final WeatherSystem system;
