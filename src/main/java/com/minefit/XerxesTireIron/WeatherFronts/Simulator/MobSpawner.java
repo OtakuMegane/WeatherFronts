@@ -42,8 +42,8 @@ public class MobSpawner {
     }
 
     public void spawnMobs() {
-        if (this.delay < 5) {
-            this.delay++;
+        if (this.delay < 10) {
+            ++this.delay;
             return;
         } else {
             this.delay = 0;
@@ -65,7 +65,7 @@ public class MobSpawner {
 
         Set<Chunk> playerChunks = collectPlayerChunks(allPlayers);
         int totalHostiles = countHostiles(playerChunks);
-        int worldHostileCap = (int) ((this.world.getMonsterSpawnLimit() * playerChunks.size()) / 256) + 2;
+        int worldHostileCap = (int) ((this.world.getMonsterSpawnLimit() * playerChunks.size()) / 256) + 1;
 
         if (totalHostiles >= worldHostileCap) {
             return;
@@ -110,17 +110,14 @@ public class MobSpawner {
             }
 
             Chunk playerChunk = player.getLocation().getChunk();
-            int maxX = playerChunk.getX() + mobRange;
-            int maxZ = playerChunk.getZ() + mobRange;
+            int x = playerChunk.getX();
+            int z = playerChunk.getZ();
 
-            for (int x = playerChunk.getX() - mobRange; x <= maxX; ++x) {
-                for (int z = playerChunk.getZ() - mobRange; z <= maxZ; ++z) {
-                    if (!this.world.isChunkInUse(x, z)) {
-                        continue;
+            for (int xx = -mobRange; xx <= mobRange + 1; ++xx) {
+                for (int zz = -mobRange; zz <= mobRange + 1; ++zz) {
+                    if (this.world.isChunkInUse(x + xx, z + zz)) {
+                        playerChunks.add(this.world.getChunkAt(x + xx, z + zz));
                     }
-
-                    Chunk chunk = this.world.getChunkAt(x, z);
-                    playerChunks.add(chunk);
                 }
             }
         }
@@ -201,7 +198,7 @@ public class MobSpawner {
 
             if (overworldHostileCanSpawn(block2, mobWidth, mobHeight)) {
                 this.world.spawnEntity(location, mob);
-                this.plugin.logger.info("SPAWNED!  " + location + "  " + mob);
+                //this.plugin.logger.info("SPAWNED!  " + location + "  " + mob);
                 ++packMobs;
             }
         }
