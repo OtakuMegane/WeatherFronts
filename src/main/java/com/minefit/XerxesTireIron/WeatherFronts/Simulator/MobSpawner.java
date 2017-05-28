@@ -42,7 +42,7 @@ public class MobSpawner {
     }
 
     public void spawnMobs() {
-        if (this.delay < 10) {
+        if (this.delay < 4) {
             ++this.delay;
             return;
         } else {
@@ -72,6 +72,11 @@ public class MobSpawner {
         }
 
         for (Chunk chunk : playerChunks) {
+            // Regulate spawn rate since we only check surface locations
+            if (this.random.nextInt(16) != 0) {
+                return;
+            }
+
             FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, false);
 
             if (!location.isLoaded()) {
@@ -159,7 +164,7 @@ public class MobSpawner {
             centerZ += this.random.nextInt(randomRange) - this.random.nextInt(randomRange);
             FrontLocation location = this.simulator.newFrontLocation(centerX, centerY, centerZ);
 
-            if (!location.isLoaded() || !blockFunction.isInWeather(block)) {
+            if (!location.isLoaded() || !location.getFront().hasLightning() || !blockFunction.isInWeather(block)) {
                 continue;
             }
 

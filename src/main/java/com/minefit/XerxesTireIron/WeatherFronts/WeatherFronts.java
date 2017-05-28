@@ -25,7 +25,7 @@ public class WeatherFronts extends JavaPlugin {
     private final PacketHandler packetHandler = new PacketHandler(this);
     private final DynmapFunctions dynmap = new DynmapFunctions(this);
     private final WorldListener worldListener = new WorldListener(this);
-    private final ServerVersion serverVersion = new ServerVersion(this);
+    public final ServerVersion serverVersion = new ServerVersion(this);
     public final Logger logger = Logger.getLogger("Minecraft");
     private final boolean oldPacket;
     private final Map<String, FrontsWorld> worlds = new HashMap<>();

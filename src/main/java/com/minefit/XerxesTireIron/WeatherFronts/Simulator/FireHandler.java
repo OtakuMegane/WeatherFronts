@@ -1,6 +1,7 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
-import java.util.Random;
+import java.util.Map;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Material;
@@ -8,6 +9,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Fish;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -15,26 +18,31 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.minefit.XerxesTireIron.WeatherFronts.BlockFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
+import com.minefit.XerxesTireIron.WeatherFronts.NMSBullshit.NMSHandler;
 
 public class FireHandler implements Listener {
-    private final Random random = new XORShiftRandom();
+    private final XORShiftRandom random = new XORShiftRandom();
     private final WeatherFronts plugin;
     private final ConcurrentHashMap<Block, Integer> fireBlocks = new ConcurrentHashMap<>();
     private final BlockFunctions blockFunction;
     private final Simulator simulator;
     private final Boolean fastExtinguish;
+    private final NMSHandler nmsHandler;
 
     public FireHandler(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
         this.blockFunction = new BlockFunctions(instance, simulator);
         this.simulator = simulator;
         this.fastExtinguish = simulator.getSimulatorConfig().getBoolean("fast-extinguish-fire", false);
+        this.nmsHandler = new NMSHandler(this.plugin);
     }
 
     public void extinguishFire() {
@@ -136,6 +144,22 @@ public class FireHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
+    private void onPlayerFish(PlayerFishEvent event) {
+        int hookTime = this.random.nextIntRange(100, 900);
+        hookTime = (int) (hookTime * this.simulator.getSimulatorConfig().getInt("fishing-time-reduction", 20));
+        ItemStack rod = event.getPlayer().getInventory().getItemInMainHand();
+        Map<Enchantment, Integer> enchants = rod.getEnchantments();
+
+        if (enchants.containsKey("LURE")) {
+            hookTime -= enchants.get("LURE") * 100;
+        }
+
+        Fish hook = event.getHook();
+        this.nmsHandler.fishingTime(hook, hookTime);
+
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
     private void onLightningStrike(LightningStrikeEvent event) {
         World world = event.getWorld();
         if (event.isCancelled() || !this.plugin.worldEnabled(world)) {
@@ -151,6 +175,10 @@ public class FireHandler implements Listener {
 
         YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
 
+        if (this.random.nextInt(10) == 0) {
+            this.nmsHandler.createHorseTrap(location);
+        }
+
         if (!simulatorConfig.getBoolean("create-fulgurites")) {
             return;
         }
@@ -159,6 +187,7 @@ public class FireHandler implements Listener {
                 || simulatorConfig.getInt("fulgurite-chance") == 100) {
             generateFulgurite(block);
         }
+
     }
 
     private void addAdjacentFire(Block block) {

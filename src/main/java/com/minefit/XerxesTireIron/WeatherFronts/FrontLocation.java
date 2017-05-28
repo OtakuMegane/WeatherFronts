@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
+import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class FrontLocation extends Location {
@@ -38,6 +39,14 @@ public class FrontLocation extends Location {
 
     public String inWhichFront() {
         return this.simulator.locationInWhichFront(this.getBlockX(), this.getBlockZ());
+    }
+
+    public Front getFront() {
+        if (isInFront()) {
+            return this.simulator.getFront(inWhichFront());
+        }
+
+        return null;
     }
 
     public Location getBukkitLocation() {

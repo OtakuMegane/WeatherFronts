@@ -26,7 +26,7 @@ simulation-center-x: 0
 simulation-center-z: 0
 
 # Maximum number of fronts to automatically create (you can manually add more than this)
-maximum-fronts: 6
+maximum-fronts: 5
 
 # This will apply the precipitation intensity to the light level in fronts
 # With an intensity of 1 you will get about the light level of vanilla rain
@@ -48,10 +48,10 @@ unending-does-not-count: true
 thunder-volume: 192
 
 # Distance outside a weather front that thunder can be heard
-thunder-distance-outside: 45
+thunder-distance-outside: 60
 
 # Distance outside a weather front that lightning can be seen
-lightning-distance-outside: 90
+lightning-distance-outside: 120
 
 # Whether there are lightning strikes in dry biomes such as desert and savanna
 # Be warned this could cause nasty wildfires as there is no rain in these biomes!
@@ -83,3 +83,9 @@ manual-creation-limits: false
 
 # Whether rain will put out fire quickly as it did before 1.9 (true) or slower and more random as in later MC versions (false)
 fast-extinguish-fire: true
+
+# Percent chance of skeleton trap horse being spawned during lightning strike. Set to 0 to disable.
+skeleton-trap-chance: 1.0
+
+# Percentage to reduce fishing time when in the rain (vanilla is approximately 20).
+fishing-time-reduction: 20

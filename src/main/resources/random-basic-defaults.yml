@@ -24,13 +24,13 @@ front-shape: rectangle
 minimum-radius-x: 500
 
 # Largest x-axis radius for a front
-maximum-radius-x: 2500
+maximum-radius-x: 3000
 
 # Smallest z-axis radius for a front
 minimum-radius-z: 500
 
 # Largest z-axis radius for a front
-maximum-radius-z: 2500
+maximum-radius-z: 3000
 
 # Minimum time before a front dies out (in seconds)
 minimum-age-limit: 180
@@ -39,19 +39,19 @@ minimum-age-limit: 180
 maximum-age-limit: 1800
 
 # Chance of a front being rain only. Set to 100 for no thunderstorms
-rain-only-chance: 70
+rain-only-chance: 80
 
 # Is it possible for rain to change to a thunderstorm
 ## UNUSED ##
 rain-to-thunder: true
 
-# Percent chance of a rain to thunder change
-## UNUSED ##
-chance-rain-to-thunder: 10
-
 # Is it possible for thunderstorm to change to only rain
 ## UNUSED ##
 thunder-to-rain: true
+
+# Percent chance of a rain to thunder change
+## UNUSED ##
+chance-rain-to-thunder: 10
 
 # Percent chance of a thunder to rain change
 ## UNUSED ##
@@ -74,7 +74,7 @@ maximum-precipitation-intensity: 30
 minimum-lightning-per-minute: 1
 
 # Maximum lightning strikes per minute
-maximum-lightning-per-minute: 50
+maximum-lightning-per-minute: 40
 
 # Minimum speed of a front on X-axis East/West (blocks/s)
 minimum-velocity-x: 3

@@ -41,7 +41,7 @@ public class Front {
         this.hostileSpawn = data.getInt("lightning-per-minute") > 0;
         this.dynmap = this.plugin.getDynmap();
         this.boundaries = new Point2D[4];
-        this.frontChunks = new HashSet<Chunk>();
+        this.frontChunks = new HashSet<>();
         this.chunkTick = new ChunkTick(instance, this);
         this.listener = new FrontListener(instance, this);
         this.plugin.getServer().getPluginManager().registerEvents(listener, this.plugin);
@@ -110,6 +110,10 @@ public class Front {
         }
     }
 
+    public boolean hasLightning() {
+        return this.hasLightning;
+    }
+
     public String changeName(String newName) {
 
         if (newName != null) {
@@ -157,7 +161,7 @@ public class Front {
     }
 
     public void updateFrontChunks() {
-        Set<Chunk> newChunks = new HashSet<Chunk>();
+        Set<Chunk> newChunks = new HashSet<>();
 
         for (Chunk chunk : this.world.getLoadedChunks()) {
             int blockX = chunk.getX() << 4;
