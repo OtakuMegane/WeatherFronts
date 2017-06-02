@@ -9,9 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
+import com.minefit.XerxesTireIron.WeatherFronts.Storm.Storm;
 
 public class Commands implements CommandExecutor {
     private final WeatherFronts plugin;
@@ -42,7 +42,7 @@ public class Commands implements CommandExecutor {
 
         if (arguments[0].equalsIgnoreCase("addrandom")) {
             if (!player.hasPermission("weatherfronts.add")) {
-                player.sendMessage("You do not have permission to add random weather fronts.");
+                player.sendMessage("You do not have permission to add random storms.");
                 return true;
             }
 
@@ -59,22 +59,22 @@ public class Commands implements CommandExecutor {
                 return true;
             }
 
-            Front newFront = frontsWorld.randomSimulator().createFront(new YamlConfiguration(), true, false);
+            Storm newStorm = frontsWorld.randomSimulator().createStorm(new YamlConfiguration(), true, false);
 
-            if (newFront != null) {
-                player.sendMessage("New front named " + newFront.getName() + " has randomly formed in world "
-                        + newFront.getWorld().getName() + " at X: " + newFront.getData().getInt("center-x") + " Z: "
-                        + newFront.getData().getInt("center-z"));
+            if (newStorm != null) {
+                player.sendMessage("New storm named " + newStorm.getName() + " has randomly formed in world "
+                        + newStorm.getWorld().getName() + " at X: " + newStorm.getData().getInt("center-x") + " Z: "
+                        + newStorm.getData().getInt("center-z"));
                 return true;
             } else {
-                player.sendMessage("Front was not able to form in world " + newFront.getWorld().getName());
+                player.sendMessage("Storm was not able to form in world " + newStorm.getWorld().getName());
                 return true;
             }
         }
 
         if (arguments[0].equalsIgnoreCase("add")) {
             if (!player.hasPermission("weatherfronts.add")) {
-                player.sendMessage("You do not have permission to add weather fronts.");
+                player.sendMessage("You do not have permission to add storms.");
                 return true;
             }
 
@@ -84,7 +84,7 @@ public class Commands implements CommandExecutor {
             }
 
             int argLength = arguments.length - 1;
-            YamlConfiguration newFrontConfig = new YamlConfiguration();
+            YamlConfiguration newStormConfig = new YamlConfiguration();
             String newFrontWorldName = frontsWorld.getWorld().getName();
             String newFrontSimulatorName = frontsWorld.randomSimulator().getName();
 
@@ -95,41 +95,41 @@ public class Commands implements CommandExecutor {
                 if (currentArgument.equalsIgnoreCase("-w")) {
                     newFrontWorldName = currentValue;
                 } else if (currentArgument.equalsIgnoreCase("-n")) {
-                    newFrontConfig.set("name", currentValue);
+                    newStormConfig.set("name", currentValue);
                 } else if (currentArgument.equalsIgnoreCase("-x")) {
-                    newFrontConfig.set("center-x", Integer.parseInt(currentValue));
+                    newStormConfig.set("center-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-z")) {
-                    newFrontConfig.set("center-z", Integer.parseInt(currentValue));
+                    newStormConfig.set("center-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-xz")) {
-                    newFrontConfig.set("center-x", Integer.parseInt(currentValue));
-                    newFrontConfig.set("center-z", Integer.parseInt(currentValue));
+                    newStormConfig.set("center-x", Integer.parseInt(currentValue));
+                    newStormConfig.set("center-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-rx")) {
-                    newFrontConfig.set("radius-x", Integer.parseInt(currentValue));
+                    newStormConfig.set("radius-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-rz")) {
-                    newFrontConfig.set("radius-z", Integer.parseInt(currentValue));
+                    newStormConfig.set("radius-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-rxz")) {
-                    newFrontConfig.set("radius-x", Integer.parseInt(currentValue));
-                    newFrontConfig.set("radius-z", Integer.parseInt(currentValue));
+                    newStormConfig.set("radius-x", Integer.parseInt(currentValue));
+                    newStormConfig.set("radius-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-vx")) {
-                    newFrontConfig.set("velocity-x", Integer.parseInt(currentValue));
+                    newStormConfig.set("velocity-x", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-vz")) {
-                    newFrontConfig.set("velocity-z", Integer.parseInt(currentValue));
+                    newStormConfig.set("velocity-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-vxz")) {
-                    newFrontConfig.set("velocity-x", Integer.parseInt(currentValue));
-                    newFrontConfig.set("velocity-z", Integer.parseInt(currentValue));
+                    newStormConfig.set("velocity-x", Integer.parseInt(currentValue));
+                    newStormConfig.set("velocity-z", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-pi")) {
-                    newFrontConfig.set("precipitation-intensity", Integer.parseInt(currentValue));
+                    newStormConfig.set("precipitation-intensity", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-ro")) {
-                    newFrontConfig.set("lightning-per-minute", 0);
+                    newStormConfig.set("lightning-per-minute", 0);
                     continue;
                 } else if (currentArgument.equalsIgnoreCase("-lpm")) {
-                    newFrontConfig.set("lightning-per-minute", Double.parseDouble(currentValue));
+                    newStormConfig.set("lightning-per-minute", Double.parseDouble(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-al")) {
-                    newFrontConfig.set("age-limit", Integer.parseInt(currentValue));
+                    newStormConfig.set("age-limit", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-a")) {
-                    newFrontConfig.set("age", Integer.parseInt(currentValue));
+                    newStormConfig.set("age", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-shp")) {
-                    newFrontConfig.set("shape", currentValue);
+                    newStormConfig.set("shape", currentValue);
                 } else if (currentArgument.equalsIgnoreCase("-sim")) {
                     newFrontSimulatorName = currentValue;
                 } else {
@@ -155,29 +155,29 @@ public class Commands implements CommandExecutor {
 
             Simulator simulator = frontsWorld.getSimulator(newFrontSimulatorName);
 
-            if (newFrontConfig.isSet("name") && frontsWorld.hasFront(newFrontConfig.getString("name"))) {
-                player.sendMessage("A front named " + newFrontConfig.getString("name") + " already exists");
+            if (newStormConfig.isSet("name") && frontsWorld.hasStorm(newStormConfig.getString("name"))) {
+                player.sendMessage("A storm named " + newStormConfig.getString("name") + " already exists");
                 player.sendMessage("in world " + newFrontWorldName);
                 return true;
             }
 
-            Front newFront = simulator.createFront(newFrontConfig, true, false);
-            YamlConfiguration frontData = newFront.getData();
+            Storm newStorm = simulator.createStorm(newStormConfig, true, false);
+            YamlConfiguration stormData = newStorm.getData();
 
-            player.sendMessage("New front named " + newFront.getName() + " has formed in world " + newFrontWorldName
-                    + " at " + "X: " + frontData.getInt("center-x") + " Z: " + frontData.getInt("center-z"));
+            player.sendMessage("New storm named " + newStorm.getName() + " has formed in world " + newFrontWorldName
+                    + " at " + "X: " + stormData.getInt("center-x") + " Z: " + stormData.getInt("center-z"));
 
             return true;
         }
 
         if (arguments[0].equalsIgnoreCase("remove")) {
             if (!player.hasPermission("weatherfronts.remove")) {
-                player.sendMessage("You do not have permission to remove weather fronts.");
+                player.sendMessage("You do not have permission to remove storms.");
                 return true;
             }
 
-            String frontId = null;
-            String frontWorldName = frontsWorld.getWorld().getName();
+            String stormId = null;
+            String stormWorldName = frontsWorld.getWorld().getName();
 
             if (arguments.length > 1) {
                 int argLength = arguments.length - 1;
@@ -187,18 +187,18 @@ public class Commands implements CommandExecutor {
                     String currentValue = arguments[i + 1].trim();
 
                     if (currentArgument.equalsIgnoreCase("-w")) {
-                        frontWorldName = currentValue;
+                        stormWorldName = currentValue;
                     } else if (currentArgument.equalsIgnoreCase("-f")) {
-                        frontId = currentValue;
+                        stormId = currentValue;
                     }
                 }
 
-                frontsWorld = this.plugin.getWorldHandle(frontWorldName);
+                frontsWorld = this.plugin.getWorldHandle(stormWorldName);
 
-                if (frontId != null) {
+                if (stormId != null) {
                     if (frontsWorld != null) {
-                        frontsWorld.getSimulatorByFront(frontId).removeFront(frontId);
-                        player.sendMessage("The front " + frontId + " in world " + frontWorldName + " has dissipated.");
+                        frontsWorld.getSimulatorByStorm(stormId).removeStorm(stormId);
+                        player.sendMessage("The storm " + stormId + " in world " + stormWorldName + " has dissipated.");
                     }
                     return true;
                 } else {
@@ -213,7 +213,7 @@ public class Commands implements CommandExecutor {
 
         if (arguments[0].equalsIgnoreCase("list")) {
             if (!player.hasPermission("weatherfronts.list")) {
-                player.sendMessage("You do not have permission to list weather fronts.");
+                player.sendMessage("You do not have permission to list storms.");
                 return true;
             }
 
@@ -232,43 +232,43 @@ public class Commands implements CommandExecutor {
 
             frontsWorld = this.plugin.getWorldHandle(worldName);
 
-            player.sendMessage("All weather fronts in world " + world.getName());
+            player.sendMessage("All storms in world " + world.getName());
 
             for (Entry<String, Simulator> simulator : frontsWorld.getSimulatorList().entrySet()) {
-                for (Entry<String, Front> entry : simulator.getValue().getFronts().entrySet()) {
-                    Front front = entry.getValue();
-                    YamlConfiguration frontConfig = front.getData();
+                for (Entry<String, Storm> entry : simulator.getValue().getStorms().entrySet()) {
+                    Storm storm = entry.getValue();
+                    YamlConfiguration stormConfig = storm.getData();
                     String heading = "Heading: ";
                     String type = "Type: ";
 
-                    if (frontConfig.getInt("lightning-per-minute") == 0) {
+                    if (stormConfig.getInt("lightning-per-minute") == 0) {
                         type += " Rain";
                     } else {
                         type += " Thunder";
                     }
 
-                    int velocityX = frontConfig.getInt("velocity-x");
-                    int velocityZ = frontConfig.getInt("velocity-z");
-                    double frontAngle = 0;
+                    int velocityX = stormConfig.getInt("velocity-x");
+                    int velocityZ = stormConfig.getInt("velocity-z");
+                    double stormAngle = 0;
 
                     if (velocityX == 0 && velocityZ == 0) {
                         heading += "(stationary)";
                     } else {
-                        double frontSpeed = Math.sqrt(Math.pow(velocityX, 2) + Math.pow(velocityZ, 2));
-                        String headingSpeed = Double.toString(Math.round(frontSpeed * 10) / 10);
-                        frontAngle = Math.toDegrees(Math.atan2(velocityX, velocityZ));
-                        if (frontAngle < 0) {
-                            frontAngle = (frontAngle * -1) + 180;
+                        double stormSpeed = Math.sqrt(Math.pow(velocityX, 2) + Math.pow(velocityZ, 2));
+                        String headingSpeed = Double.toString(Math.round(stormSpeed * 10) / 10);
+                        stormAngle = Math.toDegrees(Math.atan2(velocityX, velocityZ));
+                        if (stormAngle < 0) {
+                            stormAngle = (stormAngle * -1) + 180;
                         }
 
                         String cardinals[] = { "N", "NE", "E", "SE", "S", "SW", "W", "NW", "N" };
-                        String frontDirection = cardinals[Math.abs((int) Math.round(((frontAngle % 360) / 45)))];
-                        heading += frontDirection + " @ " + headingSpeed + " m/s";
+                        String stormDirection = cardinals[Math.abs((int) Math.round(((stormAngle % 360) / 45)))];
+                        heading += stormDirection + " @ " + headingSpeed + " m/s";
                     }
 
-                    int frontX = frontConfig.getInt("center-x");
-                    int frontZ = frontConfig.getInt("center-z");
-                    player.sendMessage(front.getName() + " @ X: " + frontX + "  Z: " + frontZ + "  " + heading);
+                    int stormX = stormConfig.getInt("center-x");
+                    int stormZ = stormConfig.getInt("center-z");
+                    player.sendMessage(storm.getName() + " @ X: " + stormX + "  Z: " + stormZ + "  " + heading);
                 }
             }
 
@@ -286,12 +286,12 @@ public class Commands implements CommandExecutor {
                     this.plugin.getWorldHandle(arguments[2]);
                 } else {
                     for (Entry<String, FrontsWorld> entry : this.plugin.getAllFrontsWorlds().entrySet()) {
-                        entry.getValue().saveFronts();
+                        entry.getValue().saveStorms();
                     }
                 }
             }
 
-            player.sendMessage("Fronts saved.");
+            player.sendMessage("Storms saved.");
             return true;
         }
 

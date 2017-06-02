@@ -1,8 +1,8 @@
-package com.minefit.XerxesTireIron.WeatherFronts.Front;
+package com.minefit.XerxesTireIron.WeatherFronts.Storm;
 
 import java.awt.geom.Point2D;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -14,7 +14,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
-public class Front {
+public class Storm {
 
     private final World world;
     private final WeatherFronts plugin;
@@ -25,13 +25,13 @@ public class Front {
     private final DynmapFunctions dynmap;
     private boolean hostileSpawn;
     private final Point2D[] boundaries;
-    private Set<Chunk> frontChunks;
+    private Map<Chunk, Integer> stormChunks;
     private final ChunkTick chunkTick;
-    private final FrontListener listener;
+    private final StormListener listener;
     private final XORShiftRandom random;
     private boolean hasLightning;
 
-    public Front(WeatherFronts instance, Simulator simulator, YamlConfiguration data) {
+    public Storm(WeatherFronts instance, Simulator simulator, YamlConfiguration data) {
         this.plugin = instance;
         this.simulator = simulator;
         this.world = simulator.getWorld();
@@ -41,15 +41,15 @@ public class Front {
         this.hostileSpawn = data.getInt("lightning-per-minute") > 0;
         this.dynmap = this.plugin.getDynmap();
         this.boundaries = new Point2D[4];
-        this.frontChunks = new HashSet<>();
+        this.stormChunks = new HashMap<>();
         this.chunkTick = new ChunkTick(instance, this);
-        this.listener = new FrontListener(instance, this);
+        this.listener = new StormListener(instance, this);
         this.plugin.getServer().getPluginManager().registerEvents(listener, this.plugin);
         this.random = new XORShiftRandom();
         this.hasLightning = this.data.getInt("lightning-per-minute") >= 0;
-        updateFrontBoundaries();
-        this.dynmap.addMarker(this.world.getName(), this.name, getFrontBoundaries());
-        updateFrontChunks();
+        updateStormBoundaries();
+        this.dynmap.addMarker(this.world.getName(), this.name, getStormBoundaries());
+        updateStormChunks();
     }
 
     public YamlConfiguration getData() {
@@ -98,8 +98,8 @@ public class Front {
     }
 
     public void update() {
-        updateFrontBoundaries();
-        updateFrontChunks();
+        updateStormBoundaries();
+        updateStormChunks();
         this.dynmap.moveMarker(this.world.getName(), this.name, this.boundaries);
         this.hostileSpawn = data.getInt("lightning-per-minute") > 0;
     }
@@ -123,11 +123,11 @@ public class Front {
         return this.name;
     }
 
-    public Point2D[] getFrontBoundaries() {
+    public Point2D[] getStormBoundaries() {
         return this.boundaries;
     }
 
-    private void updateFrontBoundaries() {
+    private void updateStormBoundaries() {
         this.boundaries[0] = new Point2D.Double(this.data.getInt("center-x") - this.data.getInt("radius-x"),
                 this.data.getInt("center-z") - this.data.getInt("radius-z"));
         this.boundaries[1] = new Point2D.Double(this.data.getInt("center-x") + this.data.getInt("radius-x"),
@@ -138,50 +138,47 @@ public class Front {
                 this.data.getInt("center-z") + this.data.getInt("radius-z"));
     }
 
-    public int getFrontArea() {
+    public int getStormArea() {
         return (this.data.getInt("radius-x") * 2) * (this.data.getInt("radius-z") * 2);
     }
 
-    public boolean isInFront(int x, int z) {
-        Point2D[] boundaries = getFrontBoundaries();
+    public boolean isInStorm(int x, int z) {
+        Point2D[] boundaries = getStormBoundaries();
         return x > boundaries[0].getX() && x < boundaries[1].getX() && z > boundaries[1].getY()
                 && z < boundaries[2].getY();
     }
 
-    public boolean isInFront(FrontLocation location) {
-        return isInFront(location.getBlockX(), location.getBlockZ());
+    public boolean isInStorm(FrontLocation location) {
+        return isInStorm(location.getBlockX(), location.getBlockZ());
     }
 
     public int getPrecipitationIntensity() {
         return this.data.getInt("precipitation-intensity");
     }
 
-    public Set<Chunk> getFrontChunks() {
-        return this.frontChunks;
+    public Map<Chunk, Integer> getStormChunks() {
+        return this.stormChunks;
     }
 
-    public void updateFrontChunks() {
-        Set<Chunk> newChunks = new HashSet<>();
+    public void updateStormChunks() {
+        Point2D[] boundaries = getStormBoundaries();
+        double frontLowX = boundaries[0].getX();
+        double frontHighX = boundaries[2].getX();
+        double frontLowZ = boundaries[0].getY();
+        double frontHighZ = boundaries[2].getY();
 
         for (Chunk chunk : this.world.getLoadedChunks()) {
-            int blockX = chunk.getX() << 4;
-            int blockZ = chunk.getZ() << 4;
-            FrontLocation[] locations = new FrontLocation[5];
-            locations[0] = new FrontLocation(this.simulator, blockX + 8, blockZ + 8); // Center
-            locations[1] = new FrontLocation(this.simulator, blockX, blockZ); // NW
-            locations[2] = new FrontLocation(this.simulator, blockX + 15, blockZ); // SW
-            locations[3] = new FrontLocation(this.simulator, blockX + 15, blockZ + 15); // SE
-            locations[4] = new FrontLocation(this.simulator, blockX, blockZ + 15); // NE
+            int chunkLowX = chunk.getX() << 4;
+            int chunkHighX = chunkLowX + 15;
+            int chunkLowZ = chunk.getZ() << 4;
+            int chunkHighZ = chunkLowX + 15;
 
-            for (FrontLocation location : locations) {
-                if (isInFront(location)) {
-                    newChunks.add(chunk);
-                    break;
-                }
+            if (chunkLowX < frontHighX && chunkHighX > frontLowX && chunkLowZ < frontHighZ && chunkHighZ > frontLowZ) {
+                this.stormChunks.put(chunk, 0);
+            } else {
+                this.stormChunks.remove(chunk);
             }
         }
-
-        this.frontChunks = newChunks;
     }
 
     public void tickFrontChunks() {

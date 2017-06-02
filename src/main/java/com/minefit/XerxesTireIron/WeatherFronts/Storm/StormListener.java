@@ -1,4 +1,4 @@
-package com.minefit.XerxesTireIron.WeatherFronts.Front;
+package com.minefit.XerxesTireIron.WeatherFronts.Storm;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,16 +11,16 @@ import com.minefit.XerxesTireIron.WeatherFronts.BlockFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
-public class FrontListener implements Listener {
-    private final Front front;
+public class StormListener implements Listener {
+    private final Storm storm;
     private final Simulator simulator;
     private final WeatherFronts plugin;
     private final BlockFunctions blockFunction;
 
-    public FrontListener(WeatherFronts instance, Front front)
+    public StormListener(WeatherFronts instance, Storm storm)
     {
-        this.front = front;
-        this.simulator = front.getSimulator();
+        this.storm = storm;
+        this.simulator = storm.getSimulator();
         this.plugin = instance;
         this.blockFunction = new BlockFunctions(instance, this.simulator);
     }

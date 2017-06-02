@@ -15,7 +15,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.DynmapFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.LoadData;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
-import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
+import com.minefit.XerxesTireIron.WeatherFronts.Storm.Storm;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.WeatherSystem;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.RandomBasic.RandomBasic;
 
@@ -24,7 +24,7 @@ public class Simulator {
     private final YamlConfiguration simulatorConfig;
     private final WeatherFronts plugin;
     private String name;
-    private final ConcurrentMap<String, Front> fronts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Storm> storms = new ConcurrentHashMap<>();
     private final LoadData loadData;
     private final DynmapFunctions dynmap;
     private final WeatherSystem system;
@@ -39,7 +39,7 @@ public class Simulator {
         this.loadData = new LoadData(instance);
         this.dynmap = this.plugin.getDynmap();
         this.system = new RandomBasic(instance, this);
-        loadFronts();
+        loadStorms();
         this.mainTickCycle = new MainTickCycle(instance, this).runTaskTimer(instance, 0, 1);
         this.tickUpdates = new TickUpdates(instance, this).runTaskTimer(instance, 0, 20);
 
@@ -53,8 +53,8 @@ public class Simulator {
         return this.name;
     }
 
-    public Map<String, Front> getFronts() {
-        return this.fronts;
+    public Map<String, Storm> getStorms() {
+        return this.storms;
     }
 
     public WeatherFronts getPlugin() {
@@ -77,10 +77,10 @@ public class Simulator {
         return new FrontLocation(this, block);
     }
 
-    public String locationInWhichFront(int x, int z) {
+    public String locationInWhichStorm(int x, int z) {
         if (isInSimulator(x, z)) {
-            for (Entry<String, Front> entry : this.fronts.entrySet()) {
-                if (entry.getValue().isInFront(x, z)) {
+            for (Entry<String, Storm> entry : this.storms.entrySet()) {
+                if (entry.getValue().isInStorm(x, z)) {
                     return entry.getValue().getName();
                 }
             }
@@ -89,56 +89,56 @@ public class Simulator {
         return null;
     }
 
-    public String locationInWhichFront(FrontLocation location) {
-        return locationInWhichFront(location.getBlockX(), location.getBlockZ());
+    public String locationInWhichStorm(FrontLocation location) {
+        return locationInWhichStorm(location.getBlockX(), location.getBlockZ());
     }
 
-    public void updateFronts() {
-        for (Entry<String, Front> entry : this.fronts.entrySet()) {
-            Front front = entry.getValue();
-            front.update();
-            boolean dead = this.system.updateFront(front);
+    public void updateStorms() {
+        for (Entry<String, Storm> entry : this.storms.entrySet()) {
+            Storm storm = entry.getValue();
+            storm.update();
+            boolean dead = this.system.updateFront(storm);
 
             if (dead) {
-                removeFront(entry.getKey());
+                removeStorm(entry.getKey());
             }
         }
     }
 
-    private void loadFronts() {
-        YamlConfiguration fronts = this.loadData.loadConfigForWorld(world.getName(), "fronts.yml", false);
-        YamlConfiguration simulatorFronts = this.loadData.getSectionAsConfig(fronts, getName());
+    private void loadStorms() {
+        YamlConfiguration storms = this.loadData.loadConfigForWorld(world.getName(), "fronts.yml", false);
+        YamlConfiguration simulatorStorms = this.loadData.getSectionAsConfig(storms, getName());
 
-        if (fronts.getKeys(false).size() == 0) {
+        if (storms.getKeys(false).size() == 0) {
             return;
         }
 
-        for (String frontName : simulatorFronts.getKeys(false)) {
-            YamlConfiguration frontData = this.loadData.getSectionAsConfig(simulatorFronts, frontName);
-            this.fronts.put(frontName, new Front(this.plugin, this, frontData));
+        for (String stormName : simulatorStorms.getKeys(false)) {
+            YamlConfiguration frontData = this.loadData.getSectionAsConfig(simulatorStorms, stormName);
+            this.storms.put(stormName, new Storm(this.plugin, this, frontData));
         }
     }
 
-    public void addFront(Front front) {
-        this.fronts.put(front.getName(), front);
+    public void addStorm(Storm front) {
+        this.storms.put(front.getName(), front);
     }
 
-    public Front createFront(YamlConfiguration config, boolean command, boolean autogen) {
-        if (canCreateFront(command, autogen)) {
-            Front front = this.system.createFront(config);
-            addFront(front);
+    public Storm createStorm(YamlConfiguration config, boolean command, boolean autogen) {
+        if (canCreateStorm(command, autogen)) {
+            Storm front = this.system.createFront(config);
+            addStorm(front);
             return front;
         }
 
         return null;
     }
 
-    public void removeFront(String frontName) {
-        this.fronts.remove(frontName);
+    public void removeStorm(String frontName) {
+        this.storms.remove(frontName);
         this.dynmap.deleteMarker(world, this.name, frontName);
     }
 
-    private boolean canCreateFront(boolean command, boolean autogen) {
+    private boolean canCreateStorm(boolean command, boolean autogen) {
         int frontsMax = this.simulatorConfig.getInt("maximum-fronts");
         boolean autogenActive = this.system.getConfig().getBoolean("generate-fronts");
 
@@ -146,17 +146,17 @@ public class Simulator {
             return false;
         }
 
-        if (this.fronts.size() >= frontsMax && !command) {
+        if (this.storms.size() >= frontsMax && !command) {
             if (this.simulatorConfig.getBoolean("unending-does-not-count")) {
                 int permanent = 0;
 
-                for (Entry<String, Front> entry : this.fronts.entrySet()) {
+                for (Entry<String, Storm> entry : this.storms.entrySet()) {
                     if (entry.getValue().isPermanent()) {
                         permanent += 1;
                     }
                 }
 
-                if (this.fronts.size() - permanent < frontsMax) {
+                if (this.storms.size() - permanent < frontsMax) {
                     return true;
                 }
             }
@@ -168,18 +168,18 @@ public class Simulator {
     }
 
     public boolean simulatorHasFront(String frontName) {
-        return this.fronts.containsKey(frontName);
+        return this.storms.containsKey(frontName);
     }
 
-    public Front getFront(String frontName) {
-        return this.fronts.get(frontName);
+    public Storm getFront(String frontName) {
+        return this.storms.get(frontName);
     }
 
     public boolean renameFront(String originalName, String newName) {
         if (simulatorHasFront(originalName) && newName != null) {
-            Front front = this.fronts.get(originalName);
+            Storm front = this.storms.get(originalName);
             front.changeName(newName);
-            this.fronts.put(front.getName(), front);
+            this.storms.put(front.getName(), front);
             return true;
         }
 
@@ -193,7 +193,7 @@ public class Simulator {
     public YamlConfiguration allFrontsData() {
         YamlConfiguration allFronts = new YamlConfiguration();
 
-        for (Entry<String, Front> entry : this.fronts.entrySet()) {
+        for (Entry<String, Storm> entry : this.storms.entrySet()) {
             if (!entry.getKey().isEmpty()) {
                 allFronts.set(entry.getKey(), getFrontData(entry.getKey()));
             }
@@ -205,8 +205,8 @@ public class Simulator {
     public YamlConfiguration getFrontData(String frontName) {
         YamlConfiguration data = new YamlConfiguration();
 
-        if (frontName != null && this.fronts.containsKey(frontName)) {
-            data = this.fronts.get(frontName).getData();
+        if (frontName != null && this.storms.containsKey(frontName)) {
+            data = this.storms.get(frontName).getData();
         }
 
         return data;

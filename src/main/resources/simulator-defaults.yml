@@ -87,5 +87,6 @@ fast-extinguish-fire: true
 # Percent chance of skeleton trap horse being spawned during lightning strike. Set to 0 to disable.
 skeleton-trap-chance: 1.0
 
-# Percentage to reduce fishing time when in the rain (vanilla is approximately 20).
+# Percentage to reduce fishing time when in the rain (vanilla is approximately 20). Set to 0 to disable.
+# Note: Setting this too high may make fishing so fast as to be impossible, much like using a Level 6 Lure enchantment.
 fishing-time-reduction: 20

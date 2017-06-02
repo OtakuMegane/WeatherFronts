@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.material.Stairs;
 
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
@@ -141,20 +142,27 @@ public class BlockFunctions {
         return !material.isTransparent() && material != Material.WEB;
     }
 
-    public boolean canFormSnow(Material material) {
-        return (material.isOccluding() && material != Material.ENDER_PORTAL_FRAME && material != Material.MOB_SPAWNER
-                && material != Material.PACKED_ICE)
-                || (material == Material.TNT || material == Material.REDSTONE_BLOCK || material == Material.LEAVES
-                        || material == Material.LEAVES_2 || material == Material.CACTUS);
+    public boolean canFormSnow(Block block) {
+        boolean invertedStairs = false;
+
+        if (block.getState().getData() instanceof Stairs) {
+            Stairs stairs = (Stairs) block.getState().getData();
+            invertedStairs = stairs.isInverted();
+        }
+
+        Material material = block.getType();
+
+        return (material.isOccluding() && material != Material.PACKED_ICE && material != Material.BARRIER)
+                || (material == Material.TNT || material == Material.LEAVES || material == Material.LEAVES_2)
+                || invertedStairs;
     }
 
     public boolean isInWeather(Block block) {
         FrontLocation location = getFrontLocation(block);
-        return location.isInFront() && block.getY() >= getTopShelterBlock(location).getY();
+        return location.isInStorm() && block.getY() >= getTopShelterBlock(location).getY();
     }
 
-    public boolean isInWeather(FrontLocation location)
-    {
+    public boolean isInWeather(FrontLocation location) {
         return isInWeather(location.getBlock());
     }
 
@@ -162,8 +170,7 @@ public class BlockFunctions {
         return isInWeather(block) && !this.biomeData.isDry(block) && !this.biomeData.isFrozen(block) && !isCold(block);
     }
 
-    public boolean isInRain(Location location)
-    {
+    public boolean isInRain(Location location) {
         return isInRain(location.getBlock());
     }
 

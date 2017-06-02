@@ -1,6 +1,7 @@
-package com.minefit.XerxesTireIron.WeatherFronts.Front;
+package com.minefit.XerxesTireIron.WeatherFronts.Storm;
 
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -16,8 +17,8 @@ import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class ChunkTick {
     private final WeatherFronts plugin;
-    private final Front front;
-    private Set<Chunk> frontChunks;
+    private final Storm storm;
+    private Map<Chunk, Integer> stormChunks;
     private final XORShiftRandom random;
     private final Simulator simulator;
     private final BlockFunctions blockFunction;
@@ -25,19 +26,19 @@ public class ChunkTick {
     private double tickDelay;
     private int intensity;
 
-    public ChunkTick(WeatherFronts instance, Front front) {
+    public ChunkTick(WeatherFronts instance, Storm storm) {
         this.plugin = instance;
-        this.front = front;
+        this.storm = storm;
         this.random = new XORShiftRandom();
-        this.simulator = front.getSimulator();
+        this.simulator = storm.getSimulator();
         this.blockFunction = new BlockFunctions(instance, this.simulator);
         this.chunkFunction = new ChunkFunctions(instance);
-        this.intensity = this.front.getPrecipitationIntensity();
+        this.intensity = this.storm.getPrecipitationIntensity();
     }
 
     public void tickDispatch() {
-        this.frontChunks = this.front.getFrontChunks();
-        this.intensity = this.front.getPrecipitationIntensity();
+        this.stormChunks = this.storm.getStormChunks();
+        this.intensity = this.storm.getPrecipitationIntensity();
 
         if (this.intensity > 100) {
             this.intensity = 100;
@@ -54,14 +55,14 @@ public class ChunkTick {
         }
 
         while (this.tickDelay >= 1.0) {
-            for (Chunk chunk : this.frontChunks) {
-                if (!chunk.isLoaded() || this.random.nextInt(16) != 0) {
+            for (Entry<Chunk, Integer> chunk : this.stormChunks.entrySet()) {
+                if (!chunk.getKey().isLoaded() || this.random.nextInt(16) != 0) {
                     continue;
                 }
 
-                FrontLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, chunk, true);
+                FrontLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, chunk.getKey(), true);
 
-                if (!location.isLoaded() || !this.front.isInFront(location)) {
+                if (!location.isLoaded() || !this.storm.isInStorm(location)) {
                     continue;
                 }
 
@@ -108,7 +109,7 @@ public class ChunkTick {
 
     private Boolean blockCanHaveSnow(Block block, Block upperBlock) {
         return upperBlock.getType() == Material.AIR
-                && this.blockFunction.canFormSnow(block.getType()) && upperBlock.getLightFromBlocks() < 10;
+                && this.blockFunction.canFormSnow(block) && upperBlock.getLightFromBlocks() < 10;
 
     }
 }

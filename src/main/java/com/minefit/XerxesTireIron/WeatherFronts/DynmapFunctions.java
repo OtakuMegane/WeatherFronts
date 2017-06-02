@@ -17,7 +17,7 @@ public class DynmapFunctions implements Listener {
     private DynmapAPI dynmapAPI;
     private Boolean dynmapEnabled = false;
     private MarkerAPI markerAPI;
-    private MarkerSet frontMarkers;
+    private MarkerSet stormMarkers;
 
     public DynmapFunctions(WeatherFronts instance) {
         this.plugin = instance;
@@ -43,9 +43,9 @@ public class DynmapFunctions implements Listener {
             this.plugin.logger.info("[WeatherFronts] Dynmap detected and enabled for WeatherFronts");
 
             if (this.markerAPI.getMarkerSet("Weather") != null) {
-                this.frontMarkers = this.markerAPI.getMarkerSet("Weather");
+                this.stormMarkers = this.markerAPI.getMarkerSet("Weather");
             } else {
-                this.frontMarkers = this.markerAPI.createMarkerSet("Weather", "Weather", null, false);
+                this.stormMarkers = this.markerAPI.createMarkerSet("Weather", "Weather", null, false);
             }
 
             this.dynmapEnabled = true;
@@ -55,7 +55,7 @@ public class DynmapFunctions implements Listener {
 
     }
 
-    public void addMarker(String worldName, String frontName, Point2D[] boundaries) {
+    public void addMarker(String worldName, String stormName, Point2D[] boundaries) {
         if (!this.dynmapEnabled) {
             return;
         }
@@ -68,10 +68,10 @@ public class DynmapFunctions implements Listener {
             z[i] = boundaries[i].getY();
         }
 
-        AreaMarker newMarker = this.frontMarkers.createAreaMarker(frontName, frontName, false, worldName, x, z, false);
+        AreaMarker newMarker = this.stormMarkers.createAreaMarker(stormName, stormName, false, worldName, x, z, false);
 
         if (newMarker == null) {
-            this.plugin.logger.info("[WeatherFronts] An error occurred while creating the marker for " + frontName);
+            this.plugin.logger.info("[WeatherFronts] An error occurred while creating the marker for " + stormName);
             return;
         }
 
@@ -79,12 +79,12 @@ public class DynmapFunctions implements Listener {
         newMarker.setFillStyle(0.40000000000000002D, 0xffffff);
     }
 
-    public void moveMarker(String worldName, String frontName, Point2D[] boundaries) {
+    public void moveMarker(String worldName, String stormName, Point2D[] boundaries) {
         if (!this.dynmapEnabled) {
             return;
         }
 
-        if (this.frontMarkers.findAreaMarker(frontName) != null) {
+        if (this.stormMarkers.findAreaMarker(stormName) != null) {
             double[] x = new double[4];
             double[] z = new double[4];
 
@@ -93,19 +93,19 @@ public class DynmapFunctions implements Listener {
                 z[i] = boundaries[i].getY();
             }
 
-            this.frontMarkers.findAreaMarker(frontName).setCornerLocations(x, z);
+            this.stormMarkers.findAreaMarker(stormName).setCornerLocations(x, z);
         } else {
-            addMarker(worldName, frontName, boundaries);
+            addMarker(worldName, stormName, boundaries);
         }
     }
 
-    public void deleteMarker(World world, String simulator, String frontId) {
+    public void deleteMarker(World world, String simulator, String stormId) {
         if (!this.dynmapEnabled) {
             return;
         }
 
-        if (this.frontMarkers.findAreaMarker(frontId) != null) {
-            this.frontMarkers.findAreaMarker(frontId).deleteMarker();
+        if (this.stormMarkers.findAreaMarker(stormId) != null) {
+            this.stormMarkers.findAreaMarker(stormId).deleteMarker();
         }
     }
 }

@@ -164,7 +164,7 @@ public class MobSpawner {
             centerZ += this.random.nextInt(randomRange) - this.random.nextInt(randomRange);
             FrontLocation location = this.simulator.newFrontLocation(centerX, centerY, centerZ);
 
-            if (!location.isLoaded() || !location.getFront().hasLightning() || !blockFunction.isInWeather(block)) {
+            if (!location.isLoaded() || !location.getStorm().hasLightning() || !blockFunction.isInWeather(block)) {
                 continue;
             }
 

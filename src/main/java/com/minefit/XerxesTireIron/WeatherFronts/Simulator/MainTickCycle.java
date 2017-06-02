@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
-import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
+import com.minefit.XerxesTireIron.WeatherFronts.Storm.Storm;
 
 public class MainTickCycle extends BukkitRunnable {
     private final WeatherFronts plugin;
@@ -35,7 +35,7 @@ public class MainTickCycle extends BukkitRunnable {
         this.entityHandler.changePlayerWeather();
         this.fireHandler.extinguishFire();
 
-        for (Entry<String, Front> entry : simulator.getFronts().entrySet()) {
+        for (Entry<String, Storm> entry : simulator.getStorms().entrySet()) {
             entry.getValue().genLightning();
             entry.getValue().tickFrontChunks();
         }

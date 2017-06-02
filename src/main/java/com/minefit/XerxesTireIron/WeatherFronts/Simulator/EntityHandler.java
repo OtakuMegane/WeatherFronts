@@ -39,7 +39,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 public class EntityHandler implements Listener {
     private final XORShiftRandom random = new XORShiftRandom();
     private final WeatherFronts plugin;
-    private final Set<Wolf> wolvesInRain = new HashSet<Wolf>();
+    private final Set<Wolf> wolvesInRain = new HashSet<>();
     private final Simulator simulator;
     private final World world;
     private final BlockFunctions blockFunction;
@@ -76,7 +76,7 @@ public class EntityHandler implements Listener {
         Entity entity = event.getEntity();
         FrontLocation location = this.simulator.newFrontLocation(entity.getLocation());
 
-        if (!location.isLoaded() || !location.isInFront()) {
+        if (!location.isLoaded() || !location.isInStorm()) {
             return;
         }
 
@@ -98,7 +98,7 @@ public class EntityHandler implements Listener {
         Entity entity = event.getEntity();
         FrontLocation location = this.simulator.newFrontLocation(entity.getLocation());
 
-        if (!location.isLoaded() || !location.isInFront()) {
+        if (!location.isLoaded() || !location.isInStorm()) {
             return;
         }
 
@@ -125,7 +125,7 @@ public class EntityHandler implements Listener {
         for (Player player : this.world.getPlayers()) {
             FrontLocation location = this.simulator.newFrontLocation(player.getLocation());
 
-            if (!location.isInFront()) {
+            if (!location.isInStorm()) {
                 if (player.getPlayerWeather() == null || !player.getPlayerWeather().equals(WeatherType.CLEAR)) {
                     player.setPlayerWeather(WeatherType.CLEAR);
                 }
@@ -134,7 +134,7 @@ public class EntityHandler implements Listener {
                     player.setPlayerWeather(WeatherType.DOWNFALL);
                 }
 
-                this.plugin.getPacketHandler().changeWeather(player, location.inWhichFront());
+                this.plugin.getPacketHandler().changeWeather(player, location.inWhichStorm());
             }
         }
     }

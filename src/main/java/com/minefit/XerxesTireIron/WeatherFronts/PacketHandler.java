@@ -38,28 +38,28 @@ public class PacketHandler {
         double y = (event.getPacket().getIntegers().read(1) / 8.0);
         double z = (event.getPacket().getIntegers().read(2) / 8.0);
         FrontsWorld frontsWorld = this.plugin.getWorldHandle(world);
-        String frontName = frontsWorld.locationInWhichFront((int) x, (int) z);
+        String stormName = frontsWorld.locationInWhichStorm((int) x, (int) z);
 
-        if (frontName == null) {
+        if (stormName == null) {
             return;
         }
 
-        YamlConfiguration simConfig = frontsWorld.getSimulatorByFront(frontName).getSimulatorConfig();
+        YamlConfiguration simConfig = frontsWorld.getSimulatorByStorm(stormName).getSimulatorConfig();
         int volume = simConfig.getInt("thunder-volume");
         int hearOutside = simConfig.getInt("thunder-distance-outside");
         Location playerLoc = event.getPlayer().getLocation();
         int playerX = playerLoc.getBlockX();
         int playerZ = playerLoc.getBlockZ();
-        YamlConfiguration frontConfig = frontsWorld.getSimulatorByFront(frontName).getFrontData(frontName);
-        int frontRadiusX = frontConfig.getInt("radius-x");
-        int frontRadiusZ = frontConfig.getInt("radius-z");
-        int frontX = frontConfig.getInt("center-x");
-        int frontZ = frontConfig.getInt("center-z");
+        YamlConfiguration stormConfig = frontsWorld.getSimulatorByStorm(stormName).getFrontData(stormName);
+        int stormRadiusX = stormConfig.getInt("radius-x");
+        int stormRadiusZ = stormConfig.getInt("radius-z");
+        int stormX = stormConfig.getInt("center-x");
+        int stormZ = stormConfig.getInt("center-z");
 
-        int x1 = frontX + frontRadiusX;
-        int x2 = frontX - frontRadiusX;
-        int z1 = frontZ + frontRadiusZ;
-        int z2 = frontZ - frontRadiusZ;
+        int x1 = stormX + stormRadiusX;
+        int x2 = stormX - stormRadiusX;
+        int z1 = stormZ + stormRadiusZ;
+        int z2 = stormZ - stormRadiusZ;
 
         if (x1 + hearOutside > playerX && x2 - hearOutside < playerX && z1 + hearOutside > playerZ
                 && z2 - hearOutside < playerZ) {
@@ -95,27 +95,27 @@ public class PacketHandler {
         double playerX = player.getLocation().getX();
         double playerZ = player.getLocation().getZ();
         FrontsWorld frontsWorld = this.plugin.getWorldHandle(world.getName());
-        String frontName = frontsWorld.locationInWhichFront((int) x, (int) z);
+        String stormName = frontsWorld.locationInWhichStorm((int) x, (int) z);
 
-        if (frontName == null) {
+        if (stormName == null) {
             return;
         }
 
-        YamlConfiguration frontConfig = frontsWorld.getSimulatorByFront(frontName).getFrontData(frontName);
-        int frontRadiusX = frontConfig.getInt("radius-x");
-        int frontRadiusZ = frontConfig.getInt("radius-z");
-        int frontX = frontConfig.getInt("center-x");
-        int frontZ = frontConfig.getInt("center-z");
-        int seeOutside = frontsWorld.getSimulatorByFront(frontName).getSimulatorConfig()
+        YamlConfiguration stormConfig = frontsWorld.getSimulatorByStorm(stormName).getFrontData(stormName);
+        int stormRadiusX = stormConfig.getInt("radius-x");
+        int stormRadiusZ = stormConfig.getInt("radius-z");
+        int stormX = stormConfig.getInt("center-x");
+        int stormZ = stormConfig.getInt("center-z");
+        int seeOutside = frontsWorld.getSimulatorByStorm(stormName).getSimulatorConfig()
                 .getInt("lightning-distance-outside");
 
-        if (frontX + frontRadiusX + seeOutside > playerX && frontX - frontRadiusX - seeOutside < playerX
-                && frontZ + frontRadiusZ + seeOutside > playerZ && frontZ - frontRadiusZ - seeOutside < playerZ) {
+        if (stormX + stormRadiusX + seeOutside > playerX && stormX - stormRadiusX - seeOutside < playerX
+                && stormZ + stormRadiusZ + seeOutside > playerZ && stormZ - stormRadiusZ - seeOutside < playerZ) {
             event.setCancelled(false);
         }
     }
 
-    public void changeWeather(Player player, String front) {
+    public void changeWeather(Player player, String storm) {
         World world = player.getWorld();
 
         if (!this.plugin.worldEnabled(world)) {
@@ -124,16 +124,16 @@ public class PacketHandler {
 
         PacketContainer packet1 = this.plugin.getProtocolManager().createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
 
-        if (front == null) {
+        if (storm == null) {
             packet1.getIntegers().write(0, 1);
             packet1.getFloat().write(0, 0.0F);
         } else {
             FrontsWorld worldHandle = this.plugin.getWorldHandle(world);
-            YamlConfiguration simConfig = worldHandle.getSimulatorByFront(front).getSimulatorConfig();
-            YamlConfiguration frontConfig = worldHandle.getSimulatorByFront(front).getFrontData(front);
-            int intensity = frontConfig.getInt("precipitation-intensity");
+            YamlConfiguration simConfig = worldHandle.getSimulatorByStorm(storm).getSimulatorConfig();
+            YamlConfiguration stormConfig = worldHandle.getSimulatorByStorm(storm).getFrontData(storm);
+            int intensity = stormConfig.getInt("precipitation-intensity");
 
-            if (frontConfig.getInt("lightning-per-minute") == 0) {
+            if (stormConfig.getInt("lightning-per-minute") == 0) {
                 packet1.getIntegers().write(0, 8);
                 packet1.getFloat().write(0, 0.0F);
 
@@ -143,7 +143,7 @@ public class PacketHandler {
             }
 
             if (simConfig.getBoolean("use-intensity-for-light-level")) {
-                int maxIntensity = worldHandle.getSimulatorByFront(front).getWeatherSystem().getConfig().getInt("maximum-precipitation-intensity");
+                int maxIntensity = worldHandle.getSimulatorByStorm(storm).getWeatherSystem().getConfig().getInt("maximum-precipitation-intensity");
 
                 if (maxIntensity > 100) {
                     maxIntensity = 100;

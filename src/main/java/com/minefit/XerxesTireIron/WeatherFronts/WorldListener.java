@@ -26,7 +26,7 @@ public class WorldListener implements Listener {
     public void onWorldUnload(WorldUnloadEvent event) {
         String worldName = event.getWorld().getName();
         FrontsWorld handle = this.plugin.getWorldHandle(worldName);
-        handle.saveFronts();
+        handle.saveStorms();
         handle.saveSimulators();
         this.plugin.removeWorld(worldName);
     }

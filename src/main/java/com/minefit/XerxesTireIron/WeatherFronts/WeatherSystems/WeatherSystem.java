@@ -2,21 +2,21 @@ package com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
+import com.minefit.XerxesTireIron.WeatherFronts.Storm.Storm;
 
 public interface WeatherSystem {
     public YamlConfiguration loadSystemParameters();
 
-    boolean updateFront(Front front);
+    boolean updateFront(Storm storm);
 
-    public void moveFront(Front front);
+    public void moveFront(Storm storm);
 
-    public boolean shouldDie(Front front, Simulator simulator);
+    public boolean shouldDie(Storm storm, Simulator simulator);
 
-    public void ageFront(Front front);
+    public void ageFront(Storm storm);
 
-    public Front createFront(YamlConfiguration config);
+    public Storm createFront(YamlConfiguration config);
 
     public YamlConfiguration getConfig();
 

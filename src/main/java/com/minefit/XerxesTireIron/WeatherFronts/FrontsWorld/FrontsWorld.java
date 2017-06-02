@@ -69,13 +69,13 @@ public class FrontsWorld {
         return (Simulator) values[random.nextInt(length)];
     }
 
-    public boolean hasFront(String frontName) {
-        return whichSimulator(frontName) != null;
+    public boolean hasStorm(String stormName) {
+        return whichSimulator(stormName) != null;
     }
 
-    private Simulator whichSimulator(String frontName) {
+    private Simulator whichSimulator(String stormName) {
         for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            if (entry.getValue().simulatorHasFront(frontName)) {
+            if (entry.getValue().simulatorHasFront(stormName)) {
                 return entry.getValue();
             }
         }
@@ -91,21 +91,21 @@ public class FrontsWorld {
         return this.simulators;
     }
 
-    public String locationInWhichFront(int x, int z) {
+    public String locationInWhichStorm(int x, int z) {
         for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            String frontName = entry.getValue().locationInWhichFront(x, z);
+            String stormName = entry.getValue().locationInWhichStorm(x, z);
 
-            if (frontName != null) {
-                return frontName;
+            if (stormName != null) {
+                return stormName;
             }
         }
 
         return null;
     }
 
-    public Simulator getSimulatorByFront(String frontName) {
-        if (hasFront(frontName)) {
-            return whichSimulator(frontName);
+    public Simulator getSimulatorByStorm(String stormName) {
+        if (hasStorm(stormName)) {
+            return whichSimulator(stormName);
         }
 
         return null;
@@ -132,15 +132,15 @@ public class FrontsWorld {
         // For now only manual changes to the file
     }
 
-    public void saveFronts() {
-        YamlConfiguration allFronts = new YamlConfiguration();
+    public void saveStorms() {
+        YamlConfiguration allStorms = new YamlConfiguration();
         String worldName = world.getName();
 
         for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            allFronts.set(entry.getKey(), entry.getValue().allFrontsData());
+            allStorms.set(entry.getKey(), entry.getValue().allFrontsData());
         }
 
-        this.save.saveToYamlFile(worldName, "fronts.yml", allFronts);
+        this.save.saveToYamlFile(worldName, "fronts.yml", allStorms);
     }
 
     public void shutdownSimulators() {
@@ -151,7 +151,7 @@ public class FrontsWorld {
 
     public void shutdown() {
         saveSimulators();
-        saveFronts();
+        saveStorms();
         shutdownSimulators();
     }
 

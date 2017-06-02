@@ -1,4 +1,4 @@
-package com.minefit.XerxesTireIron.WeatherFronts.Front;
+package com.minefit.XerxesTireIron.WeatherFronts.Storm;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -11,8 +11,8 @@ import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
 
 public class LightningGen {
     private final WeatherFronts plugin;
-    private final Front front;
-    private final YamlConfiguration frontConfig;
+    private final Storm storm;
+    private final YamlConfiguration stormConfig;
     private final YamlConfiguration simulatorConfig;
     private final YamlConfiguration systemConfig;
     private final BlockFunctions blockFunction;
@@ -23,15 +23,15 @@ public class LightningGen {
     private boolean weighted = false;
     private final XORShiftRandom random;
 
-    public LightningGen(WeatherFronts instance, YamlConfiguration config, Front front) {
+    public LightningGen(WeatherFronts instance, YamlConfiguration config, Storm storm) {
         this.plugin = instance;
-        this.front = front;
-        this.frontConfig = front.getData();
+        this.storm = storm;
+        this.stormConfig = storm.getData();
         this.simulatorConfig = config;
-        this.systemConfig = front.getSimulator().getWeatherSystem().getConfig();
-        this.blockFunction = new BlockFunctions(instance, front.getSimulator());
+        this.systemConfig = storm.getSimulator().getWeatherSystem().getConfig();
+        this.blockFunction = new BlockFunctions(instance, storm.getSimulator());
         this.random = new XORShiftRandom();
-        this.baseLPM = this.frontConfig.getInt("lightning-per-minute");
+        this.baseLPM = this.stormConfig.getInt("lightning-per-minute");
         this.weightedLPM = this.baseLPM;
 
         if (this.systemConfig.getBoolean("use-weighted-lightning")) {
@@ -43,13 +43,13 @@ public class LightningGen {
     }
 
     private void weight(int threshold) {
-        if (this.frontConfig.getInt("radius-x") > threshold) {
-            this.weightedLPM *= this.frontConfig.getInt("radius-x") / threshold;
+        if (this.stormConfig.getInt("radius-x") > threshold) {
+            this.weightedLPM *= this.stormConfig.getInt("radius-x") / threshold;
             this.weighted = true;
         }
 
-        if (this.frontConfig.getInt("radius-z") > threshold) {
-            this.weightedLPM *= this.frontConfig.getInt("radius-z") / threshold;
+        if (this.stormConfig.getInt("radius-z") > threshold) {
+            this.weightedLPM *= this.stormConfig.getInt("radius-z") / threshold;
             this.weighted = true;
         }
     }
@@ -84,7 +84,7 @@ public class LightningGen {
     }
 
     private void randomStrike(World world) {
-        FrontLocation location = this.front.randomLocationInFront();
+        FrontLocation location = this.storm.randomLocationInFront();
 
         if (!location.isLoaded()) {
             return;

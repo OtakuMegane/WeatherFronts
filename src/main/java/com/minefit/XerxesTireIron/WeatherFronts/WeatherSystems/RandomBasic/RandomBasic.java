@@ -4,8 +4,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.XerxesTireIron.WeatherFronts.LoadData;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
-import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
+import com.minefit.XerxesTireIron.WeatherFronts.Storm.Storm;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherSystems.WeatherSystem;
 
 public class RandomBasic implements WeatherSystem {
@@ -33,7 +33,7 @@ public class RandomBasic implements WeatherSystem {
     }
 
     @Override
-    public boolean updateFront(Front front)
+    public boolean updateFront(Storm front)
     {
         moveFront(front);
         ageFront(front);
@@ -41,14 +41,14 @@ public class RandomBasic implements WeatherSystem {
     }
 
     @Override
-    public void moveFront(Front front) {
+    public void moveFront(Storm front) {
         YamlConfiguration frontData = front.getData();
         front.updatePosition(frontData.getInt("center-x") + frontData.getInt("velocity-x"),
                 frontData.getInt("center-z") + frontData.getInt("velocity-z"));
     }
 
     @Override
-    public boolean shouldDie(Front front, Simulator simulator) {
+    public boolean shouldDie(Storm front, Simulator simulator) {
         int ageLimit = front.ageLimit();
         int age = front.currentAge();
 
@@ -64,15 +64,15 @@ public class RandomBasic implements WeatherSystem {
     }
 
     @Override
-    public void ageFront(Front front) {
+    public void ageFront(Storm front) {
         int age = front.currentAge() + 1;
         front.changeAge(age);
     }
 
     @Override
-    public Front createFront(YamlConfiguration config) {
-        GenerateFrontData generate = new GenerateFrontData(this.plugin, this, config);
-        Front front = new Front(this.plugin, this.simulator, generate.generateValues());
+    public Storm createFront(YamlConfiguration config) {
+        GenerateStormData generate = new GenerateStormData(this.plugin, this, config);
+        Storm front = new Storm(this.plugin, this.simulator, generate.generateValues());
         return front;
     }
 

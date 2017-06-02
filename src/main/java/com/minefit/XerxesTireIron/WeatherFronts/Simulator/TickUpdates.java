@@ -19,11 +19,11 @@ public class TickUpdates extends BukkitRunnable {
     @Override
     public void run() {
         if (this.genDelay >= 30) {
-            this.simulator.createFront(new YamlConfiguration(), false, true);
+            this.simulator.createStorm(new YamlConfiguration(), false, true);
             this.genDelay = 0;
         }
 
-        this.simulator.updateFronts();
+        this.simulator.updateStorms();
         ++this.genDelay;
     }
 }

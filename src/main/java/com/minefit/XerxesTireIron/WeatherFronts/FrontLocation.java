@@ -4,8 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import com.minefit.XerxesTireIron.WeatherFronts.Front.Front;
 import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
+import com.minefit.XerxesTireIron.WeatherFronts.Storm.Storm;
 
 public class FrontLocation extends Location {
     private Simulator simulator;
@@ -33,17 +33,17 @@ public class FrontLocation extends Location {
         return this.simulator.getWorld().isChunkLoaded(this.getBlockX() >> 4, this.getBlockZ() >> 4);
     }
 
-    public boolean isInFront() {
-        return inWhichFront() != null;
+    public boolean isInStorm() {
+        return inWhichStorm() != null;
     }
 
-    public String inWhichFront() {
-        return this.simulator.locationInWhichFront(this.getBlockX(), this.getBlockZ());
+    public String inWhichStorm() {
+        return this.simulator.locationInWhichStorm(this.getBlockX(), this.getBlockZ());
     }
 
-    public Front getFront() {
-        if (isInFront()) {
-            return this.simulator.getFront(inWhichFront());
+    public Storm getStorm() {
+        if (isInStorm()) {
+            return this.simulator.getFront(inWhichStorm());
         }
 
         return null;
