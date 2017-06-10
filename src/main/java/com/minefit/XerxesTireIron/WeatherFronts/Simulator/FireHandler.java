@@ -53,7 +53,7 @@ public class FireHandler implements Listener {
                 continue;
             }
 
-            if (!actOnBlock(block)) {
+            if (!actOnBlock(block) || block.getType() != Material.FIRE) {
                 this.fireBlocks.remove(block);
                 continue;
             }
@@ -104,7 +104,7 @@ public class FireHandler implements Listener {
         YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
 
         if (event.getCause() == IgniteCause.LIGHTNING && location.inSpawnChunk()
-                && !simulatorConfig.getBoolean("lightning-fire-in-spawn-chunk")) {
+                && !simulatorConfig.getBoolean("lightning-fire-in-spawn-chunk", false)) {
             event.setCancelled(true);
             return;
         }
@@ -131,7 +131,8 @@ public class FireHandler implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     private void onBlockSpread(BlockSpreadEvent event) {
-        if (event.isCancelled() || !this.plugin.worldEnabled(event.getBlock().getWorld())) {
+        if (event.isCancelled() || !this.plugin.worldEnabled(event.getBlock().getWorld())
+                || event.getBlock().getType() != Material.FIRE) {
             return;
         }
 
@@ -175,15 +176,16 @@ public class FireHandler implements Listener {
 
         YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
 
-        if (this.random.nextInt(10) == 0) {
+        if (simulatorConfig.getBoolean("spawn-skeleton-traps", true)
+                && random.nextDouble() * 100 < simulatorConfig.getDouble("skeleton-trap-chance")) {
             this.nmsHandler.createHorseTrap(location);
         }
 
-        if (!simulatorConfig.getBoolean("create-fulgurites")) {
+        if (!simulatorConfig.getBoolean("create-fulgurites", false)) {
             return;
         }
 
-        if (this.random.nextInt(1) < simulatorConfig.getInt("fulgurite-chance")
+        if (this.random.nextInt(100) < simulatorConfig.getInt("fulgurite-chance", 3)
                 || simulatorConfig.getInt("fulgurite-chance") == 100) {
             generateFulgurite(block);
         }
@@ -226,7 +228,7 @@ public class FireHandler implements Listener {
         YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
         FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
 
-        if (location.inSpawnChunk() && !simulatorConfig.getBoolean("fulgurite-in-spawn-chunk")) {
+        if (location.inSpawnChunk() && !simulatorConfig.getBoolean("fulgurite-in-spawn-chunk", false)) {
             return;
         }
 
@@ -238,7 +240,7 @@ public class FireHandler implements Listener {
         }
 
         blockDown.setType(blockType);
-        int limit = this.random.nextInt(simulatorConfig.getInt("fulgurite-max-size"));
+        int limit = this.random.nextInt(simulatorConfig.getInt("fulgurite-max-size", 5));
         Block baseBlock = blockDown;
         int i = 0;
         BlockFace[] faces = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.DOWN };

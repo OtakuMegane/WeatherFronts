@@ -104,7 +104,7 @@ public class GenerateStormData {
 
     private void lightningRate() {
         if (!this.stormValues.contains("lightning-per-minute")) {
-            if (this.random.nextInt(100) >= this.systemConfig.getInt("rain-only-chance")) {
+            if (this.random.nextInt(100) >= this.systemConfig.getInt("rain-only-chance", 80)) {
                 this.stormValues.set("lightning-per-minute", intFromMinMax("lightning-per-minute"));
             } else {
                 this.stormValues.set("lightning-per-minute", 0);

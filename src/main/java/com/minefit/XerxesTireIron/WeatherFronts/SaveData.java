@@ -14,7 +14,8 @@ public class SaveData {
 
     public void saveToYamlFile(String fileDirectory, String fileName, YamlConfiguration yamlConfig) {
         try {
-            File yamlFile = new File(this.plugin.getDataFolder() + File.separator + fileDirectory + File.separator + fileName);
+            File yamlFile = new File(
+                    this.plugin.getDataFolder() + File.separator + fileDirectory + File.separator + fileName);
 
             if (!yamlFile.exists()) {
                 new File(this.plugin.getDataFolder() + File.separator + fileDirectory).mkdirs();

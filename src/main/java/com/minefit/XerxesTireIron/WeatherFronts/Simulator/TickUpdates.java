@@ -24,6 +24,7 @@ public class TickUpdates extends BukkitRunnable {
         }
 
         this.simulator.updateStorms();
+        this.simulator.updateStormChunks();
         ++this.genDelay;
     }
 }

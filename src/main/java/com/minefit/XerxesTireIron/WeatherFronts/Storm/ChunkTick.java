@@ -18,7 +18,7 @@ import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 public class ChunkTick {
     private final WeatherFronts plugin;
     private final Storm storm;
-    private Map<Chunk, Integer> stormChunks;
+    private Map<Chunk, Boolean> stormChunks;
     private final XORShiftRandom random;
     private final Simulator simulator;
     private final BlockFunctions blockFunction;
@@ -55,7 +55,7 @@ public class ChunkTick {
         }
 
         while (this.tickDelay >= 1.0) {
-            for (Entry<Chunk, Integer> chunk : this.stormChunks.entrySet()) {
+            for (Entry<Chunk, Boolean> chunk : this.stormChunks.entrySet()) {
                 if (!chunk.getKey().isLoaded() || this.random.nextInt(16) != 0) {
                     continue;
                 }
@@ -108,8 +108,8 @@ public class ChunkTick {
     }
 
     private Boolean blockCanHaveSnow(Block block, Block upperBlock) {
-        return upperBlock.getType() == Material.AIR
-                && this.blockFunction.canFormSnow(block) && upperBlock.getLightFromBlocks() < 10;
+        return upperBlock.getType() == Material.AIR && this.blockFunction.canFormSnow(block)
+                && upperBlock.getLightFromBlocks() < 10;
 
     }
 }

@@ -33,26 +33,30 @@ public class WeatherFronts extends JavaPlugin {
     private final LoadData load = new LoadData(this);
     private final List<String> compatibleVersions;
     private ProtocolManager protocolManager;
+    public final String outputPrefix;
 
     public WeatherFronts() {
         this.compatibleVersions = Arrays.asList("v1_8_R1", "V1_8_R2", "v1_8_R3", "v1_9_R1", "v1_9_R2", "v1_10_R1",
-                "v1_11_R1");
-
-        if (!this.serverVersion.compatibleVersion(this.compatibleVersions)) {
-            this.logger.info(
-                    "[" + this.getName() + " Error] This version of Minecraft is not supported. Disabling plugin.");
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
+                "v1_11_R1", "v1_12_R1");
 
         if (this.serverVersion.getMajor().equals("8")) {
             this.oldPacket = true;
         } else {
             this.oldPacket = false;
         }
+
+        this.outputPrefix = "[" + this.getName() + "] ";
     }
 
     @Override
     public void onEnable() {
+        if (!this.serverVersion.compatibleVersion(this.compatibleVersions)) {
+            this.logger.info(
+                    "[" + this.getName() + " Error] This version of Minecraft is not supported. Disabling plugin.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.mainConfig = this.load.loadMainConfig();
         this.getServer().getPluginManager().registerEvents(this.weatherListener, this);
@@ -77,12 +81,16 @@ public class WeatherFronts extends JavaPlugin {
         }
 
         if (this.mainConfig.getBoolean("use-dynmap", true)) {
-            dynmap.initDynmap();
+            if (this.dynmap.initDynmap()) {
+                this.logger.info(this.outputPrefix + "Dynmap detected and enabled for WeatherFronts.");
+            } else {
+                this.logger.info(this.outputPrefix + "Dynmap is not currently available for WeatherFronts.");
+            }
         }
 
         getCommand("fronts").setExecutor(this.commands);
 
-        this.logger.info(this.getName() + " WeatherFronts has loaded successfully!");
+        this.logger.info(this.outputPrefix + "WeatherFronts has loaded successfully!");
     }
 
     @Override
@@ -154,6 +162,6 @@ public class WeatherFronts extends JavaPlugin {
     }
 
     public boolean useDynmap() {
-        return this.mainConfig.getBoolean("use-dynmap");
+        return this.mainConfig.getBoolean("use-dynmap", true);
     }
 }

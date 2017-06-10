@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -25,6 +26,7 @@ public class Simulator {
     private final WeatherFronts plugin;
     private String name;
     private final ConcurrentMap<String, Storm> storms = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Chunk, Boolean> stormChunks = new ConcurrentHashMap<>();
     private final LoadData loadData;
     private final DynmapFunctions dynmap;
     private final WeatherSystem system;
@@ -55,6 +57,26 @@ public class Simulator {
 
     public Map<String, Storm> getStorms() {
         return this.storms;
+    }
+
+    public Map<Chunk, Boolean> getStormChunks() {
+        return this.stormChunks;
+    }
+
+    public void updateStormChunks() {
+        this.stormChunks.clear();
+
+        for (Entry<String, Storm> storm : this.storms.entrySet()) {
+            this.stormChunks.putAll(storm.getValue().getStormChunks());
+        }
+    }
+
+    public Boolean updateStormChunk(Chunk chunk, boolean isPlayerChunk) {
+        return this.stormChunks.put(chunk, isPlayerChunk);
+    }
+
+    public Boolean removeStormChunk(Chunk chunk) {
+        return this.stormChunks.remove(chunk);
     }
 
     public WeatherFronts getPlugin() {
@@ -139,15 +161,15 @@ public class Simulator {
     }
 
     private boolean canCreateStorm(boolean command, boolean autogen) {
-        int frontsMax = this.simulatorConfig.getInt("maximum-fronts");
-        boolean autogenActive = this.system.getConfig().getBoolean("generate-fronts");
+        int frontsMax = this.simulatorConfig.getInt("maximum-fronts", 5);
+        boolean autogenActive = this.system.getConfig().getBoolean("generate-fronts", true);
 
         if (autogen && !autogenActive) {
             return false;
         }
 
         if (this.storms.size() >= frontsMax && !command) {
-            if (this.simulatorConfig.getBoolean("unending-does-not-count")) {
+            if (this.simulatorConfig.getBoolean("unending-does-not-count", true)) {
                 int permanent = 0;
 
                 for (Entry<String, Storm> entry : this.storms.entrySet()) {

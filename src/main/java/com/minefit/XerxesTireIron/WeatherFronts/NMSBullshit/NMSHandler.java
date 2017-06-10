@@ -4,19 +4,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fish;
 import org.bukkit.entity.Horse;
 
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
-import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
-import com.minefit.XerxesTireIron.WeatherFronts.Simulator.Simulator;
 
 public class NMSHandler {
     private final WeatherFronts plugin;
-    private final XORShiftRandom random = new XORShiftRandom();
     private final String nmsVersion;
     private final NMS_API nmsAPI;
 
@@ -32,7 +28,7 @@ public class NMSHandler {
             String fieldName = null;
             Entity entity = null;
 
-            if (this.nmsVersion.equals("v1_11_R1")) {
+            if (this.nmsVersion.equals("v1_11_R1") || this.nmsVersion.equals("v1_12_R1")) {
                 entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
                 fieldName = "p";
             } else if (this.nmsVersion.equals("v1_10_R1")) {

@@ -1,8 +1,11 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Storm;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -25,11 +28,12 @@ public class Storm {
     private final DynmapFunctions dynmap;
     private boolean hostileSpawn;
     private final Point2D[] boundaries;
-    private Map<Chunk, Integer> stormChunks;
+    private Map<Chunk, Boolean> stormChunks;
     private final ChunkTick chunkTick;
     private final StormListener listener;
     private final XORShiftRandom random;
     private boolean hasLightning;
+    private boolean initialized = false;
 
     public Storm(WeatherFronts instance, Simulator simulator, YamlConfiguration data) {
         this.plugin = instance;
@@ -50,6 +54,7 @@ public class Storm {
         updateStormBoundaries();
         this.dynmap.addMarker(this.world.getName(), this.name, getStormBoundaries());
         updateStormChunks();
+        this.initialized = true;
     }
 
     public YamlConfiguration getData() {
@@ -156,7 +161,7 @@ public class Storm {
         return this.data.getInt("precipitation-intensity");
     }
 
-    public Map<Chunk, Integer> getStormChunks() {
+    public Map<Chunk, Boolean> getStormChunks() {
         return this.stormChunks;
     }
 
@@ -166,17 +171,24 @@ public class Storm {
         double frontHighX = boundaries[2].getX();
         double frontLowZ = boundaries[0].getY();
         double frontHighZ = boundaries[2].getY();
+        this.stormChunks.clear();
 
         for (Chunk chunk : this.world.getLoadedChunks()) {
-            int chunkLowX = chunk.getX() << 4;
+            int chunkX = chunk.getX();
+            int chunkZ = chunk.getZ();
+            int chunkLowX = chunkX << 4;
             int chunkHighX = chunkLowX + 15;
-            int chunkLowZ = chunk.getZ() << 4;
+            int chunkLowZ = chunkZ << 4;
             int chunkHighZ = chunkLowX + 15;
 
             if (chunkLowX < frontHighX && chunkHighX > frontLowX && chunkLowZ < frontHighZ && chunkHighZ > frontLowZ) {
-                this.stormChunks.put(chunk, 0);
-            } else {
-                this.stormChunks.remove(chunk);
+                boolean isPlayerChunk = false;
+
+                if (this.world.isChunkInUse(chunkX, chunkZ)) {
+                    isPlayerChunk = true;
+                }
+
+                this.stormChunks.put(chunk, isPlayerChunk);
             }
         }
     }

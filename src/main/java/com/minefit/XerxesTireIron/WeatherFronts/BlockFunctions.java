@@ -28,7 +28,7 @@ public class BlockFunctions {
     }
 
     public Block findHighestBlock(Location location, int start) {
-        if (start > 256) {
+        if (start > 255) {
             start = 255;
         }
 

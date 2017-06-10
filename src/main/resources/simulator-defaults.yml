@@ -42,16 +42,19 @@ chance-new-front: 50
 # If maximum-age in settings is set to 0, this will be ignored (otherwise you'd have an infinite loop of front creation)
 unending-does-not-count: true
 
+# Allow spawning of hostile mobs during thunderstorms
+spawn-thunderstorm-mobs: true
+
 # This is the volume of the thunder and corresponds roughly to how many blocks before the sound of thunder will fade completely
 # The thunder-distance-outside setting will still override this
 # Set to 0 to disable the setting
 thunder-volume: 192
 
 # Distance outside a weather front that thunder can be heard
-thunder-distance-outside: 60
+thunder-distance-outside: 90
 
 # Distance outside a weather front that lightning can be seen
-lightning-distance-outside: 120
+lightning-distance-outside: 160
 
 # Whether there are lightning strikes in dry biomes such as desert and savanna
 # Be warned this could cause nasty wildfires as there is no rain in these biomes!
@@ -68,8 +71,8 @@ lightning-fire-in-spawn-chunk: false
 # This is disabled by default in case someone misses the setting and gets an unwanted beach full of glass
 create-fulgurites: false
 
-# The percent chance a fulgurite will be created during a lightning strike
-fulgurite-chance: 5
+# The percent chance a fulgurite will be created during a lightning strike on valid blocks
+fulgurite-chance: 3
 
 # Maximum size (in blocks) of a fulgurite
 fulgurite-max-size: 5
@@ -84,8 +87,11 @@ manual-creation-limits: false
 # Whether rain will put out fire quickly as it did before 1.9 (true) or slower and more random as in later MC versions (false)
 fast-extinguish-fire: true
 
-# Percent chance of skeleton trap horse being spawned during lightning strike. Set to 0 to disable.
-skeleton-trap-chance: 1.0
+# Whether skeleton trap horses will be spawned
+spawn-skeleton-traps: true
+
+# Percent chance of skeleton trap horse being spawned during lightning strike
+skeleton-trap-chance: 0.5
 
 # Percentage to reduce fishing time when in the rain (vanilla is approximately 20). Set to 0 to disable.
 # Note: Setting this too high may make fishing so fast as to be impossible, much like using a Level 6 Lure enchantment.

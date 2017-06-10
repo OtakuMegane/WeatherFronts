@@ -3,53 +3,49 @@ package com.minefit.XerxesTireIron.WeatherFronts;
 import java.awt.geom.Point2D;
 
 import org.bukkit.World;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginEnableEvent;
-import org.dynmap.DynmapAPI;
+import org.bukkit.plugin.Plugin;
+import org.dynmap.DynmapCommonAPI;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-public class DynmapFunctions implements Listener {
+public class DynmapFunctions {
     private final WeatherFronts plugin;
-    private DynmapAPI dynmapAPI;
+    private DynmapCommonAPI dynmapAPI;
     private Boolean dynmapEnabled = false;
     private MarkerAPI markerAPI;
     private MarkerSet stormMarkers;
 
     public DynmapFunctions(WeatherFronts instance) {
         this.plugin = instance;
-        this.dynmapAPI = (DynmapAPI) this.plugin.getServer().getPluginManager().getPlugin("dynmap");
     }
 
-    /*@EventHandler(priority = EventPriority.NORMAL)
-    public void onPluginEnable(PluginEnableEvent event) {
-        if (event.getPlugin().getName().equals("dynmap")) {
-            this.dynmapEnabled = initDynmap();
-        }
-    }*/
-
     public boolean initDynmap() {
-        if (this.dynmapAPI == null) {
-            this.plugin.logger.info(
-                    "[WeatherFronts] Dynmap not detected or did not properly initialize. Not enabled for WeatherFronts.");
+        Plugin dynmapPlugin = this.plugin.getServer().getPluginManager().getPlugin("dynmap");
+
+        if (dynmapPlugin == null) {
             return false;
         }
 
-        if (this.dynmapAPI.markerAPIInitialized()) {
-            this.markerAPI = this.dynmapAPI.getMarkerAPI();
-            this.plugin.logger.info("[WeatherFronts] Dynmap detected and enabled for WeatherFronts");
+        this.dynmapAPI = (DynmapCommonAPI) dynmapPlugin;
 
-            if (this.markerAPI.getMarkerSet("Weather") != null) {
-                this.stormMarkers = this.markerAPI.getMarkerSet("Weather");
-            } else {
-                this.stormMarkers = this.markerAPI.createMarkerSet("Weather", "Weather", null, false);
+        try {
+            if (!dynmapAPI.markerAPIInitialized()) {
+                return false;
             }
-
-            this.dynmapEnabled = true;
+        } catch (NullPointerException e) {
+            return false;
         }
+
+        this.markerAPI = dynmapAPI.getMarkerAPI();
+
+        if (this.markerAPI.getMarkerSet("Weather") != null) {
+            this.stormMarkers = this.markerAPI.getMarkerSet("Weather");
+        } else {
+            this.stormMarkers = this.markerAPI.createMarkerSet("Weather", "Weather", null, false);
+        }
+
+        this.dynmapEnabled = true;
 
         return true;
 

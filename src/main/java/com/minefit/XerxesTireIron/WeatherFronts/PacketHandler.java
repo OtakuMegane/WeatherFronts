@@ -45,8 +45,8 @@ public class PacketHandler {
         }
 
         YamlConfiguration simConfig = frontsWorld.getSimulatorByStorm(stormName).getSimulatorConfig();
-        int volume = simConfig.getInt("thunder-volume");
-        int hearOutside = simConfig.getInt("thunder-distance-outside");
+        int volume = simConfig.getInt("thunder-volume", 192);
+        int hearOutside = simConfig.getInt("thunder-distance-outside", 90);
         Location playerLoc = event.getPlayer().getLocation();
         int playerX = playerLoc.getBlockX();
         int playerZ = playerLoc.getBlockZ();
@@ -107,7 +107,7 @@ public class PacketHandler {
         int stormX = stormConfig.getInt("center-x");
         int stormZ = stormConfig.getInt("center-z");
         int seeOutside = frontsWorld.getSimulatorByStorm(stormName).getSimulatorConfig()
-                .getInt("lightning-distance-outside");
+                .getInt("lightning-distance-outside", 160);
 
         if (stormX + stormRadiusX + seeOutside > playerX && stormX - stormRadiusX - seeOutside < playerX
                 && stormZ + stormRadiusZ + seeOutside > playerZ && stormZ - stormRadiusZ - seeOutside < playerZ) {
@@ -122,7 +122,8 @@ public class PacketHandler {
             return;
         }
 
-        PacketContainer packet1 = this.plugin.getProtocolManager().createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
+        PacketContainer packet1 = this.plugin.getProtocolManager()
+                .createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
 
         if (storm == null) {
             packet1.getIntegers().write(0, 1);
@@ -142,8 +143,9 @@ public class PacketHandler {
                 packet1.getFloat().write(0, 1.0F);
             }
 
-            if (simConfig.getBoolean("use-intensity-for-light-level")) {
-                int maxIntensity = worldHandle.getSimulatorByStorm(storm).getWeatherSystem().getConfig().getInt("maximum-precipitation-intensity");
+            if (simConfig.getBoolean("use-intensity-for-light-level", true)) {
+                int maxIntensity = worldHandle.getSimulatorByStorm(storm).getWeatherSystem().getConfig()
+                        .getInt("maximum-precipitation-intensity", 30);
 
                 if (maxIntensity > 100) {
                     maxIntensity = 100;

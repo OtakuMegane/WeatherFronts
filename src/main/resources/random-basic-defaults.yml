@@ -70,7 +70,6 @@ minimum-precipitation-intensity: 1
 maximum-precipitation-intensity: 30
 
 # Minimum lightning strikes per minute
-# Value must be 1 or higher
 minimum-lightning-per-minute: 1
 
 # Maximum lightning strikes per minute

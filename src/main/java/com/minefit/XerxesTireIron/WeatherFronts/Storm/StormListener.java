@@ -17,8 +17,7 @@ public class StormListener implements Listener {
     private final WeatherFronts plugin;
     private final BlockFunctions blockFunction;
 
-    public StormListener(WeatherFronts instance, Storm storm)
-    {
+    public StormListener(WeatherFronts instance, Storm storm) {
         this.storm = storm;
         this.simulator = storm.getSimulator();
         this.plugin = instance;

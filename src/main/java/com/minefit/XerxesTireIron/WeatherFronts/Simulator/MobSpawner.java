@@ -1,13 +1,14 @@
 package com.minefit.XerxesTireIron.WeatherFronts.Simulator;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Difficulty;
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -21,7 +22,6 @@ import com.minefit.XerxesTireIron.WeatherFronts.ChunkFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
 import com.minefit.XerxesTireIron.WeatherFronts.WeatherFronts;
 import com.minefit.XerxesTireIron.WeatherFronts.XORShiftRandom;
-import com.minefit.XerxesTireIron.WeatherFronts.FrontsWorld.FrontsWorld;
 
 public class MobSpawner {
 
@@ -42,28 +42,21 @@ public class MobSpawner {
     }
 
     public void spawnMobs() {
-        if (this.delay < 4) {
-            ++this.delay;
+        // Mob spawns are based on players so if nobody is on, don't gotta do shit
+        if (!this.simulator.getSimulatorConfig().getBoolean("spawn-thunderstorm-mobs", true)
+                || this.world.getPlayers().size() == 0) {
             return;
-        } else {
-            this.delay = 0;
         }
 
-        // No point in doing our surface spawn routines at night or on Peaceful
+        // No point in doing our surface spawn routines at night, on Peaceful or if mob spawning is disabled
         if ((this.world.getTime() > 13187 && this.world.getTime() < 22812)
-                || this.world.getDifficulty() == Difficulty.PEACEFUL) {
+                || this.world.getDifficulty() == Difficulty.PEACEFUL
+                || this.world.getGameRuleValue("doMobSpawning").equals("false")) {
             return;
 
         }
 
-        List<Player> allPlayers = this.world.getPlayers();
-        int playerListSize = allPlayers.size();
-
-        if (playerListSize == 0) {
-            return;
-        }
-
-        Set<Chunk> playerChunks = collectPlayerChunks(allPlayers);
+        Set<Chunk> playerChunks = collectPlayerChunks();
         int totalHostiles = countHostiles(playerChunks);
         int worldHostileCap = (int) ((this.world.getMonsterSpawnLimit() * playerChunks.size()) / 256) + 1;
 
@@ -71,13 +64,16 @@ public class MobSpawner {
             return;
         }
 
-        for (Chunk chunk : playerChunks) {
+        List<Chunk> chunkList = new ArrayList<>(playerChunks);
+        Collections.shuffle(chunkList);
+
+        for (Chunk chunk : chunkList) {
             // Regulate spawn rate since we only check surface locations
             if (this.random.nextInt(16) != 0) {
                 return;
             }
 
-            FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, false);
+            FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, true);
 
             if (!location.isLoaded()) {
                 continue;
@@ -105,25 +101,12 @@ public class MobSpawner {
         }
     }
 
-    private Set<Chunk> collectPlayerChunks(List<Player> allPlayers) {
-        int mobRange = this.plugin.getWorldHandle(world).getMobSpawnRange();
+    private Set<Chunk> collectPlayerChunks() {
         Set<Chunk> playerChunks = new HashSet<>();
 
-        for (Player player : allPlayers) {
-            if (player.getGameMode() == GameMode.SPECTATOR) {
-                continue;
-            }
-
-            Chunk playerChunk = player.getLocation().getChunk();
-            int x = playerChunk.getX();
-            int z = playerChunk.getZ();
-
-            for (int xx = -mobRange; xx <= mobRange + 1; ++xx) {
-                for (int zz = -mobRange; zz <= mobRange + 1; ++zz) {
-                    if (this.world.isChunkInUse(x + xx, z + zz)) {
-                        playerChunks.add(this.world.getChunkAt(x + xx, z + zz));
-                    }
-                }
+        for (Entry<Chunk, Boolean> entry : this.simulator.getStormChunks().entrySet()) {
+            if (entry.getValue()) {
+                playerChunks.add(entry.getKey());
             }
         }
 
@@ -164,14 +147,15 @@ public class MobSpawner {
             centerZ += this.random.nextInt(randomRange) - this.random.nextInt(randomRange);
             FrontLocation location = this.simulator.newFrontLocation(centerX, centerY, centerZ);
 
-            if (!location.isLoaded() || !location.getStorm().hasLightning() || !blockFunction.isInWeather(block)) {
+            if (location.getStorm() == null || !location.isLoaded() || !location.getStorm().hasLightning()
+                    || !blockFunction.isInWeather(block)) {
                 continue;
             }
 
             Block block2 = location.getBlock();
+            Block block2down = block2.getRelative(BlockFace.DOWN);
 
-            if (!this.blockFunction.mobCanSpawnInBlock(block2)
-                    || !block2.getRelative(BlockFace.DOWN).getType().isOccluding()) {
+            if (!this.blockFunction.mobCanSpawnInBlock(block2) || !block2down.getType().isOccluding()) {
                 continue;
             }
 
@@ -223,9 +207,7 @@ public class MobSpawner {
             endPoint = width - 1;
         }
 
-        byte lightLevel = block.getLightFromBlocks();
-
-        if (lightLevel > 7 || lightLevel <= this.random.nextInt(8)) {
+        if (block.getLightFromSky() > this.random.nextInt(32) || block.getLightFromBlocks() > 7) {
             return false;
         }
 

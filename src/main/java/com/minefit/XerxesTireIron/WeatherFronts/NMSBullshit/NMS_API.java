@@ -28,13 +28,11 @@ public class NMS_API {
         return nmsHandle;
     }
 
-    public Class<?> getNMSClass(Object object)
-    {
+    public Class<?> getNMSClass(Object object) {
         return object.getClass();
     }
 
-    public Object bukkitToNMS(Object object)
-    {
+    public Object bukkitToNMS(Object object) {
         Class<?> craftClass = getCraftClass(object);
         Object nmsHandle = getNMSHandle(craftClass, object);
         return nmsHandle;

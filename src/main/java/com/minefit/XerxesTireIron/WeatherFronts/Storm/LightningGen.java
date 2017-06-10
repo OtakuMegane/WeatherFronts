@@ -34,8 +34,8 @@ public class LightningGen {
         this.baseLPM = this.stormConfig.getInt("lightning-per-minute");
         this.weightedLPM = this.baseLPM;
 
-        if (this.systemConfig.getBoolean("use-weighted-lightning")) {
-            weight(this.systemConfig.getInt("weight-radius-threshold"));
+        if (this.systemConfig.getBoolean("use-weighted-lightning", true)) {
+            weight(this.systemConfig.getInt("weight-radius-threshold", 192));
         }
 
         this.lightningPerCheck = this.weightedLPM / (60 * 20);
@@ -90,8 +90,8 @@ public class LightningGen {
             return;
         }
 
-        boolean lightningDry = this.simulatorConfig.getBoolean("lightning-in-dry-biomes");
-        boolean lightningCold = this.simulatorConfig.getBoolean("lightning-in-cold-biomes");
+        boolean lightningDry = this.simulatorConfig.getBoolean("lightning-in-dry-biomes", false);
+        boolean lightningCold = this.simulatorConfig.getBoolean("lightning-in-cold-biomes", false);
         Block block = this.blockFunction.getTopBlockLightningValid(location);
 
         if ((!this.blockFunction.isDry(block) && !this.blockFunction.isCold(block))

@@ -7,14 +7,12 @@ public class SpigotHandler {
     private SpigotWorldConfig spigotWorldConfig;
     public final int mobSpawnRange;
 
-    public SpigotHandler(World world)
-    {
+    public SpigotHandler(World world) {
         this.spigotWorldConfig = new SpigotWorldConfig(world.getName());
         this.mobSpawnRange = this.spigotWorldConfig.mobSpawnRange;
     }
 
-    public SpigotWorldConfig getSpigotWorldConfig()
-    {
+    public SpigotWorldConfig getSpigotWorldConfig() {
         return this.spigotWorldConfig;
     }
 }
