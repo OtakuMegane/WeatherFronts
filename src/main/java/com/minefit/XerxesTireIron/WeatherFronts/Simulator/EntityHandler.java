@@ -102,7 +102,7 @@ public class EntityHandler implements Listener {
             return;
         }
 
-        if (this.blockFunction.isInRain(location) && !(event instanceof EntityCombustByEntityEvent)
+        if (this.blockFunction.isInWeather(location) && !(event instanceof EntityCombustByEntityEvent)
                 && !(event instanceof EntityCombustByBlockEvent)) {
             entity.setFireTicks(0);
             event.setCancelled(true);

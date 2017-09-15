@@ -17,6 +17,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
+import com.minefit.XerxesTireIron.WeatherFronts.BiomeData;
 import com.minefit.XerxesTireIron.WeatherFronts.BlockFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.ChunkFunctions;
 import com.minefit.XerxesTireIron.WeatherFronts.FrontLocation;
@@ -32,6 +33,7 @@ public class MobSpawner {
     private final World world;
     private final Simulator simulator;
     private int delay = 0;
+    private final BiomeData biomeData;
 
     public MobSpawner(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
@@ -39,6 +41,7 @@ public class MobSpawner {
         this.chunkFunction = new ChunkFunctions(instance);
         this.simulator = simulator;
         this.world = simulator.getWorld();
+        this.biomeData = new BiomeData();
     }
 
     public void spawnMobs() {
@@ -196,6 +199,10 @@ public class MobSpawner {
     }
 
     public boolean overworldHostileCanSpawn(Block block, int width, int height) {
+        if (biomeData.isSafe(block.getBiome())) {
+            return false;
+        }
+
         int x = block.getX();
         int y = block.getY();
         int z = block.getZ();

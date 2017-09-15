@@ -5,6 +5,10 @@ import org.bukkit.block.Block;
 
 public class BiomeData {
 
+    public BiomeData() {
+
+    }
+
     public BiomeType getType(Biome biome) {
         if (isFrozen(biome)) {
             return BiomeType.FROZEN;
@@ -95,5 +99,9 @@ public class BiomeData {
 
     public boolean isTropical(Block block) {
         return isTropical(block.getBiome());
+    }
+
+    public boolean isSafe(Biome biome) {
+        return biome == Biome.MUSHROOM_ISLAND || biome == Biome.MUSHROOM_ISLAND_SHORE;
     }
 }

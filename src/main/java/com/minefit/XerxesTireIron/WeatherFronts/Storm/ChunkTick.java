@@ -69,18 +69,18 @@ public class ChunkTick {
                 Block block = this.blockFunction.getTopBlock(location);
 
                 if (this.blockFunction.isDry(block)) {
-                    if (block.getType() == Material.CAULDRON) {
-                        fillCauldron(block);
-                    } else if (block.getType() == Material.SOIL) {
-                        hydrateFarmland(block);
-                    }
-
                     continue;
                 }
 
                 if (this.blockFunction.isInSnow(block)) {
                     formSnow(block);
                     continue;
+                }
+
+                if (block.getType() == Material.CAULDRON) {
+                    fillCauldron(block);
+                } else if (block.getType() == Material.SOIL) {
+                    hydrateFarmland(block);
                 }
             }
 
