@@ -16,6 +16,7 @@ import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Wolf;
@@ -102,11 +103,15 @@ public class EntityHandler implements Listener {
             return;
         }
 
-        if (this.blockFunction.isInWeather(location) && !(event instanceof EntityCombustByEntityEvent)
-                && !(event instanceof EntityCombustByBlockEvent)) {
-            entity.setFireTicks(0);
-            event.setCancelled(true);
-            return;
+        if (this.blockFunction.isInWeather(location) && location.getBlock().getLightFromSky() == 15) {
+            if ((event instanceof EntityCombustByEntityEvent) || (event instanceof EntityCombustByBlockEvent)) {
+                return;
+            }
+
+            if (entity instanceof Monster && !this.blockFunction.isInRain(location)) {
+                event.setCancelled(true);
+                return;
+            }
         }
     }
 
