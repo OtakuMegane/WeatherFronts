@@ -162,7 +162,7 @@ public class BlockFunctions {
         return location.isInStorm() && block.getY() >= getTopShelterBlock(location).getY();
     }
 
-    public boolean isInWeather(FrontLocation location) {
+    public boolean isInWeather(Location location) {
         return isInWeather(location.getBlock());
     }
 
