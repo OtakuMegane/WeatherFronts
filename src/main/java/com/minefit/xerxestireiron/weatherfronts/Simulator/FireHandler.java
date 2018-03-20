@@ -170,11 +170,7 @@ public class FireHandler implements Listener {
         double reductionPercentage = this.simulator.getSimulatorConfig().getDouble("fishing-time-reduction", 20);
         double reductionTime = (reductionPercentage / 100) * hookTime;
         hookTime = (int) Math.round(hookTime - reductionTime);
-        ItemStack rod = player.getInventory().getItemInMainHand();
-
-        if (rod.containsEnchantment(Enchantment.LURE)) {
-            hookTime -= rod.getEnchantmentLevel(Enchantment.LURE) * 20 * 5;
-        }
+        hookTime -= this.nmsHandler.getRodLureLevel(hook) * 20 * 5;
 
         if (hookTime <= 0) {
             hookTime = 1;
@@ -214,23 +210,6 @@ public class FireHandler implements Listener {
         }
 
     }
-
-    /*private int calculateHookTime()
-    {
-        int hookTime = this.random.nextIntRange(100, 600);
-        this.plugin.logger.info("time " + hookTime);
-        double reductionPercentage = this.simulator.getSimulatorConfig().getDouble("fishing-time-reduction", 20);
-        double reductionTime = (reductionPercentage / 100) * hookTime;
-        hookTime = (int) Math.round(hookTime - reductionTime);
-        this.plugin.logger.info("time2 " + hookTime);
-        ItemStack rod = player.getInventory().getItemInMainHand();
-
-        if (rod.containsEnchantment(Enchantment.LURE)) {
-            hookTime -= rod.getEnchantmentLevel(Enchantment.LURE) * 20 * 5;
-        }
-
-        this.plugin.logger.info("time3 " + hookTime);
-    }*/
 
     private void addAdjacentFire(Block block) {
         if (block.getRelative(BlockFace.UP).getType() == Material.FIRE) {

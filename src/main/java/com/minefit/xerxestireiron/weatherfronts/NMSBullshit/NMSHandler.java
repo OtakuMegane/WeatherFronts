@@ -75,8 +75,35 @@ public class NMSHandler {
             fishTime.setAccessible(true);
             fishTime.setInt(nmsHook, time);
             fishTime.setAccessible(false);
+
+            Field en = nmsHook.getClass().getDeclaredField("ax");
+            this.plugin.logger.info("enchant " + en.get(nmsHook));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public int getRodLureLevel(Fish hook) {
+
+        try {
+            Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
+            String fieldName = null;
+
+            if (this.nmsVersion.equals("v1_11_R1")) {
+                fieldName = "ax";
+            } else if (this.nmsVersion.equals("v1_12_R1")) {
+                fieldName = "ax";
+            } else {
+                return 0;
+            }
+
+            Field en = nmsHook.getClass().getDeclaredField(fieldName);
+            en.setAccessible(true);
+            return en.getInt(nmsHook);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 }
