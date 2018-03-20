@@ -157,21 +157,17 @@ public class BlockFunctions {
                 || invertedStairs;
     }
 
+    public boolean isExposedToSky(Block block) {
+        return block.getY() >= getTopShelterBlock(block.getLocation()).getY();
+    }
+
     public boolean isInWeather(Block block) {
         FrontLocation location = getFrontLocation(block);
         return location.isInStorm() && block.getY() >= getTopShelterBlock(location).getY();
     }
 
-    public boolean isInWeather(Location location) {
-        return isInWeather(location.getBlock());
-    }
-
     public boolean isInRain(Block block) {
         return isInWeather(block) && !this.biomeData.isDry(block) && !this.biomeData.isFrozen(block) && !isCold(block);
-    }
-
-    public boolean isInRain(Location location) {
-        return isInRain(location.getBlock());
     }
 
     public boolean isInSnow(Block block) {

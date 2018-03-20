@@ -81,7 +81,7 @@ public class EntityHandler implements Listener {
             return;
         }
 
-        if (this.blockFunction.isInRain(location)) {
+        if (location.isInRain()) {
             entity.setFireTicks(0);
             event.setCancelled(true);
             return;
@@ -103,12 +103,12 @@ public class EntityHandler implements Listener {
             return;
         }
 
-        if (this.blockFunction.isInWeather(location) && location.getBlock().getLightFromSky() == 15) {
+        if (location.isInWeather() && location.getBlock().getLightFromSky() == 15) {
             if ((event instanceof EntityCombustByEntityEvent) || (event instanceof EntityCombustByBlockEvent)) {
                 return;
             }
 
-            if (entity instanceof Monster && !this.blockFunction.isInRain(location)) {
+            if (entity instanceof Monster && !location.isInRain()) {
                 event.setCancelled(true);
                 return;
             }
@@ -148,7 +148,7 @@ public class EntityHandler implements Listener {
         Collection<Arrow> allArrows = this.world.getEntitiesByClass(Arrow.class);
 
         for (Arrow arrow : allArrows) {
-            if (this.blockFunction.isInRain(arrow.getLocation())) {
+            if (this.simulator.newFrontLocation(arrow.getLocation()).isInRain()) {
                 arrow.setFireTicks(0);
             }
         }
@@ -158,7 +158,7 @@ public class EntityHandler implements Listener {
         Collection<Blaze> allBlazes = this.world.getEntitiesByClass(Blaze.class);
 
         for (Blaze blaze : allBlazes) {
-            if (this.blockFunction.isInRain(blaze.getLocation())) {
+            if (this.simulator.newFrontLocation(blaze.getLocation()).isInRain()) {
                 blaze.damage(1.0);
             }
         }
@@ -168,7 +168,7 @@ public class EntityHandler implements Listener {
         Collection<Snowman> allSnowmen = this.world.getEntitiesByClass(Snowman.class);
 
         for (Snowman snowman : allSnowmen) {
-            if (this.blockFunction.isInRain(snowman.getLocation())) {
+            if (this.simulator.newFrontLocation(snowman.getLocation()).isInRain()) {
                 snowman.damage(1.0);
             }
         }
@@ -180,7 +180,7 @@ public class EntityHandler implements Listener {
         for (Enderman enderman : allEndermen) {
             FrontLocation location = this.simulator.newFrontLocation(enderman.getLocation());
 
-            if (!this.blockFunction.isInRain(location)) {
+            if (!this.simulator.newFrontLocation(enderman.getLocation()).isInRain()) {
                 continue;
             }
 
@@ -231,7 +231,7 @@ public class EntityHandler implements Listener {
         for (Wolf wolf : allWolves) {
             FrontLocation location = this.simulator.newFrontLocation(wolf.getLocation());
 
-            if (this.blockFunction.isInRain(location)) {
+            if (location.isInRain()) {
                 this.wolvesInRain.add(wolf);
             } else {
                 if (this.wolvesInRain.contains(wolf) && !entityIsMoving(wolf.getVelocity())) {

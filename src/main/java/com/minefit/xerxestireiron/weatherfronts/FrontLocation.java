@@ -14,11 +14,13 @@ import com.minefit.xerxestireiron.weatherfronts.Storm.Storm;
 public class FrontLocation extends Location {
     private Simulator simulator;
     private World world;
+    private BlockFunctions blockFunction;
 
     public FrontLocation(Simulator simulator, double x, double y, double z) {
         super(simulator.getWorld(), x, y, z);
         this.simulator = simulator;
         this.world = simulator.getWorld();
+        this.blockFunction = new BlockFunctions(simulator.getPlugin(), simulator);
     }
 
     public FrontLocation(Simulator simulator, double x, double z) {
@@ -37,6 +39,30 @@ public class FrontLocation extends Location {
         return this.simulator.getWorld().isChunkLoaded(this.getBlockX() >> 4, this.getBlockZ() >> 4);
     }
 
+    public boolean isInWeather() {
+        if (this.isLoaded()) {
+            return this.blockFunction.isInWeather(this.getBlock());
+        }
+
+        return false;
+    }
+
+    public boolean isInRain() {
+        if (this.isLoaded()) {
+            return this.blockFunction.isInRain(this.getBlock());
+        }
+
+        return false;
+    }
+
+    public boolean isExposedToSky() {
+        if (this.isLoaded()) {
+            return this.blockFunction.isExposedToSky(this.getBlock());
+        }
+
+        return false;
+    }
+
     public boolean isInStorm() {
         return inWhichStorm() != null;
     }
@@ -46,7 +72,7 @@ public class FrontLocation extends Location {
     }
 
     public Storm getStorm() {
-        if (isInStorm()) {
+        if (this.isInStorm()) {
             return this.simulator.getFront(inWhichStorm());
         }
 
