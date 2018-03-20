@@ -11,6 +11,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Fish;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -146,18 +147,40 @@ public class FireHandler implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     private void onPlayerFish(PlayerFishEvent event) {
-        int hookTime = this.random.nextIntRange(100, 900);
-        hookTime = (int) (hookTime * this.simulator.getSimulatorConfig().getInt("fishing-time-reduction", 20));
-        ItemStack rod = event.getPlayer().getInventory().getItemInMainHand();
-        Map<Enchantment, Integer> enchants = rod.getEnchantments();
+        Player player = event.getPlayer();
 
-        if (enchants.containsKey("LURE")) {
-            hookTime -= enchants.get("LURE") * 100;
+        if (event.isCancelled() || event.getState() != PlayerFishEvent.State.FISHING
+                || !this.plugin.worldEnabled(player.getWorld())) {
+            return;
         }
 
         Fish hook = event.getHook();
-        this.nmsHandler.fishingTime(hook, hookTime);
+        FrontLocation hookLocation = this.simulator.newFrontLocation(hook.getLocation());
 
+        if (!hookLocation.isInWeather()) {
+            return;
+        }
+
+        int hookTime = this.random.nextIntRange(100, 600);
+
+        if (!hookLocation.isExposedToSky()) {
+            hookTime *= 1.5; // If the bobber location is sheltered we increase time by 50%
+        }
+
+        double reductionPercentage = this.simulator.getSimulatorConfig().getDouble("fishing-time-reduction", 20);
+        double reductionTime = (reductionPercentage / 100) * hookTime;
+        hookTime = (int) Math.round(hookTime - reductionTime);
+        ItemStack rod = player.getInventory().getItemInMainHand();
+
+        if (rod.containsEnchantment(Enchantment.LURE)) {
+            hookTime -= rod.getEnchantmentLevel(Enchantment.LURE) * 20 * 5;
+        }
+
+        if (hookTime <= 0) {
+            hookTime = 1;
+        }
+
+        this.nmsHandler.fishingTime(hook, hookTime);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -191,6 +214,23 @@ public class FireHandler implements Listener {
         }
 
     }
+
+    /*private int calculateHookTime()
+    {
+        int hookTime = this.random.nextIntRange(100, 600);
+        this.plugin.logger.info("time " + hookTime);
+        double reductionPercentage = this.simulator.getSimulatorConfig().getDouble("fishing-time-reduction", 20);
+        double reductionTime = (reductionPercentage / 100) * hookTime;
+        hookTime = (int) Math.round(hookTime - reductionTime);
+        this.plugin.logger.info("time2 " + hookTime);
+        ItemStack rod = player.getInventory().getItemInMainHand();
+
+        if (rod.containsEnchantment(Enchantment.LURE)) {
+            hookTime -= rod.getEnchantmentLevel(Enchantment.LURE) * 20 * 5;
+        }
+
+        this.plugin.logger.info("time3 " + hookTime);
+    }*/
 
     private void addAdjacentFire(Block block) {
         if (block.getRelative(BlockFace.UP).getType() == Material.FIRE) {
