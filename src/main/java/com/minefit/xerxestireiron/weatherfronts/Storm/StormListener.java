@@ -29,8 +29,10 @@ public class StormListener implements Listener {
         Block block = event.getBlock();
 
         if (this.blockFunction.isInRain(block) && block.getType() == Material.SOIL) {
-            event.setCancelled(true);
-            block.setData((byte) 6);
+            if (block.getData() < 7) {
+                event.setCancelled(true);
+                block.setData((byte) 6);
+            }
         }
     }
 }

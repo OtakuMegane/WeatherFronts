@@ -95,7 +95,9 @@ public class ChunkTick {
     }
 
     private void hydrateFarmland(Block block) {
-        block.setData((byte) 6);
+        if (block.getData() < 7) {
+            block.setData((byte) 6);
+        }
     }
 
     private void formSnow(Block block) {
