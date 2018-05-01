@@ -273,7 +273,9 @@ public class FireHandler implements Listener {
 
             Material newType = convertBlock(block2.getType());
 
-            if (newType != null) {
+            if (newType == null) {
+                continue;
+            } else {
                 block2.setType(newType);
             }
 
@@ -301,7 +303,7 @@ public class FireHandler implements Listener {
 
         Material downType = block.getRelative(BlockFace.DOWN).getType();
 
-        if (downType == Material.NETHERRACK) { // TODO: Add 1.12 magma blocks
+        if (downType.equals(Material.NETHERRACK) || downType.equals(Material.MAGMA)) {
             return false;
         }
 
