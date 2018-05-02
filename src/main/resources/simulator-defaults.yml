@@ -17,7 +17,7 @@ use-dynmap: true
 simulation-radius: 20000
 
 # The simulation will be centered around 0,0 by default unless the simulation-center values below are changed
-# Usually there will be no reason to change this unless you are running multiple simulators or have a spawn far from world center
+# Usually there will be no reason to change this unless you are running multiple simulators or have a spawn very far from world center
 
 # X-axis location where simulation will be centered
 simulation-center-x: 0
@@ -29,7 +29,7 @@ simulation-center-z: 0
 maximum-fronts: 5
 
 # This will apply the precipitation intensity to the light level in fronts
-# With an intensity of 1 you will get about the light level of vanilla rain
+# With an intensity of 1 you will get about the same light level of vanilla rain
 # An intensity equal to maximum-intensity will be the light level of a vanilla thunderstorm
 # (This setting is purely aesthetic)
 use-intensity-for-light-level: true
@@ -48,13 +48,13 @@ spawn-thunderstorm-mobs: true
 # This is the volume of the thunder and corresponds roughly to how many blocks before the sound of thunder will fade completely
 # The thunder-distance-outside setting will still override this
 # Set to 0 to disable the setting
-thunder-volume: 192
+thunder-volume: 256
 
 # Distance outside a weather front that thunder can be heard
-thunder-distance-outside: 90
+thunder-distance-outside: 120
 
 # Distance outside a weather front that lightning can be seen
-lightning-distance-outside: 160
+lightning-distance-outside: 180
 
 # Whether there are lightning strikes in dry biomes such as desert and savanna
 # Be warned this could cause nasty wildfires as there is no rain in these biomes!
@@ -67,12 +67,12 @@ lightning-in-cold-biomes: false
 # Since spawn chunks are often loaded at all times they tend to be more susceptible to accumulated damage
 lightning-fire-in-spawn-chunk: false
 
-# Whether lightning striking sand or clay can create a fulgurite
-# This is disabled by default in case someone misses the setting and gets an unwanted beach full of glass
-create-fulgurites: false
+# Whether lightning striking certain blocks such as sand or clay can create a fulgurite
+create-fulgurites: true
 
-# The percent chance a fulgurite will be created during a lightning strike on valid blocks
-fulgurite-chance: 3
+# The percent chance a fulgurite will be created during a lightning strike
+# Be careful if you change this. Setting it considerably higher can result in entire beaches turning into glass over weeks or months
+fulgurite-chance: 0.25
 
 # Maximum size (in blocks) of a fulgurite
 fulgurite-max-size: 5
