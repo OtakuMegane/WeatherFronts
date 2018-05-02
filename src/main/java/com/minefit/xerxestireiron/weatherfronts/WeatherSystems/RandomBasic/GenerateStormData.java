@@ -24,6 +24,7 @@ public class GenerateStormData {
     }
 
     public YamlConfiguration generateValues() {
+        stormID();
         stormName();
         stormLocation();
         stormSize();
@@ -36,22 +37,34 @@ public class GenerateStormData {
         return this.stormValues;
     }
 
-    private void stormName() {
-        String name = "";
+    private void stormID() {
+        String id = "";
 
-        if (!this.stormValues.contains("name")) {
+        if (!this.stormValues.contains("id")) {
             boolean validId = false;
 
             while (!validId) {
-                name = "storm" + this.random.nextInt(1000);
+                id = "storm" + this.random.nextInt(10000);
 
-                if (!this.system.getSimulator().simulatorHasFront(name)) {
+                if (!this.system.getSimulator().simulatorHasFront(id)) {
                     validId = true;
                 }
             }
 
-            this.stormValues.set("name", name);
+            this.stormValues.set("id", id);
         }
+    }
+
+    private void stormName() {
+        String name = "";
+
+        if (this.stormValues.contains("name")) {
+            name = this.stormValues.getString("name");
+        } else {
+            name = this.stormValues.getString("id");
+        }
+
+        this.stormValues.set("name", name);
     }
 
     private void stormLocation() {

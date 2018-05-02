@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.xerxestireiron.weatherfronts.DynmapFunctions;
 import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
+import com.minefit.xerxestireiron.weatherfronts.SaveData;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
 import com.minefit.xerxestireiron.weatherfronts.Simulator.Simulator;
