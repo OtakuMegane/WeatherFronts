@@ -204,9 +204,14 @@ public class FireHandler implements Listener {
             return;
         }
 
-        if (this.random.nextInt(100) < simulatorConfig.getInt("fulgurite-chance", 3)
-                || simulatorConfig.getInt("fulgurite-chance") == 100) {
-            generateFulgurite(block);
+        if (location.inSpawnChunk() && !simulatorConfig.getBoolean("fulgurite-in-spawn-chunk", false)) {
+            return;
+        }
+
+        double fulguriteChance = simulatorConfig.getDouble("fulgurite-chance", 0.25D);
+
+        if (this.random.nextDouble() < (fulguriteChance / 100) || fulguriteChance >= 100) {
+            new Fulgurite(this.simulator, block);
         }
 
     }
@@ -241,59 +246,6 @@ public class FireHandler implements Listener {
         if (!this.fireBlocks.containsKey(block)) {
             this.fireBlocks.put(block, 0);
         }
-    }
-
-    public void generateFulgurite(Block block) {
-        YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
-        FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
-
-        if (location.inSpawnChunk() && !simulatorConfig.getBoolean("fulgurite-in-spawn-chunk", false)) {
-            return;
-        }
-
-        Block blockDown = block.getRelative(BlockFace.DOWN);
-        Material blockType = convertBlock(blockDown.getType());
-
-        if (blockType == null) {
-            return;
-        }
-
-        blockDown.setType(blockType);
-        int limit = this.random.nextInt(simulatorConfig.getInt("fulgurite-max-size", 5));
-        Block baseBlock = blockDown;
-        int i = 0;
-        BlockFace[] faces = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.DOWN };
-
-        for (i = 0; i < limit; ++i) {
-            Block block2 = baseBlock.getRelative(faces[this.random.nextInt(5)]);
-
-            if (i == 0 && limit > 2) {
-                block2 = baseBlock.getRelative(BlockFace.DOWN);
-            }
-
-            Material newType = convertBlock(block2.getType());
-
-            if (newType == null) {
-                continue;
-            } else {
-                block2.setType(newType);
-            }
-
-            if (this.random.nextInt(2) == 0) {
-                baseBlock = block2;
-            }
-
-        }
-    }
-
-    private Material convertBlock(Material blockType) {
-        if (blockType == Material.SAND) {
-            return Material.GLASS;
-        } else if (blockType == Material.CLAY) {
-            return Material.HARD_CLAY;
-        }
-
-        return null;
     }
 
     private boolean actOnBlock(Block block) {
