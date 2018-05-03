@@ -24,6 +24,7 @@ public class Storm {
     private final WeatherFronts plugin;
     private final YamlConfiguration data;
     private String name;
+    private final String id;
     private final Simulator simulator;
     private final LightningGen lightning;
     private final DynmapFunctions dynmap;
@@ -35,12 +36,14 @@ public class Storm {
     private final XORShiftRandom random;
     private boolean hasLightning;
     private boolean initialized = false;
+    private final SaveData save;
 
     public Storm(WeatherFronts instance, Simulator simulator, YamlConfiguration data) {
         this.plugin = instance;
         this.simulator = simulator;
         this.world = simulator.getWorld();
         this.data = data;
+        this.id = data.getString("id");
         this.name = data.getString("name");
         this.lightning = new LightningGen(instance, simulator.getSimulatorConfig(), this);
         this.hostileSpawn = data.getInt("lightning-per-minute") > 0;
@@ -56,10 +59,16 @@ public class Storm {
         this.dynmap.addMarker(this.world.getName(), this.name, getStormBoundaries());
         updateStormChunks();
         this.initialized = true;
+        this.save = new SaveData(instance);
     }
 
     public YamlConfiguration getData() {
         return this.data;
+    }
+
+    public void save() {
+        String file_separator = System.getProperty("file.separator");
+        this.save.saveToYamlFile(this.world.getName() + file_separator + "fronts", this.id + ".yml", this.data);
     }
 
     public FrontLocation getFrontLocation() {
@@ -69,6 +78,10 @@ public class Storm {
     public void updatePosition(int x, int z) {
         this.data.set("center-x", x);
         this.data.set("center-z", z);
+    }
+
+    public String getID() {
+        return this.id;
     }
 
     public String getName() {

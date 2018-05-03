@@ -1,5 +1,6 @@
 package com.minefit.xerxestireiron.weatherfronts.FrontsWorld;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,6 +14,7 @@ import com.minefit.xerxestireiron.weatherfronts.SaveData;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
 import com.minefit.xerxestireiron.weatherfronts.Simulator.Simulator;
+import com.minefit.xerxestireiron.weatherfronts.Storm.Storm;
 
 public class FrontsWorld {
     private final WeatherFronts plugin;
@@ -134,12 +136,25 @@ public class FrontsWorld {
 
     public void saveStorms() {
         YamlConfiguration allStorms = new YamlConfiguration();
+        YamlConfiguration simulatorStorms = new YamlConfiguration();
         String worldName = world.getName();
 
         for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
             allStorms.set(entry.getKey(), entry.getValue().allFrontsData());
         }
 
+        for (Entry<String, Simulator> simulator : this.simulators.entrySet()) {
+            ArrayList<String> stormList = new ArrayList<>();
+
+            for (Entry<String, Storm> storm : simulator.getValue().getStorms().entrySet()) {
+                stormList.add(storm.getKey());
+                storm.getValue().save();
+            }
+
+            simulatorStorms.set(simulator.getKey(), stormList);
+        }
+
+        this.save.saveToYamlFile(worldName, "stormlist.yml", simulatorStorms);
         this.save.saveToYamlFile(worldName, "fronts.yml", allStorms);
     }
 
