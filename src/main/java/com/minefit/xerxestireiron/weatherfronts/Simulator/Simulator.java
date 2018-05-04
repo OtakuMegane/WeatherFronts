@@ -1,5 +1,6 @@
 package com.minefit.xerxestireiron.weatherfronts.Simulator;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -128,16 +129,11 @@ public class Simulator {
     }
 
     private void loadStorms() {
-        YamlConfiguration storms = this.loadData.loadConfigForWorld(world.getName(), "fronts.yml", false);
-        YamlConfiguration simulatorStorms = this.loadData.getSectionAsConfig(storms, getName());
+        File[] stormFiles = this.loadData.getListOfStormFiles(this.world.getName(), this.getName());
 
-        if (storms.getKeys(false).size() == 0) {
-            return;
-        }
-
-        for (String stormName : simulatorStorms.getKeys(false)) {
-            YamlConfiguration frontData = this.loadData.getSectionAsConfig(simulatorStorms, stormName);
-            this.storms.put(stormName, new Storm(this.plugin, this, frontData));
+        for (File stormFile : stormFiles) {
+            YamlConfiguration frontData = YamlConfiguration.loadConfiguration(stormFile);
+            this.storms.put(frontData.getString("id"), new Storm(this.plugin, this, frontData));
         }
     }
 

@@ -63,6 +63,14 @@ public class LoadData {
         return config;
     }
 
+    public File[] getListOfStormFiles(String worldName, String simulatorName)
+    {
+        File stormDirectory = new File(
+                this.plugin.getDataFolder() + File.separator + worldName + File.separator + simulatorName + File.separator + "storms"  + File.separator);
+        File[] stormFiles = stormDirectory.listFiles();
+        return stormFiles;
+    }
+
     public YamlConfiguration combineConfigDefaults(String path, YamlConfiguration defaults, YamlConfiguration config) {
 
         YamlConfiguration combined = new YamlConfiguration();

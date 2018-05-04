@@ -136,15 +136,6 @@ public class FrontsWorld {
     }
 
     public void saveStorms() {
-        YamlConfiguration allStorms = new YamlConfiguration();
-        YamlConfiguration simulatorStorms = new YamlConfiguration();
-        String worldName = world.getName();
-        String file_separator = System.getProperty("file.separator");
-
-        for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            allStorms.set(entry.getKey(), entry.getValue().allFrontsData());
-        }
-
         for (Entry<String, Simulator> simulator : this.simulators.entrySet()) {
             ArrayList<String> stormList = new ArrayList<>();
 
@@ -152,12 +143,7 @@ public class FrontsWorld {
                 stormList.add(storm.getKey());
                 storm.getValue().save();
             }
-
-            simulatorStorms.set(simulator.getKey(), stormList);
-            this.save.saveToYamlFile(worldName + file_separator + simulator.getKey(), "stormlist.yml", simulatorStorms);
         }
-
-        this.save.saveToYamlFile(worldName, "fronts.yml", allStorms);
     }
 
     public void shutdownSimulators() {
