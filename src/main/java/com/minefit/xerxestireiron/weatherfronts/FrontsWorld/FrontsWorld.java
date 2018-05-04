@@ -1,5 +1,6 @@
 package com.minefit.xerxestireiron.weatherfronts.FrontsWorld;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -122,11 +123,11 @@ public class FrontsWorld {
         for (String simulatorName : simulatorConfigs.getKeys(false)) {
             YamlConfiguration config = this.load.combineConfigDefaults(simulatorName, simulatorDefaults,
                     simulatorConfigs);
+            new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + simulatorName).mkdirs();
             this.simulators.put(simulatorName, new Simulator(this.world, this.plugin, config, simulatorName));
             /*this.save.saveToYamlFile(worldName, "simulators-mod.yml",
                     this.load.combineConfigDefaults(simulatorName, simulatorDefaults, this.worldSimulatorConfigs));*/
         }
-
     }
 
     public void saveSimulators() {
@@ -138,6 +139,7 @@ public class FrontsWorld {
         YamlConfiguration allStorms = new YamlConfiguration();
         YamlConfiguration simulatorStorms = new YamlConfiguration();
         String worldName = world.getName();
+        String file_separator = System.getProperty("file.separator");
 
         for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
             allStorms.set(entry.getKey(), entry.getValue().allFrontsData());
@@ -152,9 +154,9 @@ public class FrontsWorld {
             }
 
             simulatorStorms.set(simulator.getKey(), stormList);
+            this.save.saveToYamlFile(worldName + file_separator + simulator.getKey(), "stormlist.yml", simulatorStorms);
         }
 
-        this.save.saveToYamlFile(worldName, "stormlist.yml", simulatorStorms);
         this.save.saveToYamlFile(worldName, "fronts.yml", allStorms);
     }
 

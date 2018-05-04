@@ -9,4 +9,4 @@
 # for each simulator. Otherwise they'll all go by the default size and center
 #
 simulator1:
-    generate-fronts: true
+  generate-fronts: true

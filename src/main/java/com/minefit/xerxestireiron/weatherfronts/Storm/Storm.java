@@ -68,7 +68,9 @@ public class Storm {
 
     public void save() {
         String file_separator = System.getProperty("file.separator");
-        this.save.saveToYamlFile(this.world.getName() + file_separator + "fronts", this.id + ".yml", this.data);
+        this.save.saveToYamlFile(
+                this.world.getName() + file_separator + this.simulator.getName() + file_separator + "storms",
+                this.id + ".yml", this.data);
     }
 
     public FrontLocation getFrontLocation() {
