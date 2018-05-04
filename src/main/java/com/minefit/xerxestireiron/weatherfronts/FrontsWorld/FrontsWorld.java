@@ -123,7 +123,8 @@ public class FrontsWorld {
         for (String simulatorName : simulatorConfigs.getKeys(false)) {
             YamlConfiguration config = this.load.combineConfigDefaults(simulatorName, simulatorDefaults,
                     simulatorConfigs);
-            new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + simulatorName).mkdirs();
+            new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + simulatorName)
+                    .mkdirs();
             this.simulators.put(simulatorName, new Simulator(this.world, this.plugin, config, simulatorName));
             /*this.save.saveToYamlFile(worldName, "simulators-mod.yml",
                     this.load.combineConfigDefaults(simulatorName, simulatorDefaults, this.worldSimulatorConfigs));*/
@@ -157,5 +158,4 @@ public class FrontsWorld {
         saveStorms();
         shutdownSimulators();
     }
-
 }

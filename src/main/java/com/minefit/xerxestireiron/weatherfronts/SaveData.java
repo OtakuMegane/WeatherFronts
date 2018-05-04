@@ -27,4 +27,9 @@ public class SaveData {
             e.printStackTrace();
         }
     }
+
+    public void removeFile(String fileDirectory, String fileName) {
+        File file = new File(this.plugin.getDataFolder() + File.separator + fileDirectory + File.separator + fileName);
+        file.delete();
+    }
 }

@@ -152,6 +152,7 @@ public class Simulator {
     }
 
     public void removeStorm(String frontName) {
+        this.storms.get(frontName).die();
         this.storms.remove(frontName);
         this.dynmap.deleteMarker(world, this.name, frontName);
     }

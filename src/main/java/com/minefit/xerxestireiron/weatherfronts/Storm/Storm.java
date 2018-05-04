@@ -73,6 +73,13 @@ public class Storm {
                 this.id + ".yml", this.data);
     }
 
+    public void die() {
+        String file_separator = System.getProperty("file.separator");
+        this.save.removeFile(
+                this.world.getName() + file_separator + this.simulator.getName() + file_separator + "storms",
+                this.id + ".yml");
+    }
+
     public FrontLocation getFrontLocation() {
         return new FrontLocation(this.simulator, this.data.getInt("center-x"), this.data.getInt("center-z"));
     }
