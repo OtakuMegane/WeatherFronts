@@ -35,7 +35,6 @@ public class Storm {
     private final StormListener listener;
     private final XORShiftRandom random;
     private boolean hasLightning;
-    private boolean initialized = false;
     private final SaveData save;
 
     public Storm(WeatherFronts instance, Simulator simulator, YamlConfiguration data) {
@@ -58,7 +57,6 @@ public class Storm {
         updateStormBoundaries();
         this.dynmap.addMarker(this.world.getName(), this.name, getStormBoundaries());
         updateStormChunks();
-        this.initialized = true;
         this.save = new SaveData(instance);
     }
 

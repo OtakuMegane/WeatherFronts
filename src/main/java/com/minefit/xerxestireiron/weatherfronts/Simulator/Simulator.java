@@ -45,7 +45,6 @@ public class Simulator {
         loadStorms();
         this.mainTickCycle = new MainTickCycle(instance, this).runTaskTimer(instance, 0, 1);
         this.tickUpdates = new TickUpdates(instance, this).runTaskTimer(instance, 0, 20);
-
     }
 
     public World getWorld() {
@@ -213,18 +212,6 @@ public class Simulator {
 
     public YamlConfiguration getSimulatorConfig() {
         return this.simulatorConfig;
-    }
-
-    public YamlConfiguration allFrontsData() {
-        YamlConfiguration allFronts = new YamlConfiguration();
-
-        for (Entry<String, Storm> entry : this.storms.entrySet()) {
-            if (!entry.getKey().isEmpty()) {
-                allFronts.set(entry.getKey(), getFrontData(entry.getKey()));
-            }
-        }
-
-        return allFronts;
     }
 
     public YamlConfiguration getFrontData(String frontName) {
