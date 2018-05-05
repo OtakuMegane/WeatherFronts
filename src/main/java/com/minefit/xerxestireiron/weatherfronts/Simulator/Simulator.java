@@ -117,13 +117,12 @@ public class Simulator {
     }
 
     public void updateStorms() {
-        for (Entry<String, Storm> entry : this.storms.entrySet()) {
-            Storm storm = entry.getValue();
-            storm.update();
-            boolean dead = this.system.updateFront(storm);
+        for (Entry<String, Storm> storm : this.storms.entrySet()) {
+            storm.getValue().update();
+            boolean dead = this.system.updateFront(storm.getValue());
 
             if (dead) {
-                removeStorm(entry.getKey());
+                removeStorm(storm.getKey());
             }
         }
     }
@@ -134,6 +133,13 @@ public class Simulator {
         for (File stormFile : stormFiles) {
             YamlConfiguration frontData = YamlConfiguration.loadConfiguration(stormFile);
             this.storms.put(frontData.getString("id"), new Storm(this.plugin, this, frontData));
+        }
+    }
+
+    public void saveStorms()
+    {
+        for (Entry<String, Storm> storm : this.storms.entrySet()) {
+            storm.getValue().save();
         }
     }
 

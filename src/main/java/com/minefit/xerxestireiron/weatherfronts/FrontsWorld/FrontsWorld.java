@@ -132,24 +132,19 @@ public class FrontsWorld {
     }
 
     public void saveSimulators() {
-        // This will come later
+        // This may come later
         // For now only manual changes to the file
     }
 
     public void saveStorms() {
         for (Entry<String, Simulator> simulator : this.simulators.entrySet()) {
-            ArrayList<String> stormList = new ArrayList<>();
-
-            for (Entry<String, Storm> storm : simulator.getValue().getStorms().entrySet()) {
-                stormList.add(storm.getKey());
-                storm.getValue().save();
-            }
+            simulator.getValue().saveStorms();
         }
     }
 
     public void shutdownSimulators() {
-        for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            entry.getValue().shutdown();
+        for (Entry<String, Simulator> simulator : this.simulators.entrySet()) {
+            simulator.getValue().shutdown();
         }
     }
 
