@@ -135,8 +135,7 @@ public class Simulator {
         }
     }
 
-    public void saveStorms()
-    {
+    public void saveStorms() {
         for (Entry<String, Storm> storm : this.storms.entrySet()) {
             storm.getValue().save();
         }
