@@ -284,10 +284,10 @@ public class Commands implements CommandExecutor {
             if (arguments.length > 1) {
                 if (arguments[1].equalsIgnoreCase("-w")) {
                     this.plugin.getWorldHandle(arguments[2]);
-                } else {
-                    for (Entry<String, FrontsWorld> entry : this.plugin.getAllFrontsWorlds().entrySet()) {
-                        entry.getValue().saveStorms();
-                    }
+                }
+            } else {
+                for (Entry<String, FrontsWorld> entry : this.plugin.getAllFrontsWorlds().entrySet()) {
+                    entry.getValue().saveStorms();
                 }
             }
 
