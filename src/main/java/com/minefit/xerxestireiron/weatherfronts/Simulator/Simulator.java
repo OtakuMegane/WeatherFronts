@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -28,7 +27,6 @@ public class Simulator {
     private String name;
     private final String id;
     private final ConcurrentMap<String, Storm> storms = new ConcurrentHashMap<>();
-    private final ConcurrentMap<Chunk, Boolean> stormChunks = new ConcurrentHashMap<>();
     private final LoadData loadData;
     private final DynmapFunctions dynmap;
     private final WeatherSystem system;
@@ -63,26 +61,6 @@ public class Simulator {
 
     public Map<String, Storm> getStorms() {
         return this.storms;
-    }
-
-    public Map<Chunk, Boolean> getStormChunks() {
-        return this.stormChunks;
-    }
-
-    public void updateStormChunks() {
-        this.stormChunks.clear();
-
-        for (Entry<String, Storm> storm : this.storms.entrySet()) {
-            this.stormChunks.putAll(storm.getValue().getStormChunks());
-        }
-    }
-
-    public Boolean updateStormChunk(Chunk chunk, boolean isPlayerChunk) {
-        return this.stormChunks.put(chunk, isPlayerChunk);
-    }
-
-    public Boolean removeStormChunk(Chunk chunk) {
-        return this.stormChunks.remove(chunk);
     }
 
     public WeatherFronts getPlugin() {
