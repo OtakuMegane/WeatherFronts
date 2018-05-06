@@ -43,10 +43,10 @@ public class Simulator {
         this.loadData = new LoadData(instance);
         this.dynmap = this.plugin.getDynmap();
         this.system = new RandomBasic(instance, this);
+        this.id = id;
         loadStorms();
         this.mainTickCycle = new MainTickCycle(instance, this).runTaskTimer(instance, 0, 1);
         this.tickUpdates = new TickUpdates(instance, this).runTaskTimer(instance, 0, 20);
-        this.id = id;
     }
 
     public World getWorld() {
