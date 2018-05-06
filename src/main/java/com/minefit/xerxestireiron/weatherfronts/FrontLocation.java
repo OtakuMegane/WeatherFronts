@@ -1,9 +1,5 @@
 package com.minefit.xerxestireiron.weatherfronts;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;

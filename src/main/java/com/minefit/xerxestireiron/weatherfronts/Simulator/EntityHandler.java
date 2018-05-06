@@ -32,7 +32,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.util.Vector;
 
-import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
 import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
@@ -43,13 +42,11 @@ public class EntityHandler implements Listener {
     private final Set<Wolf> wolvesInRain = new HashSet<>();
     private final Simulator simulator;
     private final World world;
-    private final BlockFunctions blockFunction;
 
     public EntityHandler(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
         this.simulator = simulator;
         this.world = simulator.getWorld();
-        this.blockFunction = new BlockFunctions(instance, simulator);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
