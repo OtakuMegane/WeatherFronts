@@ -4,8 +4,11 @@
 # Do not modify this file as it may be overwritten during updates
 # Use simulators.yml to apply custom settings to each simulator
 
+# Automatically generate storms and fronts
+generate-fronts: true
+
 # Which weather system you want to use
-# This corresponds to a name in weather-systems.yml
+# This corresponds to an id in weather-systems.yml
 weather-system: random-basic1
 
 # Choose whether to use dynmap (if available) for this simulator

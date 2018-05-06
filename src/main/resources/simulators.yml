@@ -1,12 +1,10 @@
 #
-# This is where we create and name simulators
-# It also contains optional simulator-specific overrides to the default settings
-# Anything setting not specified here will use the value in defaults.yml
+# This is where we set up simulators
+# Each simulator can optionally have settings added here that will override the defaults
+# Anything setting not specified here will use the value in simulator-defaults.yml
 #
-# To add more simulators just create a new node with the simulator name
-# Then add the generate-fronts setting for the simulator (can be true or false)
-# While not required it is recommended to also set at least the simulation-radius, simulation-center-x and simulation-center-z
-# for each simulator. Otherwise they'll all go by the default size and center
+# To add more simulators just create a new node with the simulator id (this cannot be easily changed once set)
+# You can optionally give it a name that can be changed and will generally be used for display purposes
 #
 simulator1:
-  generate-fronts: true
+  name: simulator1
