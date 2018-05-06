@@ -84,8 +84,8 @@ public class FrontsWorld {
         return null;
     }
 
-    public Simulator getSimulator(String simulatorName) {
-        return simulators.get(simulatorName);
+    public Simulator getSimulator(String simulatorID) {
+        return simulators.get(simulatorID);
     }
 
     public Map<String, Simulator> getSimulatorList() {
@@ -118,14 +118,14 @@ public class FrontsWorld {
         YamlConfiguration simulatorConfigs = this.load.loadConfigForWorld(worldName, "simulators.yml", true);
 
         // Set up new simulator here
-        for (String simulatorName : simulatorConfigs.getKeys(false)) {
-            YamlConfiguration config = this.load.combineConfigDefaults(simulatorName, simulatorDefaults,
+        for (String simulatorID : simulatorConfigs.getKeys(false)) {
+            YamlConfiguration config = this.load.combineConfigDefaults(simulatorID, simulatorDefaults,
                     simulatorConfigs);
-            new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + simulatorName)
+            new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + simulatorID)
                     .mkdirs();
-            this.simulators.put(simulatorName, new Simulator(this.world, this.plugin, config, simulatorName));
+            this.simulators.put(simulatorID, new Simulator(this.world, this.plugin, config, simulatorID));
             /*this.save.saveToYamlFile(worldName, "simulators-mod.yml",
-                    this.load.combineConfigDefaults(simulatorName, simulatorDefaults, this.worldSimulatorConfigs));*/
+                    this.load.combineConfigDefaults(simulatorID, simulatorDefaults, this.worldSimulatorConfigs));*/
         }
     }
 

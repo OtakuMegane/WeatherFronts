@@ -26,6 +26,7 @@ public class Simulator {
     private final YamlConfiguration simulatorConfig;
     private final WeatherFronts plugin;
     private String name;
+    private final String id;
     private final ConcurrentMap<String, Storm> storms = new ConcurrentHashMap<>();
     private final ConcurrentMap<Chunk, Boolean> stormChunks = new ConcurrentHashMap<>();
     private final LoadData loadData;
@@ -34,21 +35,26 @@ public class Simulator {
     private final BukkitTask mainTickCycle;
     private final BukkitTask tickUpdates;
 
-    public Simulator(World world, WeatherFronts instance, YamlConfiguration config, String name) {
+    public Simulator(World world, WeatherFronts instance, YamlConfiguration config, String id) {
         this.simulatorConfig = config;
         this.plugin = instance;
         this.world = world;
-        this.name = name;
+        this.name = config.getString("name", "");
         this.loadData = new LoadData(instance);
         this.dynmap = this.plugin.getDynmap();
         this.system = new RandomBasic(instance, this);
         loadStorms();
         this.mainTickCycle = new MainTickCycle(instance, this).runTaskTimer(instance, 0, 1);
         this.tickUpdates = new TickUpdates(instance, this).runTaskTimer(instance, 0, 20);
+        this.id = id;
     }
 
     public World getWorld() {
         return this.world;
+    }
+
+    public String getID() {
+        return this.id;
     }
 
     public String getName() {
@@ -127,11 +133,11 @@ public class Simulator {
     }
 
     private void loadStorms() {
-        File[] stormFiles = this.loadData.getListOfStormFiles(this.world.getName(), this.getName());
+        File[] stormFiles = this.loadData.getListOfStormFiles(this.world.getName(), this.id);
 
         for (File stormFile : stormFiles) {
-            YamlConfiguration frontData = YamlConfiguration.loadConfiguration(stormFile);
-            this.storms.put(frontData.getString("id"), new Storm(this.plugin, this, frontData));
+            YamlConfiguration stormData = YamlConfiguration.loadConfiguration(stormFile);
+            this.storms.put(stormData.getString("id"), new Storm(this.plugin, this, stormData));
         }
     }
 
@@ -141,8 +147,8 @@ public class Simulator {
         }
     }
 
-    public void addStorm(Storm front) {
-        this.storms.put(front.getName(), front);
+    public void addStorm(Storm storm) {
+        this.storms.put(storm.getName(), storm);
     }
 
     public Storm createStorm(YamlConfiguration config, boolean command, boolean autogen) {
@@ -155,10 +161,10 @@ public class Simulator {
         return null;
     }
 
-    public void removeStorm(String frontName) {
-        this.storms.get(frontName).die();
-        this.storms.remove(frontName);
-        this.dynmap.deleteMarker(world, this.name, frontName);
+    public void removeStorm(String stormName) {
+        this.storms.get(stormName).die();
+        this.storms.remove(stormName);
+        this.dynmap.deleteMarker(world, this.id, stormName);
     }
 
     private boolean canCreateStorm(boolean command, boolean autogen) {

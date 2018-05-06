@@ -86,7 +86,7 @@ public class Commands implements CommandExecutor {
             int argLength = arguments.length - 1;
             YamlConfiguration newStormConfig = new YamlConfiguration();
             String newFrontWorldName = frontsWorld.getWorld().getName();
-            String newFrontSimulatorName = frontsWorld.randomSimulator().getName();
+            String newFrontSimulatorName = frontsWorld.randomSimulator().getID();
 
             for (int i = 1; i < argLength; i++) {
                 String currentArgument = arguments[i].trim();
