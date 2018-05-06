@@ -119,6 +119,7 @@ public class WeatherFronts extends JavaPlugin {
     public FrontsWorld addWorld(World world) {
         if (worldEnabled(world)) {
             this.worlds.put(world.getName(), new FrontsWorld(this, world));
+            this.worlds.get(world.getName()).start();
             return this.worlds.get(world.getName());
         }
 

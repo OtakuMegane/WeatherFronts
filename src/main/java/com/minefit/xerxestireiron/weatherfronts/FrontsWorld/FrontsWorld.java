@@ -43,7 +43,9 @@ public class FrontsWorld {
         } else {
             this.mobSpawnRange = mobRange;
         }
+    }
 
+    public void start() {
         loadSimulators();
     }
 
@@ -121,8 +123,7 @@ public class FrontsWorld {
         for (String simulatorID : simulatorConfigs.getKeys(false)) {
             YamlConfiguration config = this.load.combineConfigDefaults(simulatorID, simulatorDefaults,
                     simulatorConfigs);
-            new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + simulatorID)
-                    .mkdirs();
+            new File(this.plugin.getDataFolder() + File.separator + worldName + File.separator + simulatorID).mkdirs();
             this.simulators.put(simulatorID, new Simulator(this.world, this.plugin, config, simulatorID));
             /*this.save.saveToYamlFile(worldName, "simulators-mod.yml",
                     this.load.combineConfigDefaults(simulatorID, simulatorDefaults, this.worldSimulatorConfigs));*/
