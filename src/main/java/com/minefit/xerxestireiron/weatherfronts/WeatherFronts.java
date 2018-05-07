@@ -27,7 +27,6 @@ public class WeatherFronts extends JavaPlugin {
     private final WorldListener worldListener = new WorldListener(this);
     public final ServerVersion serverVersion = new ServerVersion(this);
     public final Logger logger = Logger.getLogger("Minecraft");
-    private final boolean oldPacket;
     private final Map<String, FrontsWorld> worlds = new HashMap<>();
     private YamlConfiguration mainConfig;
     private final LoadData load = new LoadData(this);
@@ -36,15 +35,7 @@ public class WeatherFronts extends JavaPlugin {
     public final String outputPrefix;
 
     public WeatherFronts() {
-        this.compatibleVersions = Arrays.asList("v1_8_R1", "V1_8_R2", "v1_8_R3", "v1_9_R1", "v1_9_R2", "v1_10_R1",
-                "v1_11_R1", "v1_12_R1");
-
-        if (this.serverVersion.getMajor().equals("8")) {
-            this.oldPacket = true;
-        } else {
-            this.oldPacket = false;
-        }
-
+        this.compatibleVersions = Arrays.asList("v1_10_R1", "v1_11_R1", "v1_12_R1");
         this.outputPrefix = "[" + this.getName() + "] ";
     }
 
@@ -110,10 +101,6 @@ public class WeatherFronts extends JavaPlugin {
 
     public ProtocolManager getProtocolManager() {
         return this.protocolManager;
-    }
-
-    public boolean useOldPacket() {
-        return this.oldPacket;
     }
 
     public FrontsWorld addWorld(World world) {

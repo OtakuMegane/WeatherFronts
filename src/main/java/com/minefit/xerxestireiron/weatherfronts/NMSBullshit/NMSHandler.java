@@ -36,11 +36,6 @@ public class NMSHandler {
                 Horse e2 = (Horse) entity;
                 e2.setVariant(org.bukkit.entity.Horse.Variant.SKELETON_HORSE);
                 fieldName = "y";
-            } else if (this.nmsVersion.equals("v1_9_R1") || this.nmsVersion.equals("v1_9_R2")) {
-                entity = location.getWorld().spawnEntity(location, EntityType.HORSE);
-                Horse e2 = (Horse) entity;
-                e2.setVariant(org.bukkit.entity.Horse.Variant.SKELETON_HORSE);
-                fieldName = "x";
             }
 
             Object nmsHorse = this.nmsAPI.bukkitToNMS(entity);
@@ -57,11 +52,7 @@ public class NMSHandler {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
             String fieldName = null;
 
-            if (this.nmsVersion.equals("v1_9_R1")) {
-                fieldName = "av";
-            } else if (this.nmsVersion.equals("v1_9_R2")) {
-                fieldName = "aw";
-            } else if (this.nmsVersion.equals("v1_10_R1")) {
+            if (this.nmsVersion.equals("v1_10_R1")) {
                 fieldName = "av";
             } else if (this.nmsVersion.equals("v1_11_R1")) {
                 fieldName = "h";

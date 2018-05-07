@@ -21,13 +21,7 @@ public class PacketHandler {
     public void onSoundPacket(PacketEvent event) {
         event.setCancelled(true);
         World world = event.getPlayer().getWorld();
-        boolean isThunder = false;
-
-        if (this.plugin.useOldPacket()) {
-            isThunder = event.getPacket().getStrings().read(0).equals("ambient.weather.thunder");
-        } else {
-            isThunder = event.getPacket().getSoundEffects().read(0) == Sound.ENTITY_LIGHTNING_THUNDER;
-        }
+        boolean isThunder = event.getPacket().getSoundEffects().read(0) == Sound.ENTITY_LIGHTNING_THUNDER;
 
         if (!this.plugin.worldEnabled(world) || !isThunder) {
             event.setCancelled(false);
@@ -77,20 +71,9 @@ public class PacketHandler {
             return;
         }
 
-        double x = 0.0;
-        double y = 0.0;
-        double z = 0.0;
-
-        if (this.plugin.useOldPacket()) {
-            x = (event.getPacket().getIntegers().read(1) / 32.0);
-            y = (event.getPacket().getIntegers().read(2) / 32.0);
-            z = (event.getPacket().getIntegers().read(3) / 32.0);
-        } else {
-            x = (event.getPacket().getDoubles().read(0));
-            y = (event.getPacket().getDoubles().read(1));
-            z = (event.getPacket().getDoubles().read(2));
-        }
-
+        double x = (event.getPacket().getDoubles().read(0));
+        double y = (event.getPacket().getDoubles().read(1));
+        double z = (event.getPacket().getDoubles().read(2));
         Player player = event.getPlayer();
         double playerX = player.getLocation().getX();
         double playerZ = player.getLocation().getZ();
