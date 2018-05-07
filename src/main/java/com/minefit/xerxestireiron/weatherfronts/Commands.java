@@ -197,7 +197,7 @@ public class Commands implements CommandExecutor {
 
                 if (stormId != null) {
                     if (frontsWorld != null) {
-                        frontsWorld.getSimulatorByStorm(stormId).removeStorm(stormId);
+                        frontsWorld.getSimulatorByStorm(stormId).killStorm(stormId);
                         player.sendMessage("The storm " + stormId + " in world " + stormWorldName + " has dissipated.");
                     }
                     return true;

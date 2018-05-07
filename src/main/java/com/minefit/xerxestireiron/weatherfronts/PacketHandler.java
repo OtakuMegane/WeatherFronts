@@ -50,7 +50,7 @@ public class PacketHandler {
         Location playerLoc = event.getPlayer().getLocation();
         int playerX = playerLoc.getBlockX();
         int playerZ = playerLoc.getBlockZ();
-        YamlConfiguration stormConfig = frontsWorld.getSimulatorByStorm(stormName).getFrontData(stormName);
+        YamlConfiguration stormConfig = frontsWorld.getSimulatorByStorm(stormName).getStormData(stormName);
         int stormRadiusX = stormConfig.getInt("radius-x");
         int stormRadiusZ = stormConfig.getInt("radius-z");
         int stormX = stormConfig.getInt("center-x");
@@ -101,7 +101,7 @@ public class PacketHandler {
             return;
         }
 
-        YamlConfiguration stormConfig = frontsWorld.getSimulatorByStorm(stormName).getFrontData(stormName);
+        YamlConfiguration stormConfig = frontsWorld.getSimulatorByStorm(stormName).getStormData(stormName);
         int stormRadiusX = stormConfig.getInt("radius-x");
         int stormRadiusZ = stormConfig.getInt("radius-z");
         int stormX = stormConfig.getInt("center-x");
@@ -131,7 +131,7 @@ public class PacketHandler {
         } else {
             FrontsWorld worldHandle = this.plugin.getWorldHandle(world);
             YamlConfiguration simConfig = worldHandle.getSimulatorByStorm(storm).getSimulatorConfig();
-            YamlConfiguration stormConfig = worldHandle.getSimulatorByStorm(storm).getFrontData(storm);
+            YamlConfiguration stormConfig = worldHandle.getSimulatorByStorm(storm).getStormData(storm);
             int intensity = stormConfig.getInt("precipitation-intensity");
 
             if (stormConfig.getInt("lightning-per-minute") == 0) {

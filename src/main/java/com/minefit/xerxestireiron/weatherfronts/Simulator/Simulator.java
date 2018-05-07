@@ -93,7 +93,7 @@ public class Simulator {
             boolean dead = this.system.updateStorm(entry.getValue());
 
             if (dead) {
-                removeStorm(entry.getKey());
+                killStorm(entry.getKey());
             }
         }
     }
@@ -119,18 +119,22 @@ public class Simulator {
 
     public Storm createStorm(YamlConfiguration config, boolean command, boolean autogen) {
         if (canCreateStorm(command, autogen)) {
-            Storm front = this.system.createStorm(config);
-            addStorm(front);
-            return front;
+            Storm storm = this.system.createStorm(config);
+            addStorm(storm);
+            return storm;
         }
 
         return null;
     }
 
-    public void removeStorm(String stormName) {
+    public void killStorm(String stormName)
+    {
         this.storms.get(stormName).die();
-        this.storms.remove(stormName);
         this.dynmap.deleteMarker(world, this.id, stormName);
+    }
+
+    public void removeStorm(String stormName) {
+        this.storms.remove(stormName);
     }
 
     private boolean canCreateStorm(boolean command, boolean autogen) {
@@ -185,11 +189,11 @@ public class Simulator {
         return this.simulatorConfig;
     }
 
-    public YamlConfiguration getFrontData(String frontName) {
+    public YamlConfiguration getStormData(String stormName) {
         YamlConfiguration data = new YamlConfiguration();
 
-        if (frontName != null && this.storms.containsKey(frontName)) {
-            data = this.storms.get(frontName).getData();
+        if (stormName != null && this.storms.containsKey(stormName)) {
+            data = this.storms.get(stormName).getData();
         }
 
         return data;
