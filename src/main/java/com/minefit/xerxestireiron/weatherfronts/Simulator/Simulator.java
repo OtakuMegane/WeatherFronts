@@ -13,7 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.minefit.xerxestireiron.weatherfronts.DynmapFunctions;
-import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
+import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.LoadData;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.Storm.Storm;
@@ -71,18 +71,6 @@ public class Simulator {
         return this.system;
     }
 
-    public FrontLocation newFrontLocation(double x, double y, double z) {
-        return new FrontLocation(this, x, y, z);
-    }
-
-    public FrontLocation newFrontLocation(Location location) {
-        return new FrontLocation(this, location);
-    }
-
-    public FrontLocation newFrontLocation(Block block) {
-        return new FrontLocation(this, block);
-    }
-
     public String locationInWhichStorm(int x, int z) {
         if (isInSimulator(x, z)) {
             for (Entry<String, Storm> entry : this.storms.entrySet()) {
@@ -95,17 +83,17 @@ public class Simulator {
         return null;
     }
 
-    public String locationInWhichStorm(FrontLocation location) {
+    public String locationInWhichStorm(FrontsLocation location) {
         return locationInWhichStorm(location.getBlockX(), location.getBlockZ());
     }
 
     public void updateStorms() {
-        for (Entry<String, Storm> storm : this.storms.entrySet()) {
-            storm.getValue().update();
-            boolean dead = this.system.updateFront(storm.getValue());
+        for (Entry<String, Storm> entry : this.storms.entrySet()) {
+            entry.getValue().update();
+            boolean dead = this.system.updateStorm(entry.getValue());
 
             if (dead) {
-                removeStorm(storm.getKey());
+                removeStorm(entry.getKey());
             }
         }
     }
@@ -120,8 +108,8 @@ public class Simulator {
     }
 
     public void saveStorms() {
-        for (Entry<String, Storm> storm : this.storms.entrySet()) {
-            storm.getValue().save();
+        for (Entry<String, Storm> entry : this.storms.entrySet()) {
+            entry.getValue().save();
         }
     }
 
@@ -131,7 +119,7 @@ public class Simulator {
 
     public Storm createStorm(YamlConfiguration config, boolean command, boolean autogen) {
         if (canCreateStorm(command, autogen)) {
-            Storm front = this.system.createFront(config);
+            Storm front = this.system.createStorm(config);
             addStorm(front);
             return front;
         }
@@ -174,19 +162,19 @@ public class Simulator {
         return false;
     }
 
-    public boolean simulatorHasFront(String frontName) {
-        return this.storms.containsKey(frontName);
+    public boolean simulatorHasStorm(String stormName) {
+        return this.storms.containsKey(stormName);
     }
 
-    public Storm getFront(String frontName) {
-        return this.storms.get(frontName);
+    public Storm getStorm(String stormName) {
+        return this.storms.get(stormName);
     }
 
     public boolean renameFront(String originalName, String newName) {
-        if (simulatorHasFront(originalName) && newName != null) {
-            Storm front = this.storms.get(originalName);
-            front.changeName(newName);
-            this.storms.put(front.getName(), front);
+        if (simulatorHasStorm(originalName) && newName != null) {
+            Storm storm = this.storms.get(originalName);
+            storm.changeName(newName);
+            this.storms.put(storm.getName(), storm);
             return true;
         }
 
@@ -219,7 +207,7 @@ public class Simulator {
         return true;
     }
 
-    public boolean isInSimulator(FrontLocation location) {
+    public boolean isInSimulator(FrontsLocation location) {
         return isInSimulator(location.getBlockX(), location.getBlockZ());
     }
 

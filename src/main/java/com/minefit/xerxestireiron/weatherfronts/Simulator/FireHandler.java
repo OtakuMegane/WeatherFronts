@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
-import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
+import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
 import com.minefit.xerxestireiron.weatherfronts.NMSBullshit.NMSHandler;
@@ -44,7 +44,7 @@ public class FireHandler implements Listener {
 
     public void extinguishFire() {
         for (Block block : fireBlocks.keySet()) {
-            FrontLocation location = this.simulator.newFrontLocation(block);
+            FrontsLocation location = new FrontsLocation(this.simulator, block);
 
             if (!location.isLoaded()) {
                 continue;
@@ -92,7 +92,7 @@ public class FireHandler implements Listener {
         }
 
         Block block = event.getBlock();
-        FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
+        FrontsLocation location = new FrontsLocation(this.simulator, block.getLocation());
 
         if (!this.simulator.isInSimulator(location.getBlockX(), location.getBlockZ())) {
             return;
@@ -151,7 +151,7 @@ public class FireHandler implements Listener {
         }
 
         Fish hook = event.getHook();
-        FrontLocation hookLocation = this.simulator.newFrontLocation(hook.getLocation());
+        FrontsLocation hookLocation = new FrontsLocation(this.simulator, hook.getLocation());
 
         if (!hookLocation.isInWeather()) {
             return;
@@ -183,7 +183,7 @@ public class FireHandler implements Listener {
         }
 
         Block block = event.getLightning().getLocation().getBlock();
-        FrontLocation location = this.simulator.newFrontLocation(block.getLocation());
+        FrontsLocation location = new FrontsLocation(this.simulator, block.getLocation());
 
         if (!this.simulator.isInSimulator(location)) {
             return;

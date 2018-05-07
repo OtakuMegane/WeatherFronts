@@ -10,7 +10,7 @@ import org.bukkit.block.BlockFace;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
 import com.minefit.xerxestireiron.weatherfronts.ChunkFunctions;
-import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
+import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
 import com.minefit.xerxestireiron.weatherfronts.Simulator.Simulator;
@@ -55,12 +55,12 @@ public class ChunkTick {
         }
 
         while (this.tickDelay >= 1.0) {
-            for (Entry<Chunk, Boolean> chunk : this.stormChunks.entrySet()) {
-                if (!chunk.getKey().isLoaded() || this.random.nextInt(16) != 0) {
+            for (Entry<Chunk, Boolean> entry : this.stormChunks.entrySet()) {
+                if (!entry.getKey().isLoaded() || this.random.nextInt(16) != 0) {
                     continue;
                 }
 
-                FrontLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, chunk.getKey(), true);
+                FrontsLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, entry.getKey(), true);
 
                 if (!location.isLoaded() || !this.storm.isInStorm(location)) {
                     continue;

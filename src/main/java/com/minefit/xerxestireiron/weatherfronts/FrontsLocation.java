@@ -7,27 +7,27 @@ import org.bukkit.block.Block;
 import com.minefit.xerxestireiron.weatherfronts.Simulator.Simulator;
 import com.minefit.xerxestireiron.weatherfronts.Storm.Storm;
 
-public class FrontLocation extends Location {
+public class FrontsLocation extends Location {
     private Simulator simulator;
     private World world;
     private BlockFunctions blockFunction;
 
-    public FrontLocation(Simulator simulator, double x, double y, double z) {
+    public FrontsLocation(Simulator simulator, double x, double y, double z) {
         super(simulator.getWorld(), x, y, z);
         this.simulator = simulator;
         this.world = simulator.getWorld();
         this.blockFunction = new BlockFunctions(simulator.getPlugin(), simulator);
     }
 
-    public FrontLocation(Simulator simulator, double x, double z) {
+    public FrontsLocation(Simulator simulator, double x, double z) {
         this(simulator, x, 0, z);
     }
 
-    public FrontLocation(Simulator simulator, Location location) {
+    public FrontsLocation(Simulator simulator, Location location) {
         this(simulator, location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
-    public FrontLocation(Simulator simulator, Block block) {
+    public FrontsLocation(Simulator simulator, Block block) {
         this(simulator, block.getLocation());
     }
 
@@ -69,7 +69,7 @@ public class FrontLocation extends Location {
 
     public Storm getStorm() {
         if (this.isInStorm()) {
-            return this.simulator.getFront(inWhichStorm());
+            return this.simulator.getStorm(inWhichStorm());
         }
 
         return null;

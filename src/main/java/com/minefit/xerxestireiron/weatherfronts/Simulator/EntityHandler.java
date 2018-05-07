@@ -32,7 +32,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.util.Vector;
 
-import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
+import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
 
@@ -72,7 +72,7 @@ public class EntityHandler implements Listener {
         }
 
         Entity entity = event.getEntity();
-        FrontLocation location = this.simulator.newFrontLocation(entity.getLocation());
+        FrontsLocation location = new FrontsLocation(this.simulator, entity.getLocation());
 
         if (!location.isLoaded() || !location.isInStorm()) {
             return;
@@ -94,7 +94,7 @@ public class EntityHandler implements Listener {
         }
 
         Entity entity = event.getEntity();
-        FrontLocation location = this.simulator.newFrontLocation(entity.getLocation());
+        FrontsLocation location = new FrontsLocation(this.simulator, entity.getLocation());
 
         if (!location.isLoaded() || !location.isInStorm()) {
             return;
@@ -125,7 +125,7 @@ public class EntityHandler implements Listener {
 
     public void changePlayerWeather() {
         for (Player player : this.world.getPlayers()) {
-            FrontLocation location = this.simulator.newFrontLocation(player.getLocation());
+            FrontsLocation location = new FrontsLocation(this.simulator, player.getLocation());
 
             if (!location.isInStorm()) {
                 if (player.getPlayerWeather() == null || !player.getPlayerWeather().equals(WeatherType.CLEAR)) {
@@ -145,7 +145,7 @@ public class EntityHandler implements Listener {
         Collection<Arrow> allArrows = this.world.getEntitiesByClass(Arrow.class);
 
         for (Arrow arrow : allArrows) {
-            if (this.simulator.newFrontLocation(arrow.getLocation()).isInRain()) {
+            if (new FrontsLocation(this.simulator, arrow.getLocation()).isInRain()) {
                 arrow.setFireTicks(0);
             }
         }
@@ -155,7 +155,7 @@ public class EntityHandler implements Listener {
         Collection<Blaze> allBlazes = this.world.getEntitiesByClass(Blaze.class);
 
         for (Blaze blaze : allBlazes) {
-            if (this.simulator.newFrontLocation(blaze.getLocation()).isInRain()) {
+            if (new FrontsLocation(this.simulator, blaze.getLocation()).isInRain()) {
                 blaze.damage(1.0);
             }
         }
@@ -165,7 +165,7 @@ public class EntityHandler implements Listener {
         Collection<Snowman> allSnowmen = this.world.getEntitiesByClass(Snowman.class);
 
         for (Snowman snowman : allSnowmen) {
-            if (this.simulator.newFrontLocation(snowman.getLocation()).isInRain()) {
+            if (new FrontsLocation(this.simulator, snowman.getLocation()).isInRain()) {
                 snowman.damage(1.0);
             }
         }
@@ -175,9 +175,9 @@ public class EntityHandler implements Listener {
         Collection<Enderman> allEndermen = this.world.getEntitiesByClass(Enderman.class);
 
         for (Enderman enderman : allEndermen) {
-            FrontLocation location = this.simulator.newFrontLocation(enderman.getLocation());
+            FrontsLocation location = new FrontsLocation(this.simulator, enderman.getLocation());
 
-            if (!this.simulator.newFrontLocation(enderman.getLocation()).isInRain()) {
+            if (!new FrontsLocation(this.simulator, enderman.getLocation()).isInRain()) {
                 continue;
             }
 
@@ -190,7 +190,7 @@ public class EntityHandler implements Listener {
                 int x = location.getBlockX() + this.random.nextInt(64) - 32;
                 int y = location.getBlockY() - this.random.nextInt(32);
                 int z = location.getBlockZ() + this.random.nextInt(64) - 32;
-                FrontLocation newLoc = this.simulator.newFrontLocation(x, y, z);
+                FrontsLocation newLoc = new FrontsLocation(this.simulator, x, y, z);
 
                 if (!newLoc.isLoaded()) {
                     continue;
@@ -226,7 +226,7 @@ public class EntityHandler implements Listener {
         Collection<Wolf> allWolves = this.world.getEntitiesByClass(Wolf.class);
 
         for (Wolf wolf : allWolves) {
-            FrontLocation location = this.simulator.newFrontLocation(wolf.getLocation());
+            FrontsLocation location = new FrontsLocation(this.simulator, wolf.getLocation());
 
             if (location.isInRain()) {
                 this.wolvesInRain.add(wolf);

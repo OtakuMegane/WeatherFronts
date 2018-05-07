@@ -77,9 +77,9 @@ public class FrontsWorld {
     }
 
     private Simulator whichSimulator(String stormName) {
-        for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            if (entry.getValue().simulatorHasFront(stormName)) {
-                return entry.getValue();
+        for (Entry<String, Simulator> simulator : this.simulators.entrySet()) {
+            if (simulator.getValue().simulatorHasStorm(stormName)) {
+                return simulator.getValue();
             }
         }
 
@@ -95,8 +95,8 @@ public class FrontsWorld {
     }
 
     public String locationInWhichStorm(int x, int z) {
-        for (Entry<String, Simulator> entry : this.simulators.entrySet()) {
-            String stormName = entry.getValue().locationInWhichStorm(x, z);
+        for (Entry<String, Simulator> simulator : this.simulators.entrySet()) {
+            String stormName = simulator.getValue().locationInWhichStorm(x, z);
 
             if (stormName != null) {
                 return stormName;

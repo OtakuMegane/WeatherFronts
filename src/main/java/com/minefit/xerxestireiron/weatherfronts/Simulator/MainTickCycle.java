@@ -37,7 +37,7 @@ public class MainTickCycle extends BukkitRunnable {
 
         for (Entry<String, Storm> entry : simulator.getStorms().entrySet()) {
             entry.getValue().genLightning();
-            entry.getValue().tickFrontChunks();
+            entry.getValue().tickStormChunks();
         }
     }
 }

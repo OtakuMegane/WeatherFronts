@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 import com.minefit.xerxestireiron.weatherfronts.BiomeData;
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
 import com.minefit.xerxestireiron.weatherfronts.ChunkFunctions;
-import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
+import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
 import com.minefit.xerxestireiron.weatherfronts.FrontsWorld.FrontsWorld;
@@ -81,7 +81,7 @@ public class MobSpawner {
                 continue;
             }
 
-            FrontLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, true);
+            FrontsLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, true);
 
             if (!location.isLoaded()) {
                 continue;
@@ -185,7 +185,7 @@ public class MobSpawner {
             centerX += this.random.nextInt(randomRange) - this.random.nextInt(randomRange);
             centerY += this.random.nextInt(1) - this.random.nextInt(1); // Who knows why this was in MC code lol
             centerZ += this.random.nextInt(randomRange) - this.random.nextInt(randomRange);
-            FrontLocation location = this.simulator.newFrontLocation(centerX, centerY, centerZ);
+            FrontsLocation location = new FrontsLocation(this.simulator, centerX, centerY, centerZ);
 
             if (location.getStorm() == null || !location.isLoaded() || !location.getStorm().hasLightning()
                     || !blockFunction.isInWeather(block)) {

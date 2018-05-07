@@ -33,30 +33,30 @@ public class RandomBasic implements WeatherSystem {
     }
 
     @Override
-    public boolean updateFront(Storm front)
+    public boolean updateStorm(Storm storm)
     {
-        moveFront(front);
-        ageFront(front);
-        return shouldDie(front, this.simulator);
+        moveStorm(storm);
+        ageStorm(storm);
+        return shouldDie(storm, this.simulator);
     }
 
     @Override
-    public void moveFront(Storm front) {
-        YamlConfiguration frontData = front.getData();
-        front.updatePosition(frontData.getInt("center-x") + frontData.getInt("velocity-x"),
-                frontData.getInt("center-z") + frontData.getInt("velocity-z"));
+    public void moveStorm(Storm storm) {
+        YamlConfiguration stormData = storm.getData();
+        storm.updatePosition(stormData.getInt("center-x") + stormData.getInt("velocity-x"),
+                stormData.getInt("center-z") + stormData.getInt("velocity-z"));
     }
 
     @Override
-    public boolean shouldDie(Storm front, Simulator simulator) {
-        int ageLimit = front.ageLimit();
-        int age = front.currentAge();
+    public boolean shouldDie(Storm storm, Simulator simulator) {
+        int ageLimit = storm.ageLimit();
+        int age = storm.currentAge();
 
         if (age > ageLimit && ageLimit != 0) {
             return true;
         }
 
-        if (!simulator.isInSimulator(front.getFrontLocation())) {
+        if (!simulator.isInSimulator(storm.getFrontsLocation())) {
             return true;
         }
 
@@ -64,16 +64,16 @@ public class RandomBasic implements WeatherSystem {
     }
 
     @Override
-    public void ageFront(Storm front) {
-        int age = front.currentAge() + 1;
-        front.changeAge(age);
+    public void ageStorm(Storm storm) {
+        int age = storm.currentAge() + 1;
+        storm.changeAge(age);
     }
 
     @Override
-    public Storm createFront(YamlConfiguration config) {
+    public Storm createStorm(YamlConfiguration config) {
         GenerateStormData generate = new GenerateStormData(this.plugin, this, config);
-        Storm front = new Storm(this.plugin, this.simulator, generate.generateValues());
-        return front;
+        Storm storm = new Storm(this.plugin, this.simulator, generate.generateValues());
+        return storm;
     }
 
     @Override

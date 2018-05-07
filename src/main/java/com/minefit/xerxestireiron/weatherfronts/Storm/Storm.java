@@ -9,7 +9,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.xerxestireiron.weatherfronts.DynmapFunctions;
-import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
+import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.SaveData;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
@@ -75,8 +75,8 @@ public class Storm {
                 this.id + ".yml");
     }
 
-    public FrontLocation getFrontLocation() {
-        return new FrontLocation(this.simulator, this.data.getInt("center-x"), this.data.getInt("center-z"));
+    public FrontsLocation getFrontsLocation() {
+        return new FrontsLocation(this.simulator, this.data.getInt("center-x"), this.data.getInt("center-z"));
     }
 
     public void updatePosition(int x, int z) {
@@ -171,7 +171,7 @@ public class Storm {
                 && z < boundaries[2].getY();
     }
 
-    public boolean isInStorm(FrontLocation location) {
+    public boolean isInStorm(FrontsLocation location) {
         return isInStorm(location.getBlockX(), location.getBlockZ());
     }
 
@@ -211,13 +211,13 @@ public class Storm {
         }
     }
 
-    public void tickFrontChunks() {
+    public void tickStormChunks() {
         this.chunkTick.tickDispatch();
     }
 
-    public FrontLocation randomLocationInFront() {
+    public FrontsLocation randomLocationInStorm() {
         double x = this.random.nextIntRangeInclusive(boundaries[0].getX(), boundaries[1].getX());
         double z = this.random.nextIntRangeInclusive(boundaries[1].getY(), boundaries[2].getY());
-        return new FrontLocation(simulator, x, z);
+        return new FrontsLocation(simulator, x, z);
     }
 }

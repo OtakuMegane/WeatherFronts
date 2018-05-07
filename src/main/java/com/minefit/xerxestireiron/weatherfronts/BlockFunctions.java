@@ -22,8 +22,8 @@ public class BlockFunctions {
         this.plugin = instance;
     }
 
-    public FrontLocation getFrontLocation(Block block) {
-        return this.simulator.newFrontLocation(block);
+    public FrontsLocation getFrontLocation(Block block) {
+        return new FrontsLocation(this.simulator, block);
     }
 
     public Block findHighestBlock(Location location, int start) {
@@ -161,7 +161,7 @@ public class BlockFunctions {
     }
 
     public boolean isInWeather(Block block) {
-        FrontLocation location = getFrontLocation(block);
+        FrontsLocation location = getFrontLocation(block);
         return location.isInStorm() && block.getY() >= getTopShelterBlock(location).getY();
     }
 

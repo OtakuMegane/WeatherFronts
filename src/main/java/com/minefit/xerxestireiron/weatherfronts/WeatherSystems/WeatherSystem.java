@@ -8,15 +8,15 @@ import com.minefit.xerxestireiron.weatherfronts.Storm.Storm;
 public interface WeatherSystem {
     public YamlConfiguration loadSystemParameters();
 
-    boolean updateFront(Storm storm);
+    boolean updateStorm(Storm storm);
 
-    public void moveFront(Storm storm);
+    public void moveStorm(Storm storm);
 
     public boolean shouldDie(Storm storm, Simulator simulator);
 
-    public void ageFront(Storm storm);
+    public void ageStorm(Storm storm);
 
-    public Storm createFront(YamlConfiguration config);
+    public Storm createStorm(YamlConfiguration config);
 
     public YamlConfiguration getConfig();
 

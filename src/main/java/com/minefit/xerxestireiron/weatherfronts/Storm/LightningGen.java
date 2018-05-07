@@ -5,7 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
-import com.minefit.xerxestireiron.weatherfronts.FrontLocation;
+import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
 
@@ -84,7 +84,7 @@ public class LightningGen {
     }
 
     private void randomStrike(World world) {
-        FrontLocation location = this.storm.randomLocationInFront();
+        FrontsLocation location = this.storm.randomLocationInStorm();
 
         if (!location.isLoaded()) {
             return;

@@ -14,14 +14,14 @@ public class ChunkFunctions {
         this.random = new XORShiftRandom();
     }
 
-    public FrontLocation randomLocationInChunk(Simulator simulator, Chunk chunk, boolean buffer) {
+    public FrontsLocation randomLocationInChunk(Simulator simulator, Chunk chunk, boolean buffer) {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         int x = chunkX << 4;
         int z = chunkZ << 4;
         int x2 = x + 16;
         int z2 = z + 16;
-        FrontLocation location = new FrontLocation(simulator, this.random.nextIntRange(x, x2),
+        FrontsLocation location = new FrontsLocation(simulator, this.random.nextIntRange(x, x2),
                 this.random.nextIntRange(z, z2));
 
         if (buffer) {
@@ -33,7 +33,7 @@ public class ChunkFunctions {
 
     // Making block changes at the edge of a chunk apparently causes the adjacent chunk to load/generate
     // This gives a slight buffer that seems to avoid the problem when needed
-    public FrontLocation adjustForUnloadedChunks(FrontLocation location) {
+    public FrontsLocation adjustForUnloadedChunks(FrontsLocation location) {
         int chunkX = location.getChunk().getX();
         int chunkZ = location.getChunk().getZ();
         World world = location.getWorld();
