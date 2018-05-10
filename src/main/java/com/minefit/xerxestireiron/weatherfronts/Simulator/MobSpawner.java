@@ -57,7 +57,7 @@ public class MobSpawner {
         Set<Chunk> playerChunks = collectPlayerChunks(validPlayers);
         int totalHostiles = countChunkSetHostiles(playerChunks);
         int worldHostileCap = (int) ((this.world.getMonsterSpawnLimit()
-                * (validPlayers.size() * (Math.pow((this.frontsWorld.getMobSpawnRange() * 2) + 1, 2))) / 256) + 1);
+                * (validPlayers.size() * (Math.pow((this.frontsWorld.getMobSpawnRange() * 2) + 1, 2))) / 256));
         // No point in doing our surface spawn routines at night, on Peaceful or if mob spawning is disabled
         if ((this.world.getTime() > 13187 && this.world.getTime() < 22812)
                 || this.world.getDifficulty() == Difficulty.PEACEFUL
