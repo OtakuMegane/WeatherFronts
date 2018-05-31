@@ -100,12 +100,12 @@ public class EntityHandler implements Listener {
             return;
         }
 
-        if (location.isInWeather() && location.getBlock().getLightFromSky() == 15) {
+        if (location.isInWeather() || location.getBlock().getLightFromSky() == 15) {
             if ((event instanceof EntityCombustByEntityEvent) || (event instanceof EntityCombustByBlockEvent)) {
                 return;
             }
 
-            if (entity instanceof Monster && !location.isInRain()) {
+            if (entity instanceof Monster) {
                 event.setCancelled(true);
                 return;
             }
