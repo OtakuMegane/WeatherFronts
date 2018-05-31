@@ -119,6 +119,7 @@ public class Simulator {
         if (canCreateStorm(command, autogen)) {
             Storm storm = this.system.createStorm(config);
             addStorm(storm);
+            storm.save();
             return storm;
         }
 
