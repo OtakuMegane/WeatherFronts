@@ -6,9 +6,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -130,6 +128,7 @@ public class Simulator {
     public void killStorm(String stormName)
     {
         this.storms.get(stormName).die();
+        this.storms.remove(stormName);
         this.dynmap.deleteMarker(world, this.id, stormName);
     }
 
