@@ -76,18 +76,14 @@ public class MobSpawner {
         Collections.shuffle(chunkList);
 
         for (Chunk chunk : chunkList) {
-            // Regulate spawn rate since we only check surface locations
-            if (this.random.nextInt(16) != 0) {
+            // Throttle spawn rate since we only check surface locations
+            if (this.random.nextInt(128) != 0) {
                 continue;
             }
 
             FrontsLocation location = this.chunkFunction.randomLocationInChunk(simulator, chunk, true);
 
             if (!location.isLoaded()) {
-                continue;
-            }
-
-            if (!this.world.isChunkInUse(chunk.getX(), chunk.getZ())) {
                 continue;
             }
 
@@ -226,8 +222,9 @@ public class MobSpawner {
             }
 
             if (overworldHostileCanSpawn(block2, mobWidth, mobHeight)) {
+                location.setX(location.getX() + 0.5);
+                location.setZ(location.getZ() + 0.5);
                 this.world.spawnEntity(location, mob);
-                //this.plugin.logger.info("SPAWNED!  " + location + "  " + mob);
                 ++packMobs;
             }
         }
