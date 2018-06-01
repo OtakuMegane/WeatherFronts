@@ -40,6 +40,12 @@ public class PacketHandler {
 
         YamlConfiguration simConfig = frontsWorld.getSimulatorByStorm(stormName).getSimulatorConfig();
         int volume = simConfig.getInt("thunder-volume", 192);
+
+        // Make sure intracloud lightning isn't too quiet
+        if (y > 255) {
+            volume += y - 255;
+        }
+
         int hearOutside = simConfig.getInt("thunder-distance-outside", 90);
         Location playerLoc = event.getPlayer().getLocation();
         int playerX = playerLoc.getBlockX();

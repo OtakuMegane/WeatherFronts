@@ -33,6 +33,7 @@ public class Storm {
     private final XORShiftRandom random;
     private boolean hasLightning;
     private final SaveData save;
+    private int intracloudPercentage;
 
     public Storm(WeatherFronts instance, Simulator simulator, YamlConfiguration data) {
         this.plugin = instance;
@@ -51,6 +52,7 @@ public class Storm {
         this.plugin.getServer().getPluginManager().registerEvents(listener, this.plugin);
         this.random = new XORShiftRandom();
         this.hasLightning = this.data.getInt("lightning-per-minute") >= 0;
+        this.intracloudPercentage = this.data.getInt("intracloud-percentage");
         updateStormBoundaries();
         this.dynmap.addMarker(this.world.getName(), this.name, getStormBoundaries());
         updateStormChunks();
@@ -70,8 +72,7 @@ public class Storm {
 
     public void die() {
         String file_separator = System.getProperty("file.separator");
-        this.save.removeFile(
-                this.world.getName() + file_separator + this.simulator.getID() + file_separator + "storms",
+        this.save.removeFile(this.world.getName() + file_separator + this.simulator.getID() + file_separator + "storms",
                 this.id + ".yml");
     }
 
@@ -118,6 +119,10 @@ public class Storm {
 
     public boolean spawnHostile() {
         return this.hostileSpawn;
+    }
+
+    public int intracloudPecentage() {
+        return this.intracloudPercentage;
     }
 
     public void update() {

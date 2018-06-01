@@ -32,6 +32,7 @@ public class GenerateStormData {
         stormIntensity();
         stormShape();
         lightningRate();
+        intracloudLightning();
         stormAgeLimit();
         this.stormValues.set("age", 0);
         return this.stormValues;
@@ -122,6 +123,13 @@ public class GenerateStormData {
             } else {
                 this.stormValues.set("lightning-per-minute", 0);
             }
+        }
+    }
+
+    private void intracloudLightning() {
+        this.plugin.logger.info("int input " + this.stormValues.getInt("intracloud-percentage"));
+        if (!this.stormValues.contains("intracloud-percentage")) {
+            this.stormValues.set("intracloud-percentage", intFromMinMax("intracloud"));
         }
     }
 

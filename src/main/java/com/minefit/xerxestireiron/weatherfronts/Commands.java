@@ -130,6 +130,8 @@ public class Commands implements CommandExecutor {
                     newStormConfig.set("age", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-shp")) {
                     newStormConfig.set("shape", currentValue);
+                } else if (currentArgument.equalsIgnoreCase("-icp")) {
+                    newStormConfig.set("intracloud-percentage", Integer.parseInt(currentValue));
                 } else if (currentArgument.equalsIgnoreCase("-sim")) {
                     newFrontSimulatorName = currentValue;
                 } else {

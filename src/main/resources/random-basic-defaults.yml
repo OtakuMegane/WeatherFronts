@@ -57,6 +57,12 @@ chance-rain-to-thunder: 10
 ## UNUSED ##
 chance-thunder-to-rain: 5
 
+# Minimum percentage of lightning that does not strike the ground
+minimum-intracloud: 30
+
+# Maximum percentage of lightning that does not strike the ground
+maximum-intracloud: 70
+
 # Precipitation intensity is the amount of precipitation from a front. Scale ranges from 1-100.
 # At present it affects the rate of snow formation, cauldrons being filled, farmland hydration and optionally the light level
 # An intensity of 10 is approximately the same as vanilla rain
@@ -73,7 +79,7 @@ maximum-precipitation-intensity: 30
 minimum-lightning-per-minute: 1
 
 # Maximum lightning strikes per minute
-maximum-lightning-per-minute: 40
+maximum-lightning-per-minute: 50
 
 # Minimum speed of a front on X-axis East/West (blocks/s)
 minimum-velocity-x: 3

@@ -92,12 +92,18 @@ public class LightningGen {
 
         boolean lightningDry = this.simulatorConfig.getBoolean("lightning-in-dry-biomes", false);
         boolean lightningCold = this.simulatorConfig.getBoolean("lightning-in-cold-biomes", false);
-        Block block = this.blockFunction.getTopBlockLightningValid(location);
 
-        if ((!this.blockFunction.isDry(block) && !this.blockFunction.isCold(block))
-                || (this.blockFunction.isDry(block) && lightningDry)
-                || (this.blockFunction.isCold(block) && lightningCold)) {
-            world.strikeLightning(block.getLocation());
+        if (this.random.nextInt(100) < this.storm.intracloudPecentage()) {
+            location.setY(this.random.nextInt(45) + 256);
+            world.strikeLightning(location);
+        } else {
+            Block block = this.blockFunction.getTopBlockLightningValid(location);
+
+            if ((!this.blockFunction.isDry(block) && !this.blockFunction.isCold(block))
+                    || (this.blockFunction.isDry(block) && lightningDry)
+                    || (this.blockFunction.isCold(block) && lightningCold)) {
+                world.strikeLightning(block.getLocation());
+            }
         }
     }
 }
