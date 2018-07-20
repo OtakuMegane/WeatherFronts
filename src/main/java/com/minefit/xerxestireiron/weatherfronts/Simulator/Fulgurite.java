@@ -51,7 +51,7 @@ public class Fulgurite {
             block.setType(Material.GLASS);
             success = true;
         } else if (blockType == Material.CLAY) {
-            block.setType(Material.HARD_CLAY);
+            block.setType(Material.TERRACOTTA);
             success = true;
         }
 

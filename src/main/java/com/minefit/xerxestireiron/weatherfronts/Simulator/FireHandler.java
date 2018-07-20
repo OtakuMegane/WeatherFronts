@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Fish;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -150,7 +151,7 @@ public class FireHandler implements Listener {
             return;
         }
 
-        Fish hook = event.getHook();
+        FishHook hook = event.getHook();
         FrontsLocation hookLocation = new FrontsLocation(this.simulator, hook.getLocation());
 
         if (!hookLocation.isInWeather()) {
@@ -251,7 +252,7 @@ public class FireHandler implements Listener {
 
         Material downType = block.getRelative(BlockFace.DOWN).getType();
 
-        if (downType.equals(Material.NETHERRACK) || downType.equals(Material.MAGMA)) {
+        if (downType.equals(Material.NETHERRACK) || downType.equals(Material.MAGMA_BLOCK)) {
             return false;
         }
 

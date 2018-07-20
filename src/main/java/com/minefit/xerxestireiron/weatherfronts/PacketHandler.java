@@ -21,7 +21,7 @@ public class PacketHandler {
     public void onSoundPacket(PacketEvent event) {
         event.setCancelled(true);
         World world = event.getPlayer().getWorld();
-        boolean isThunder = event.getPacket().getSoundEffects().read(0) == Sound.ENTITY_LIGHTNING_THUNDER;
+        boolean isThunder = event.getPacket().getSoundEffects().read(0) == Sound.ENTITY_LIGHTNING_BOLT_THUNDER;
 
         if (!this.plugin.worldEnabled(world) || !isThunder) {
             event.setCancelled(false);

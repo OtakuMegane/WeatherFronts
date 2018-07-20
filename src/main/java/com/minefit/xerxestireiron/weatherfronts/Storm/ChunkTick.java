@@ -7,6 +7,8 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Farmland;
+import org.bukkit.material.Cauldron;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
 import com.minefit.xerxestireiron.weatherfronts.ChunkFunctions;
@@ -79,7 +81,7 @@ public class ChunkTick {
 
                 if (block.getType() == Material.CAULDRON) {
                     fillCauldron(block);
-                } else if (block.getType() == Material.SOIL) {
+                } else if (block.getType() == Material.FARMLAND) {
                     hydrateFarmland(block);
                 }
             }
@@ -89,14 +91,17 @@ public class ChunkTick {
     }
 
     private void fillCauldron(Block block) {
-        if (block.getData() < 3) {
-            block.setData((byte) (block.getData() + 1));
+        Cauldron cauldron = (Cauldron) block.getBlockData();
+        if (!cauldron.isFull()) {
+            cauldron.setData((byte) (cauldron.getData() + 1));
         }
     }
 
     private void hydrateFarmland(Block block) {
-        if (block.getData() < 7) {
-            block.setData((byte) 6);
+        Farmland farmland = (Farmland) block.getBlockData();
+
+        if ( farmland.getMoisture() < farmland.getMaximumMoisture()) {
+            farmland.setMoisture(6);
         }
     }
 

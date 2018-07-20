@@ -2,6 +2,7 @@ package com.minefit.xerxestireiron.weatherfronts.Storm;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Farmland;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,10 +29,12 @@ public class StormListener implements Listener {
     public void onFarmlandDecay(BlockFadeEvent event) {
         Block block = event.getBlock();
 
-        if (this.blockFunction.isInRain(block) && block.getType() == Material.SOIL) {
-            if (block.getData() < 7) {
-                event.setCancelled(true);
-                block.setData((byte) 6);
+        if (this.blockFunction.isInRain(block) && block.getType() == Material.FARMLAND) {
+            event.setCancelled(true);
+            Farmland farmland = (Farmland) block.getBlockData();
+
+            if ( farmland.getMoisture() < farmland.getMaximumMoisture()) {
+                farmland.setMoisture(6);
             }
         }
     }

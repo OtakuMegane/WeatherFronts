@@ -138,7 +138,7 @@ public class BlockFunctions {
 
     public boolean isShelter(Block block) {
         Material material = block.getType();
-        return !material.isTransparent() && material != Material.WEB;
+        return !material.isTransparent() && material != Material.COBWEB;
     }
 
     public boolean canFormSnow(Block block) {
@@ -152,7 +152,9 @@ public class BlockFunctions {
         Material material = block.getType();
 
         return (material.isOccluding() && material != Material.PACKED_ICE && material != Material.BARRIER)
-                || (material == Material.TNT || material == Material.LEAVES || material == Material.LEAVES_2)
+                || (material == Material.TNT || material == Material.OAK_LEAVES || material == Material.BIRCH_LEAVES
+                        || material == Material.DARK_OAK_LEAVES || material == Material.JUNGLE_LEAVES
+                        || material == Material.SPRUCE_LEAVES || material == Material.ACACIA_LEAVES)
                 || invertedStairs;
     }
 

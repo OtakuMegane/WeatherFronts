@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fish;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Horse;
 
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
@@ -46,7 +47,8 @@ public class NMSHandler {
         }
     }
 
-    public void fishingTime(Fish hook, int time) {
+    // TODO: Update this
+    public void fishingTime(FishHook hook, int time) {
 
         try {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
@@ -74,7 +76,8 @@ public class NMSHandler {
         }
     }
 
-    public int getRodLureLevel(Fish hook) {
+    // TODO: Update this
+    public int getRodLureLevel(FishHook hook) {
 
         try {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);

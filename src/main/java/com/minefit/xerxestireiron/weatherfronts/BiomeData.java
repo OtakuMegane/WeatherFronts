@@ -34,10 +34,10 @@ public class BiomeData {
     }
 
     public boolean isFrozen(Biome biome) {
-        return biome == Biome.FROZEN_OCEAN || biome == Biome.FROZEN_RIVER || biome == Biome.ICE_FLATS
-                || biome == Biome.ICE_MOUNTAINS || biome == Biome.COLD_BEACH || biome == Biome.TAIGA_COLD
-                || biome == Biome.TAIGA_COLD_HILLS || biome == Biome.MUTATED_ICE_FLATS
-                || biome == Biome.MUTATED_TAIGA_COLD;
+        return biome == Biome.FROZEN_OCEAN || biome == Biome.FROZEN_RIVER || biome == Biome.SNOWY_TUNDRA
+                || biome == Biome.SNOWY_MOUNTAINS || biome == Biome.SNOWY_BEACH || biome == Biome.SNOWY_TAIGA
+                || biome == Biome.SNOWY_TAIGA_MOUNTAINS || biome == Biome.ICE_SPIKES
+                || biome == Biome.SNOWY_TAIGA_MOUNTAINS;
     }
 
     public boolean isFrozen(Block block) {
@@ -45,12 +45,12 @@ public class BiomeData {
     }
 
     public boolean isCold(Biome biome) {
-        return biome == Biome.EXTREME_HILLS || biome == Biome.TAIGA || biome == Biome.TAIGA_HILLS
-                || biome == Biome.SMALLER_EXTREME_HILLS || biome == Biome.STONE_BEACH || biome == Biome.REDWOOD_TAIGA
-                || biome == Biome.REDWOOD_TAIGA_HILLS || biome == Biome.EXTREME_HILLS_WITH_TREES
-                || biome == Biome.MUTATED_EXTREME_HILLS || biome == Biome.MUTATED_TAIGA
-                || biome == Biome.MUTATED_REDWOOD_TAIGA || biome == Biome.MUTATED_REDWOOD_TAIGA_HILLS
-                || biome == Biome.MUTATED_EXTREME_HILLS_WITH_TREES;
+        return biome == Biome.MOUNTAINS || biome == Biome.TAIGA || biome == Biome.TAIGA_HILLS
+                || biome == Biome.MOUNTAIN_EDGE || biome == Biome.STONE_SHORE || biome == Biome.GIANT_TREE_TAIGA
+                || biome == Biome.GIANT_TREE_TAIGA_HILLS || biome == Biome.WOODED_MOUNTAINS
+                || biome == Biome.GRAVELLY_MOUNTAINS || biome == Biome.TAIGA_MOUNTAINS
+                || biome == Biome.GIANT_SPRUCE_TAIGA || biome == Biome.GIANT_SPRUCE_TAIGA_HILLS
+                || biome == Biome.MODIFIED_GRAVELLY_MOUNTAINS;
     }
 
     public boolean isCold(Block block) {
@@ -58,15 +58,15 @@ public class BiomeData {
     }
 
     public boolean isWarm(Biome biome) {
-        return biome == Biome.OCEAN || biome == Biome.PLAINS || biome == Biome.FOREST || biome == Biome.SWAMPLAND
-                || biome == Biome.RIVER || biome == Biome.MUSHROOM_ISLAND || biome == Biome.MUSHROOM_ISLAND_SHORE
-                || biome == Biome.BEACHES || biome == Biome.FOREST_HILLS || biome == Biome.JUNGLE
+        return biome == Biome.OCEAN || biome == Biome.PLAINS || biome == Biome.FOREST || biome == Biome.SWAMP
+                || biome == Biome.RIVER || biome == Biome.MUSHROOM_FIELDS || biome == Biome.MUSHROOM_FIELD_SHORE
+                || biome == Biome.BEACH || biome == Biome.WOODED_HILLS || biome == Biome.JUNGLE
                 || biome == Biome.JUNGLE_HILLS || biome == Biome.JUNGLE_EDGE || biome == Biome.DEEP_OCEAN
-                || biome == Biome.BIRCH_FOREST || biome == Biome.BIRCH_FOREST_HILLS || biome == Biome.ROOFED_FOREST
-                || biome == Biome.MUTATED_PLAINS || biome == Biome.MUTATED_FOREST || biome == Biome.MUTATED_SWAMPLAND
-                || biome == Biome.MUTATED_JUNGLE || biome == Biome.MUTATED_JUNGLE_EDGE
-                || biome == Biome.MUTATED_BIRCH_FOREST || biome == Biome.MUTATED_BIRCH_FOREST_HILLS
-                || biome == Biome.MUTATED_ROOFED_FOREST;
+                || biome == Biome.BIRCH_FOREST || biome == Biome.BIRCH_FOREST_HILLS || biome == Biome.DARK_FOREST
+                || biome == Biome.SUNFLOWER_PLAINS || biome == Biome.FLOWER_FOREST || biome == Biome.SWAMP_HILLS
+                || biome == Biome.MODIFIED_JUNGLE || biome == Biome.MODIFIED_JUNGLE_EDGE
+                || biome == Biome.TALL_BIRCH_FOREST || biome == Biome.TALL_BIRCH_HILLS
+                || biome == Biome.DARK_FOREST_HILLS;
     }
 
     public boolean isWarm(Block block) {
@@ -75,10 +75,10 @@ public class BiomeData {
 
     public boolean isDry(Biome biome) {
         return biome == Biome.DESERT || biome == Biome.DESERT_HILLS || biome == Biome.SAVANNA
-                || biome == Biome.SAVANNA_ROCK || biome == Biome.MESA || biome == Biome.MESA_ROCK
-                || biome == Biome.MESA_CLEAR_ROCK || biome == Biome.MUTATED_DESERT || biome == Biome.MUTATED_SAVANNA
-                || biome == Biome.MUTATED_SAVANNA_ROCK || biome == Biome.MUTATED_MESA
-                || biome == Biome.MUTATED_MESA_ROCK || biome == Biome.MUTATED_MESA_CLEAR_ROCK;
+                || biome == Biome.SAVANNA_PLATEAU || biome == Biome.BADLANDS || biome == Biome.WOODED_BADLANDS_PLATEAU
+                || biome == Biome.BADLANDS_PLATEAU || biome == Biome.DESERT_LAKES || biome == Biome.SHATTERED_SAVANNA
+                || biome == Biome.SHATTERED_SAVANNA_PLATEAU|| biome == Biome.ERODED_BADLANDS
+                || biome == Biome.MODIFIED_WOODED_BADLANDS_PLATEAU || biome == Biome.MODIFIED_BADLANDS_PLATEAU;
     }
 
     public boolean isDry(Block block) {
@@ -102,6 +102,6 @@ public class BiomeData {
     }
 
     public boolean isSafe(Biome biome) {
-        return biome == Biome.MUSHROOM_ISLAND || biome == Biome.MUSHROOM_ISLAND_SHORE;
+        return biome == Biome.MUSHROOM_FIELDS || biome == Biome.MUSHROOM_FIELD_SHORE;
     }
 }

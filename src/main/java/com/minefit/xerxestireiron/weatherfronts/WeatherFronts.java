@@ -35,7 +35,7 @@ public class WeatherFronts extends JavaPlugin {
     public final String outputPrefix;
 
     public WeatherFronts() {
-        this.compatibleVersions = Arrays.asList("v1_10_R1", "v1_11_R1", "v1_12_R1");
+        this.compatibleVersions = Arrays.asList("v1_13_R1");
         this.outputPrefix = "[" + this.getName() + "] ";
     }
 
