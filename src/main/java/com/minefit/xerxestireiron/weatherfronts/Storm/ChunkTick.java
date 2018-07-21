@@ -7,6 +7,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.type.Farmland;
 import org.bukkit.material.Cauldron;
 
@@ -91,9 +92,10 @@ public class ChunkTick {
     }
 
     private void fillCauldron(Block block) {
-        Cauldron cauldron = (Cauldron) block.getBlockData();
-        if (!cauldron.isFull()) {
-            cauldron.setData((byte) (cauldron.getData() + 1));
+        Levelled cauldron = (Levelled) block.getBlockData();
+        if (cauldron.getLevel() < cauldron.getMaximumLevel()) {
+            cauldron.setLevel(cauldron.getLevel()  + 1);
+            block.setBlockData(cauldron);
         }
     }
 

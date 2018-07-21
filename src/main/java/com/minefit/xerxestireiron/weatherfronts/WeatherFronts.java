@@ -68,6 +68,7 @@ public class WeatherFronts extends JavaPlugin {
         });
 
         for (String worldName : this.mainConfig.getConfigurationSection("worlds-enabled").getKeys(false)) {
+            System.out.print("world " + worldName);
             addWorld(worldName);
         }
 

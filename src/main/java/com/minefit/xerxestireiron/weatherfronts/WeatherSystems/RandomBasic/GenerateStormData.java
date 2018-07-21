@@ -127,7 +127,6 @@ public class GenerateStormData {
     }
 
     private void intracloudLightning() {
-        this.plugin.logger.info("int input " + this.stormValues.getInt("intracloud-percentage"));
         if (!this.stormValues.contains("intracloud-percentage")) {
             this.stormValues.set("intracloud-percentage", intFromMinMax("intracloud"));
         }
