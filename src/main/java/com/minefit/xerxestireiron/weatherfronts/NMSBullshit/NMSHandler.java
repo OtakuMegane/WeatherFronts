@@ -29,14 +29,9 @@ public class NMSHandler {
             String fieldName = null;
             Entity entity = null;
 
-            if (this.nmsVersion.equals("v1_11_R1") || this.nmsVersion.equals("v1_12_R1")) {
+            if (this.nmsVersion.equals("v1_13_R1")) {
                 entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
-                fieldName = "p";
-            } else if (this.nmsVersion.equals("v1_10_R1")) {
-                entity = location.getWorld().spawnEntity(location, EntityType.HORSE);
-                Horse e2 = (Horse) entity;
-                e2.setVariant(org.bukkit.entity.Horse.Variant.SKELETON_HORSE);
-                fieldName = "y";
+                fieldName = "s";
             }
 
             Object nmsHorse = this.nmsAPI.bukkitToNMS(entity);
@@ -54,11 +49,7 @@ public class NMSHandler {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
             String fieldName = null;
 
-            if (this.nmsVersion.equals("v1_10_R1")) {
-                fieldName = "av";
-            } else if (this.nmsVersion.equals("v1_11_R1")) {
-                fieldName = "h";
-            } else if (this.nmsVersion.equals("v1_12_R1")) {
+            if (this.nmsVersion.equals("v1_13_R1")) {
                 fieldName = "h";
             } else {
                 return;
@@ -67,10 +58,9 @@ public class NMSHandler {
             Field fishTime = nmsHook.getClass().getDeclaredField(fieldName);
             fishTime.setAccessible(true);
             fishTime.setInt(nmsHook, time);
-            fishTime.setAccessible(false);
 
             Field en = nmsHook.getClass().getDeclaredField("ax");
-            this.plugin.logger.info("enchant " + en.get(nmsHook));
+            this.plugin.logger.info("enchant " + en.get(nmsHook)); // TODO remove
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,10 +73,8 @@ public class NMSHandler {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
             String fieldName = null;
 
-            if (this.nmsVersion.equals("v1_11_R1")) {
-                fieldName = "ax";
-            } else if (this.nmsVersion.equals("v1_12_R1")) {
-                fieldName = "ax";
+            if (this.nmsVersion.equals("v1_13_R1")) {
+                fieldName = "aA";
             } else {
                 return 0;
             }
