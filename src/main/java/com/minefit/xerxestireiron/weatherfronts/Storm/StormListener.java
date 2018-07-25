@@ -35,6 +35,7 @@ public class StormListener implements Listener {
 
             if ( farmland.getMoisture() < farmland.getMaximumMoisture()) {
                 farmland.setMoisture(6);
+                block.setBlockData(farmland);
             }
         }
     }
