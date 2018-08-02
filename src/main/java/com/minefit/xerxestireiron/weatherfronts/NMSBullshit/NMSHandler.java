@@ -6,9 +6,7 @@ import java.lang.reflect.Method;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Fish;
 import org.bukkit.entity.FishHook;
-import org.bukkit.entity.Horse;
 
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 
@@ -42,7 +40,6 @@ public class NMSHandler {
         }
     }
 
-    // TODO: Update this
     public void fishingTime(FishHook hook, int time) {
 
         try {
@@ -58,15 +55,11 @@ public class NMSHandler {
             Field fishTime = nmsHook.getClass().getDeclaredField(fieldName);
             fishTime.setAccessible(true);
             fishTime.setInt(nmsHook, time);
-
-            Field en = nmsHook.getClass().getDeclaredField("ax");
-            this.plugin.logger.info("enchant " + en.get(nmsHook)); // TODO remove
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // TODO: Update this
     public int getRodLureLevel(FishHook hook) {
 
         try {
@@ -79,9 +72,9 @@ public class NMSHandler {
                 return 0;
             }
 
-            Field en = nmsHook.getClass().getDeclaredField(fieldName);
-            en.setAccessible(true);
-            return en.getInt(nmsHook);
+            Field lureLevel = nmsHook.getClass().getDeclaredField(fieldName);
+            lureLevel.setAccessible(true);
+            return lureLevel.getInt(nmsHook);
         } catch (Exception e) {
             e.printStackTrace();
         }
