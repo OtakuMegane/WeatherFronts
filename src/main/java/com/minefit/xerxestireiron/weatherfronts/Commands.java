@@ -67,7 +67,7 @@ public class Commands implements CommandExecutor {
                         + newStorm.getData().getInt("center-z"));
                 return true;
             } else {
-                player.sendMessage("Storm was not able to form in world " + newStorm.getWorld().getName());
+                player.sendMessage("Storm was not able to form in world " + newFrontWorldName);
                 return true;
             }
         }
