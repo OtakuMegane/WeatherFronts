@@ -93,6 +93,7 @@ public class ChunkTick {
 
     private void fillCauldron(Block block) {
         Levelled cauldron = (Levelled) block.getBlockData();
+
         if (cauldron.getLevel() < cauldron.getMaximumLevel()) {
             cauldron.setLevel(cauldron.getLevel()  + 1);
             block.setBlockData(cauldron);

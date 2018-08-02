@@ -133,12 +133,18 @@ public class BlockFunctions {
     }
 
     public boolean mobCanSpawnInBlock(Block block) {
-        return block.getType().isTransparent() && !block.isLiquid();
+        Material material = block.getType();
+        return !material.isSolid() && !block.isLiquid();
+    }
+
+    public boolean mobCanSpawnOnBlock(Block block) {
+        Material material = block.getType();
+        return material.isSolid() && material.isOccluding();
     }
 
     public boolean isShelter(Block block) {
         Material material = block.getType();
-        return !material.isTransparent() && material != Material.COBWEB;
+        return material.isSolid();
     }
 
     public boolean canFormSnow(Block block) {

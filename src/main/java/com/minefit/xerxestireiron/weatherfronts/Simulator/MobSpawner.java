@@ -56,8 +56,7 @@ public class MobSpawner {
         Set<Player> validPlayers = getValidPlayers();
         Set<Chunk> playerChunks = collectPlayerChunks(validPlayers);
         int totalHostiles = countChunkSetHostiles(playerChunks);
-        int worldHostileCap = (int) ((this.world.getMonsterSpawnLimit()
-                * (validPlayers.size() * (Math.pow((this.frontsWorld.getMobSpawnRange() * 2) + 1, 2))) / 256));
+        int worldHostileCap = (int) (this.world.getMonsterSpawnLimit() * (playerChunks.size()) / 256);
         // No point in doing our surface spawn routines at night, on Peaceful or if mob spawning is disabled
         if ((this.world.getTime() > 13187 && this.world.getTime() < 22812)
                 || this.world.getDifficulty() == Difficulty.PEACEFUL
@@ -179,7 +178,7 @@ public class MobSpawner {
             }
 
             centerX += this.random.nextInt(randomRange) - this.random.nextInt(randomRange);
-            centerY += this.random.nextInt(1) - this.random.nextInt(1); // Who knows why this was in MC code lol
+            centerY += this.random.nextInt(1) - this.random.nextInt(1);
             centerZ += this.random.nextInt(randomRange) - this.random.nextInt(randomRange);
             FrontsLocation location = new FrontsLocation(this.simulator, centerX, centerY, centerZ);
 
@@ -191,7 +190,7 @@ public class MobSpawner {
             Block block2 = location.getBlock();
             Block block2down = block2.getRelative(BlockFace.DOWN);
 
-            if (!this.blockFunction.mobCanSpawnInBlock(block2) || !block2down.getType().isOccluding()) {
+            if (!this.blockFunction.mobCanSpawnInBlock(block2) || !this.blockFunction.mobCanSpawnOnBlock(block2down)) {
                 continue;
             }
 
