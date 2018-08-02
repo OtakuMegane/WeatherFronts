@@ -16,6 +16,7 @@ import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowman;
@@ -29,12 +30,14 @@ import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.util.Vector;
 
 import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
+import com.minefit.xerxestireiron.weatherfronts.NMSBullshit.NMSHandler;
 
 public class EntityHandler implements Listener {
     private final XORShiftRandom random = new XORShiftRandom();
@@ -42,11 +45,13 @@ public class EntityHandler implements Listener {
     private final Set<Wolf> wolvesInRain = new HashSet<>();
     private final Simulator simulator;
     private final World world;
+    private final NMSHandler nmsHandler;
 
     public EntityHandler(WeatherFronts instance, Simulator simulator) {
         this.plugin = instance;
         this.simulator = simulator;
         this.world = simulator.getWorld();
+        this.nmsHandler = new NMSHandler(this.plugin);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -121,6 +126,40 @@ public class EntityHandler implements Listener {
         }
 
         changePlayerWeather();
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    private void onPlayerFish(PlayerFishEvent event) {
+        Player player = event.getPlayer();
+
+        if (event.isCancelled() || event.getState() != PlayerFishEvent.State.FISHING
+                || !this.plugin.worldEnabled(player.getWorld())) {
+            return;
+        }
+
+        FishHook hook = event.getHook();
+        FrontsLocation hookLocation = new FrontsLocation(this.simulator, hook.getLocation());
+
+        if (!hookLocation.isInWeather()) {
+            return;
+        }
+
+        int hookTime = this.random.nextIntRange(100, 600);
+
+        if (!hookLocation.isExposedToSky()) {
+            hookTime *= 1.5; // If the bobber location is sheltered we increase time by 50%
+        }
+
+        double reductionPercentage = this.simulator.getSimulatorConfig().getDouble("fishing-time-reduction", 20);
+        double reductionTime = (reductionPercentage / 100) * hookTime;
+        hookTime = (int) Math.round(hookTime - reductionTime);
+        hookTime -= this.nmsHandler.getRodLureLevel(hook) * 20 * 5;
+
+        if (hookTime <= 0) {
+            hookTime = 1;
+        }
+
+        this.nmsHandler.fishingTime(hook, hookTime);
     }
 
     public void changePlayerWeather() {
