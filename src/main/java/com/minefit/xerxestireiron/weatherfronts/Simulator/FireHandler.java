@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -55,9 +56,9 @@ public class FireHandler implements Listener {
             if (this.fastExtinguish) {
                 fastExtinguishFire(block);
             } else {
-                int age = block.getData();
+                Ageable fire = (Ageable) block.getBlockData();
 
-                if (random.nextInt(20) == 0 && random.nextFloat() < 0.2F + (float) age * 0.03F) {
+                if (random.nextInt(20) == 0 && random.nextFloat() < 0.2F + (float) fire.getAge() * 0.03F) {
                     removeFire(block);
                 }
             }
@@ -65,10 +66,10 @@ public class FireHandler implements Listener {
     }
 
     public void fastExtinguishFire(Block block) {
-        int age = block.getData();
+        Ageable fire = (Ageable) block.getBlockData();
         int fireStatus = this.fireBlocks.get(block);
 
-        if (age >= 15 || fireStatus >= 30) {
+        if (fire.getAge() >= 15 || fireStatus >= 30) {
             if (random.nextInt(4) == 0) {
                 removeFire(block);
             }
