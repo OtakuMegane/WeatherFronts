@@ -65,35 +65,6 @@ public class BlockFunctions {
         return getTopShelterBlock(block.getLocation());
     }
 
-    public Block getTopLiquidBlock(Location location) {
-        Block block = findHighestBlock(location, 255);
-
-        for (int start = block.getY(); start > 0; --start) {
-            if (block.isLiquid()) {
-                return block;
-            }
-
-            start = block.getY() - 1;
-            block = findHighestBlock(location, start);
-        }
-
-        return block;
-    }
-
-    public Block getTopSolidBlock(Location location) {
-        Block block = findHighestBlock(location, 255);
-
-        for (int start = block.getY(); start > 0; --start) {
-            if (block.getType().isSolid()) {
-                return block;
-            }
-
-            block = findHighestBlock(location, start);
-        }
-
-        return block;
-    }
-
     public Block getTopOccludingBlock(Location location) {
         Block block = findHighestBlock(location, 255);
 
@@ -121,10 +92,6 @@ public class BlockFunctions {
         }
 
         return block;
-    }
-
-    public Block getTopEmptyBlock(Location location) {
-        return findHighestBlock(location, 255).getRelative(BlockFace.UP);
     }
 
     public boolean adjacentBlockExposed(Block block) {
