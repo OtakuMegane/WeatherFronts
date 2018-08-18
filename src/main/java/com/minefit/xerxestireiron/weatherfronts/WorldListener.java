@@ -24,7 +24,13 @@ public class WorldListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onWorldUnload(WorldUnloadEvent event) {
-        String worldName = event.getWorld().getName();
+        World world = event.getWorld();
+
+        if (!this.plugin.worldEnabled(world)) {
+            return;
+        }
+
+        String worldName = world.getName();
         FrontsWorld handle = this.plugin.getWorldHandle(worldName);
         handle.saveStorms();
         handle.saveSimulators();
