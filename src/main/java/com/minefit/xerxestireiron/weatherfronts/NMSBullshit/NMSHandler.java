@@ -22,18 +22,20 @@ public class NMSHandler {
     }
 
     public void createHorseTrap(Location location) {
-
         try {
-            String fieldName = null;
+            String methodName = null;
             Entity entity = null;
 
             if (this.nmsVersion.equals("v1_13_R1")) {
                 entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
-                fieldName = "s";
+                methodName = "s";
+            } else if (this.nmsVersion.equals("v1_13_R2")) {
+                entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
+                methodName = "s";
             }
 
             Object nmsHorse = this.nmsAPI.bukkitToNMS(entity);
-            Method isTrap = nmsHorse.getClass().getMethod(fieldName, boolean.class);
+            Method isTrap = nmsHorse.getClass().getMethod(methodName, boolean.class);
             isTrap.invoke(nmsHorse, true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,12 +43,13 @@ public class NMSHandler {
     }
 
     public void fishingTime(FishHook hook, int time) {
-
         try {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
             String fieldName = null;
 
             if (this.nmsVersion.equals("v1_13_R1")) {
+                fieldName = "h";
+            } else if (this.nmsVersion.equals("v1_13_R2")) {
                 fieldName = "h";
             } else {
                 return;
@@ -61,12 +64,13 @@ public class NMSHandler {
     }
 
     public int getRodLureLevel(FishHook hook) {
-
         try {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
             String fieldName = null;
 
             if (this.nmsVersion.equals("v1_13_R1")) {
+                fieldName = "aA";
+            } else if (this.nmsVersion.equals("v1_13_R2")) {
                 fieldName = "aA";
             } else {
                 return 0;
