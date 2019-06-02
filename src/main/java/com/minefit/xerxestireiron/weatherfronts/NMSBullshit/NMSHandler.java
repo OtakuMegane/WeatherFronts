@@ -32,6 +32,9 @@ public class NMSHandler {
             } else if (this.nmsVersion.equals("v1_13_R2")) {
                 entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
                 methodName = "s";
+            } else if (this.nmsVersion.equals("v1_14_R1")) {
+                entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
+                methodName = "r";
             }
 
             Object nmsHorse = this.nmsAPI.bukkitToNMS(entity);
@@ -51,6 +54,8 @@ public class NMSHandler {
                 fieldName = "h";
             } else if (this.nmsVersion.equals("v1_13_R2")) {
                 fieldName = "h";
+            } else if (this.nmsVersion.equals("v1_14_R1")) {
+                fieldName = "as";
             } else {
                 return;
             }
@@ -72,6 +77,8 @@ public class NMSHandler {
                 fieldName = "aA";
             } else if (this.nmsVersion.equals("v1_13_R2")) {
                 fieldName = "aA";
+            } else if (this.nmsVersion.equals("v1_14_R1")) {
+                fieldName = "ax";
             } else {
                 return 0;
             }
