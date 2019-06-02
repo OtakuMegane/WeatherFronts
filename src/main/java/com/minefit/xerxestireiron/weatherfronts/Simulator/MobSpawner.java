@@ -10,6 +10,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -56,7 +57,7 @@ public class MobSpawner {
         Set<Player> validPlayers = getValidPlayers();
         Set<Chunk> playerChunks = collectPlayerChunks(validPlayers);
         int totalHostiles = countChunkSetHostiles(playerChunks);
-        int worldHostileCap = (int) (this.world.getMonsterSpawnLimit() * (playerChunks.size()) / 256);
+        int worldHostileCap = (int) (this.world.getMonsterSpawnLimit() * (playerChunks.size()) / 256) + 100;
         // No point in doing our surface spawn routines at night, on Peaceful or if mob spawning is disabled
         if ((this.world.getTime() > 13187 && this.world.getTime() < 22812)
                 || this.world.getDifficulty() == Difficulty.PEACEFUL
@@ -169,7 +170,7 @@ public class MobSpawner {
         int centerX = block.getX();
         int centerY = block.getY();
         int centerZ = block.getZ();
-        EntityType mob = randomHostile();
+        EntityType mob = randomHostile(block);
         int randomRange = 11; // NMS gives ~99% chance of spawning within 10 blocks of center
 
         for (int i = 0; i < packTries; ++i) {
@@ -266,16 +267,37 @@ public class MobSpawner {
         return true;
     }
 
-    public EntityType randomHostile() {
-        // From BiomeBase.java, hostile mob weights (minus slime for now) totals 415
+    public EntityType randomHostile(Block block) {
+        Biome biome = block.getBiome();
         int roll = this.random.nextInt(415);
 
         if (roll < 100) {
             return EntityType.SPIDER;
         } else if (roll < 200) {
-            return EntityType.ZOMBIE;
+            if (biome == Biome.DESERT || biome == Biome.DESERT_HILLS || biome == Biome.DESERT_LAKES) {
+                if (roll < 120) {
+                    return EntityType.ZOMBIE;
+                } else {
+                    return EntityType.HUSK;
+                }
+            } else {
+                if (roll < 195) {
+                    return EntityType.ZOMBIE;
+                } else {
+                    return EntityType.ZOMBIE_VILLAGER;
+                }
+            }
         } else if (roll < 300) {
-            return EntityType.SKELETON;
+            if (biome == Biome.SNOWY_TUNDRA || biome == Biome.SNOWY_MOUNTAINS || biome == Biome.ICE_SPIKES
+                    || biome == Biome.FROZEN_RIVER || biome == Biome.FROZEN_OCEAN || biome == Biome.DEEP_FROZEN_OCEAN) {
+                if (roll < 220) {
+                    return EntityType.STRAY;
+                } else {
+                    return EntityType.SKELETON;
+                }
+            } else {
+                return EntityType.SKELETON;
+            }
         } else if (roll < 400) {
             return EntityType.CREEPER;
         } else if (roll < 410) {

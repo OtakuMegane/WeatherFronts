@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.minefit.xerxestireiron</groupId>
   <artifactId>weatherfronts</artifactId>
-  <version>0.9.6</version>
+  <version>0.9.7</version>
   <name>WeatherFronts</name>
 
   <build>
@@ -52,7 +52,7 @@
   	  <dependency>
   		<groupId>us.dynmap</groupId>
   		<artifactId>DynmapCoreAPI</artifactId>
-  		<version>2.6-SNAPSHOT</version>
+  		<version>3.0-SNAPSHOT</version>
   	</dependency>
   	<dependency>
   		<groupId>org.spigotmc</groupId>

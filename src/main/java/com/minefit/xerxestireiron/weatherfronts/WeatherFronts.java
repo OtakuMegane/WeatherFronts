@@ -36,7 +36,7 @@ public class WeatherFronts extends JavaPlugin {
     // TODO: Shift class inits to onEnable after check
 
     public WeatherFronts() {
-        this.compatibleVersions = Arrays.asList("v1_13_R1", "v1_13_R2");
+        this.compatibleVersions = Arrays.asList("v1_13_R1", "v1_13_R2", "v1_14_R1");
         this.outputPrefix = "[" + this.getName() + "] ";
     }
 
@@ -69,7 +69,6 @@ public class WeatherFronts extends JavaPlugin {
         });
 
         for (String worldName : this.mainConfig.getConfigurationSection("worlds-enabled").getKeys(false)) {
-            System.out.print("world " + worldName);
             addWorld(worldName);
         }
 
