@@ -101,7 +101,10 @@ public class Simulator {
 
         for (File stormFile : stormFiles) {
             YamlConfiguration stormData = YamlConfiguration.loadConfiguration(stormFile);
-            this.storms.put(stormData.getString("id"), new Storm(this.plugin, this, stormData));
+
+            if(stormData != null) {
+                this.storms.put(stormData.getString("id"), new Storm(this.plugin, this, stormData));
+            }
         }
     }
 
