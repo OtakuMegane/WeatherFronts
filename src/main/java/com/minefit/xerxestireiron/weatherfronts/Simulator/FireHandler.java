@@ -157,7 +157,16 @@ public class FireHandler implements Listener {
 
         if (simulatorConfig.getBoolean("spawn-skeleton-traps", true)
                 && random.nextDouble() * 100 < simulatorConfig.getDouble("skeleton-trap-chance")) {
-            this.nmsHandler.createHorseTrap(location);
+
+            if (location.inSpawnChunk() && !simulatorConfig.getBoolean("skeleton-traps-in-spawn-chunk", false)) {
+                return;
+            }
+
+            Block spawnBlock = location.getBlock();
+
+            if(spawnBlock.getRelative(BlockFace.DOWN).getType().isSolid()) {
+                this.nmsHandler.createHorseTrap(location);
+            }
         }
 
         if (!simulatorConfig.getBoolean("create-fulgurites", false)) {

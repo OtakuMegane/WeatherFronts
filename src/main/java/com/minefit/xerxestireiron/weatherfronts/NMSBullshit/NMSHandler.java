@@ -26,13 +26,10 @@ public class NMSHandler {
             String methodName = null;
             Entity entity = null;
 
-            if (this.nmsVersion.equals("v1_13_R1")) {
+            if (this.nmsVersion.equals("v1_14_R1")) {
                 entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
-                methodName = "s";
-            } else if (this.nmsVersion.equals("v1_13_R2")) {
-                entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
-                methodName = "s";
-            } else if (this.nmsVersion.equals("v1_14_R1")) {
+                methodName = "r";
+            } else if (this.nmsVersion.equals("v1_15_R1")) {
                 entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
                 methodName = "r";
             }
@@ -50,12 +47,10 @@ public class NMSHandler {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
             String fieldName = null;
 
-            if (this.nmsVersion.equals("v1_13_R1")) {
-                fieldName = "h";
-            } else if (this.nmsVersion.equals("v1_13_R2")) {
-                fieldName = "h";
-            } else if (this.nmsVersion.equals("v1_14_R1")) {
+            if (this.nmsVersion.equals("v1_14_R1")) {
                 fieldName = "as";
+            } else if (this.nmsVersion.equals("v1_15_R1")) {
+                fieldName = "ap";
             } else {
                 return;
             }
@@ -73,12 +68,10 @@ public class NMSHandler {
             Object nmsHook = this.nmsAPI.bukkitToNMS(hook);
             String fieldName = null;
 
-            if (this.nmsVersion.equals("v1_13_R1")) {
-                fieldName = "aA";
-            } else if (this.nmsVersion.equals("v1_13_R2")) {
-                fieldName = "aA";
-            } else if (this.nmsVersion.equals("v1_14_R1")) {
+            if (this.nmsVersion.equals("v1_14_R1")) {
                 fieldName = "ax";
+            } else if (this.nmsVersion.equals("v1_15_R1")) {
+                fieldName = "au";
             } else {
                 return 0;
             }
