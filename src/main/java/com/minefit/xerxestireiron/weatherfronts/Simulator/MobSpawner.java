@@ -9,6 +9,7 @@ import java.util.Set;
 import org.bukkit.Chunk;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
@@ -57,11 +58,12 @@ public class MobSpawner {
         Set<Player> validPlayers = getValidPlayers();
         Set<Chunk> playerChunks = collectPlayerChunks(validPlayers);
         int totalHostiles = countChunkSetHostiles(playerChunks);
-        int worldHostileCap = (int) (this.world.getMonsterSpawnLimit() * (playerChunks.size()) / 256) + 100;
+        // Based on limit calculation in ChunkProviderServer
+        int worldHostileCap = (int) (this.world.getMonsterSpawnLimit() * (playerChunks.size()) / 289);
         // No point in doing our surface spawn routines at night, on Peaceful or if mob spawning is disabled
         if ((this.world.getTime() > 13187 && this.world.getTime() < 22812)
                 || this.world.getDifficulty() == Difficulty.PEACEFUL
-                || this.world.getGameRuleValue("doMobSpawning").equals("false")) {
+                || this.world.getGameRuleValue(GameRule.DO_MOB_SPAWNING)) {
             return;
 
         }
