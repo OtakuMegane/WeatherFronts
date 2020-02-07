@@ -97,7 +97,7 @@ spawn-skeleton-traps: true
 skeleton-trap-chance: 0.5
 
 # Spawn skeleton traps in spawn chunks
-skeleton-in-spawn-chunk: false
+skeleton-traps-in-spawn-chunk: false
 
 # Percentage to reduce fishing time when in the rain (vanilla is approximately 20). Set to 0 to disable.
 fishing-time-reduction: 20
