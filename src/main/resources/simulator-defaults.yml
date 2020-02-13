@@ -67,15 +67,14 @@ lightning-in-dry-biomes: false
 lightning-in-cold-biomes: false
 
 # Trigger lightning fires in spawn chunks
-# Since spawn chunks are often loaded at all times they tend to be more susceptible to accumulated damage
 lightning-fire-in-spawn-chunk: false
 
 # Whether lightning striking certain blocks such as sand or clay can create a fulgurite
 create-fulgurites: true
 
-# The percent chance a fulgurite will be created during a lightning strike
+# The percent chance a fulgurite will be created when lightning strikes an appropriate block
 # Be careful if you change this. Setting it considerably higher can result in entire beaches turning into glass over weeks or months
-fulgurite-chance: 0.25
+fulgurite-chance: 0.1
 
 # Maximum size (in blocks) of a fulgurite
 fulgurite-max-size: 5
@@ -88,13 +87,10 @@ fulgurite-in-spawn-chunk: false
 manual-creation-limits: false
 
 # Whether rain will put out fire quickly as it did before 1.9 (true) or slower and more random as in later MC versions (false)
-fast-extinguish-fire: true
+fast-extinguish-fire: false
 
 # Whether skeleton trap horses will be spawned
 spawn-skeleton-traps: true
-
-# Percent chance of skeleton trap horse being spawned during lightning strike
-skeleton-trap-chance: 0.5
 
 # Spawn skeleton traps in spawn chunks
 skeleton-traps-in-spawn-chunk: false

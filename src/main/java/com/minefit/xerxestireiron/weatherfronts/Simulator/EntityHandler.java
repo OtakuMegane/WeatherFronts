@@ -242,12 +242,13 @@ public class EntityHandler implements Listener {
                     if (block.getRelative(BlockFace.DOWN).getType().isSolid() && block.isEmpty()
                             && block.getRelative(BlockFace.UP).isEmpty()
                             && block.getRelative(BlockFace.UP).getRelative(BlockFace.UP).isEmpty()) {
+                        world.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+
                         if (enderman.isInsideVehicle() && enderman.getVehicle().getType() == EntityType.MINECART) {
-                            world.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+
                             break;
                         }
 
-                        world.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
                         enderman.teleport(new Location(world, x, y, z));
                         flag2 = true;
                         flag = true;

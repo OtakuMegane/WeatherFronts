@@ -2,6 +2,7 @@ package com.minefit.xerxestireiron.weatherfronts.Simulator;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Difficulty;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -155,34 +156,40 @@ public class FireHandler implements Listener {
 
         YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
 
-        if (simulatorConfig.getBoolean("spawn-skeleton-traps", true)
-                && random.nextDouble() * 100 < simulatorConfig.getDouble("skeleton-trap-chance")) {
+        if (simulatorConfig.getBoolean("spawn-skeleton-traps", true)) {
+            if (!location.inSpawnChunk() || simulatorConfig.getBoolean("skeleton-traps-in-spawn-chunk", false)) {
 
-            if (location.inSpawnChunk() && !simulatorConfig.getBoolean("skeleton-traps-in-spawn-chunk", false)) {
-                return;
+                Difficulty difficulty = world.getDifficulty();
+                double chanceLimit = 0.0;
+
+                if (difficulty == Difficulty.EASY) {
+                    chanceLimit = this.random.nextDoubleRange(0.0, 0.0075) + 0.0075;
+                } else if (difficulty == Difficulty.NORMAL) {
+                    chanceLimit = this.random.nextDoubleRange(0.0, 0.025) + 0.015;
+                } else if (difficulty == Difficulty.HARD) {
+                    chanceLimit = this.random.nextDoubleRange(0.0, 0.039375) + 0.028125;
+                }
+
+                double spawnChance = this.random.nextDouble();
+                boolean doSpawn = spawnChance > 0.0 && spawnChance <= chanceLimit;
+                Block spawnBlock = location.getBlock();
+
+                if (doSpawn && spawnBlock.getRelative(BlockFace.DOWN).getType().isSolid()) {
+                    this.nmsHandler.createHorseTrap(location);
+                }
             }
+        }
 
-            Block spawnBlock = location.getBlock();
+        if (simulatorConfig.getBoolean("create-fulgurites", false)) {
+            if (!location.inSpawnChunk() || simulatorConfig.getBoolean("fulgurite-in-spawn-chunk", false)) {
 
-            if(spawnBlock.getRelative(BlockFace.DOWN).getType().isSolid()) {
-                this.nmsHandler.createHorseTrap(location);
+                double fulguriteChance = simulatorConfig.getDouble("fulgurite-chance", 0.10D) / 100;
+
+                if (this.random.nextDouble() <= fulguriteChance) {
+                    new Fulgurite(this.simulator, block);
+                }
             }
         }
-
-        if (!simulatorConfig.getBoolean("create-fulgurites", false)) {
-            return;
-        }
-
-        if (location.inSpawnChunk() && !simulatorConfig.getBoolean("fulgurite-in-spawn-chunk", false)) {
-            return;
-        }
-
-        double fulguriteChance = simulatorConfig.getDouble("fulgurite-chance", 0.25D);
-
-        if (this.random.nextDouble() < (fulguriteChance / 100) || fulguriteChance >= 100) {
-            new Fulgurite(this.simulator, block);
-        }
-
     }
 
     private void addAdjacentFire(Block block) {
