@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.MoistureChangeEvent;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
@@ -27,15 +28,31 @@ public class StormListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onFarmlandDecay(BlockFadeEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         Block block = event.getBlock();
 
         if (this.blockFunction.isInRain(block) && block.getType() == Material.FARMLAND) {
             event.setCancelled(true);
-            Farmland farmland = (Farmland) block.getBlockData();
+        }
+    }
 
-            if ( farmland.getMoisture() < farmland.getMaximumMoisture()) {
-                farmland.setMoisture(6);
-                block.setBlockData(farmland);
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onMoistureChange(MoistureChangeEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        Block block = event.getBlock();
+
+        if (this.blockFunction.isInRain(block) && block.getType() == Material.FARMLAND) {
+            Farmland farmlandOld = (Farmland) block.getBlockData();
+            Farmland farmlandNew = (Farmland) event.getNewState().getBlockData();
+
+            if (farmlandNew.getMoisture() < farmlandOld.getMoisture()) {
+                event.setCancelled(true);
             }
         }
     }

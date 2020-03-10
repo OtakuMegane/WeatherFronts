@@ -3,12 +3,17 @@ package com.minefit.xerxestireiron.weatherfronts.Storm;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.type.Farmland;
+import org.bukkit.event.block.CauldronLevelChangeEvent;
+import org.bukkit.event.block.MoistureChangeEvent;
 import org.bukkit.material.Cauldron;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
@@ -63,7 +68,8 @@ public class ChunkTick {
                     continue;
                 }
 
-                FrontsLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, entry.getKey(), true);
+                FrontsLocation location = this.chunkFunction.randomLocationInChunk(this.simulator, entry.getKey(),
+                        true);
 
                 if (!location.isLoaded() || !this.storm.isInStorm(location)) {
                     continue;
@@ -93,19 +99,33 @@ public class ChunkTick {
 
     private void fillCauldron(Block block) {
         Levelled cauldron = (Levelled) block.getBlockData();
+        int oldLevel = cauldron.getLevel();
 
-        if (cauldron.getLevel() < cauldron.getMaximumLevel()) {
-            cauldron.setLevel(cauldron.getLevel()  + 1);
-            block.setBlockData(cauldron);
+        if (oldLevel < cauldron.getMaximumLevel()) {
+            int newLevel = cauldron.getLevel() + 1;
+            CauldronLevelChangeEvent newEvent = new CauldronLevelChangeEvent(block, null, null, oldLevel, newLevel);
+            Bukkit.getServer().getPluginManager().callEvent(newEvent);
+
+            if (!newEvent.isCancelled()) {
+                cauldron.setLevel(newLevel);
+                block.setBlockData(cauldron);
+            }
         }
     }
 
     private void hydrateFarmland(Block block) {
         Farmland farmland = (Farmland) block.getBlockData();
 
-        if ( farmland.getMoisture() < farmland.getMaximumMoisture()) {
-            farmland.setMoisture(6);
-            block.setBlockData(farmland);
+        if (farmland.getMoisture() < farmland.getMaximumMoisture()) {
+            BlockState newState = block.getState();
+            farmland.setMoisture(7);
+            newState.setBlockData((BlockData) farmland);
+            MoistureChangeEvent newEvent = new MoistureChangeEvent(block, newState);
+            Bukkit.getServer().getPluginManager().callEvent(newEvent);
+
+            if (!newEvent.isCancelled()) {
+                block.setBlockData(farmland);
+            }
         }
     }
 
