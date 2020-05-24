@@ -59,9 +59,8 @@ public class LightningHandler implements Listener {
 
                 double spawnChance = this.random.nextDouble();
                 boolean doSpawn = spawnChance > 0.0 && spawnChance <= chanceLimit;
-                Block spawnBlock = location.getBlock();
 
-                if (doSpawn && spawnBlock.getRelative(BlockFace.DOWN).getType().isSolid()) {
+                if (doSpawn) {
                     this.nmsHandler.createHorseTrap(location);
                 }
             }

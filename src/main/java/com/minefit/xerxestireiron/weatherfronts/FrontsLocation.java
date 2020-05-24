@@ -89,8 +89,10 @@ public class FrontsLocation extends Location {
 
     public boolean inSpawnChunk() {
         Location spawn = this.world.getSpawnLocation();
-        return this.getBlockX() < (spawn.getX() + 128 + 8) && this.getBlockX() > (spawn.getX() - 128 - 8)
-                && this.getBlockZ() < (spawn.getZ() + 128 + 8) && this.getBlockZ() > (spawn.getZ() - 128 - 8);
+        // There is a radius of 22 chunks (352 blocks) from the spawn chunk that are always loaded
+        int spawnChunkBlockRadius = 352;
+        return this.getBlockX() < (spawn.getX() + spawnChunkBlockRadius + 8) && this.getBlockX() > (spawn.getX() - spawnChunkBlockRadius - 8)
+                && this.getBlockZ() < (spawn.getZ() + spawnChunkBlockRadius + 8) && this.getBlockZ() > (spawn.getZ() - spawnChunkBlockRadius - 8);
     }
 
     public Block getBlock() {
