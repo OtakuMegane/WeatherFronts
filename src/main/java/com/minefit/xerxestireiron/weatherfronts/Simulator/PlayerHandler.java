@@ -102,7 +102,7 @@ public class PlayerHandler implements Listener {
                     player.setPlayerWeather(WeatherType.DOWNFALL);
                 }
 
-                this.plugin.getPacketHandler().changeWeather(player, location.inWhichStorm());
+                //this.plugin.getPacketHandler().changeWeather(player, location.inWhichStorm());
             }
         }
     }

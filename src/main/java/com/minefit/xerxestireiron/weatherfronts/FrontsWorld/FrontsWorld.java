@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -72,13 +73,13 @@ public class FrontsWorld {
         return (Simulator) values[random.nextInt(length)];
     }
 
-    public boolean hasStorm(String stormName) {
-        return whichSimulator(stormName) != null;
+    public boolean hasStorm(String stormID) {
+        return whichSimulator(stormID) != null;
     }
 
-    private Simulator whichSimulator(String stormName) {
+    private Simulator whichSimulator(String stormID) {
         for (Entry<String, Simulator> simulator : this.simulators.entrySet()) {
-            if (simulator.getValue().simulatorHasStorm(stormName)) {
+            if (simulator.getValue().hasStorm(stormID)) {
                 return simulator.getValue();
             }
         }
@@ -104,6 +105,10 @@ public class FrontsWorld {
         }
 
         return null;
+    }
+
+    public String locationInWhichStorm(Location location) {
+        return locationInWhichStorm((int) location.getX(), (int) location.getZ());
     }
 
     public Simulator getSimulatorByStorm(String stormName) {

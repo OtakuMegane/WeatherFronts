@@ -10,7 +10,7 @@ generate-fronts: true
 
 # Whether to use weighted lightning for larger storms
 # The lightning values will be weighted by the front engine for a more consistent experience in larger fronts
-# For example a player inside a front with setting of 10 will witness approximately 10 strikes per minute
+# For example a player inside a front with setting of 10 will witness on average 10 strikes per minute
 # However the total number of strikes occurring throughout the entire front each minute may be higher in order to achieve that
 use-weighted-lightning: true
 
@@ -75,20 +75,20 @@ minimum-precipitation-intensity: 1
 # The maximum intensity of precipitation
 maximum-precipitation-intensity: 30
 
-# Minimum lightning strikes per minute
+# Minimum lightning strikes per minute (if not a rain-only storm)
 minimum-lightning-per-minute: 1
 
 # Maximum lightning strikes per minute
-maximum-lightning-per-minute: 50
+maximum-lightning-per-minute: 60
 
 # Minimum speed of a front on X-axis East/West (blocks/s)
-minimum-velocity-x: 3
+minimum-velocity-x: 2
 
 # Maximum speed of a front on X-axis East/West (blocks/s)
 maximum-velocity-x: 12
 
 # Minimum speed of a front on Z-axis North/South (blocks/s)
-minimum-velocity-z: 3
+minimum-velocity-z: 2
 
 # Maximum speed of a front on Z-axis North/South (blocks/s)
 maximum-velocity-z: 12

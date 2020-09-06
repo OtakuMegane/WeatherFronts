@@ -47,7 +47,7 @@ public class GenerateStormData {
             while (!validId) {
                 id = "storm" + this.random.nextInt(10000);
 
-                if (!this.system.getSimulator().simulatorHasStorm(id)) {
+                if (!this.system.getSimulator().hasStorm(id)) {
                     validId = true;
                 }
             }

@@ -36,7 +36,7 @@ public class WeatherFronts extends JavaPlugin {
     // TODO: Shift class inits to onEnable after check
 
     public WeatherFronts() {
-        this.compatibleVersions = Arrays.asList("v1_14_R1", "v1_15_R1");
+        this.compatibleVersions = Arrays.asList("v1_16_R1");
         this.outputPrefix = "[" + this.getName() + "] ";
     }
 
@@ -61,7 +61,7 @@ public class WeatherFronts extends JavaPlugin {
             }
         });
 
-        this.protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.SPAWN_ENTITY_WEATHER) {
+        this.protocolManager.addPacketListener(new PacketAdapter(this, Play.Server.SPAWN_ENTITY) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 packetHandler.onLightningPacket(event);

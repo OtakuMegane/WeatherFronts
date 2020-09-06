@@ -73,7 +73,7 @@ public class Simulator {
         if (isInSimulator(x, z)) {
             for (Entry<String, Storm> entry : this.storms.entrySet()) {
                 if (entry.getValue().isInStorm(x, z)) {
-                    return entry.getValue().getName();
+                    return entry.getValue().getID();
                 }
             }
         }
@@ -115,7 +115,7 @@ public class Simulator {
     }
 
     public void addStorm(Storm storm) {
-        this.storms.put(storm.getName(), storm);
+        this.storms.put(storm.getID(), storm);
     }
 
     public Storm createStorm(YamlConfiguration config, boolean command, boolean autogen) {
@@ -169,7 +169,7 @@ public class Simulator {
         return false;
     }
 
-    public boolean simulatorHasStorm(String stormName) {
+    public boolean hasStorm(String stormName) {
         return this.storms.containsKey(stormName);
     }
 
@@ -178,7 +178,7 @@ public class Simulator {
     }
 
     public boolean renameFront(String originalName, String newName) {
-        if (simulatorHasStorm(originalName) && newName != null) {
+        if (hasStorm(originalName) && newName != null) {
             Storm storm = this.storms.get(originalName);
             storm.changeName(newName);
             this.storms.put(storm.getName(), storm);

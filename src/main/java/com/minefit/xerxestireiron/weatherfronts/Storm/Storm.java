@@ -156,12 +156,16 @@ public class Storm {
     }
 
     private void updateStormBoundaries() {
+        // Low X, Low Z
         this.boundaries[0] = new Point2D.Double(this.data.getInt("center-x") - this.data.getInt("radius-x"),
                 this.data.getInt("center-z") - this.data.getInt("radius-z"));
+        // High X, Low Z
         this.boundaries[1] = new Point2D.Double(this.data.getInt("center-x") + this.data.getInt("radius-x"),
                 this.data.getInt("center-z") - this.data.getInt("radius-z"));
+        // High X, High Z
         this.boundaries[2] = new Point2D.Double(this.data.getInt("center-x") + this.data.getInt("radius-x"),
                 this.data.getInt("center-z") + this.data.getInt("radius-z"));
+        // Low X, High Z
         this.boundaries[3] = new Point2D.Double(this.data.getInt("center-x") - this.data.getInt("radius-x"),
                 this.data.getInt("center-z") + this.data.getInt("radius-z"));
     }
@@ -176,8 +180,22 @@ public class Storm {
                 && z < boundaries[2].getY();
     }
 
+    public boolean isInStorm(double x, double z) {
+        return isInStorm((int) x, (int) z);
+    }
+
     public boolean isInStorm(FrontsLocation location) {
         return isInStorm(location.getBlockX(), location.getBlockZ());
+    }
+
+    public boolean isInRangeOf(int x, int z, int range) {
+        Point2D[] boundaries = getStormBoundaries();
+        return x > boundaries[0].getX() - range && x < boundaries[1].getX() + range && z > boundaries[1].getY() - range
+                && z < boundaries[2].getY() + range;
+    }
+
+    public boolean isInRangeOf(double x, double z, int range) {
+        return isInRangeOf((int) x, (int) z, range);
     }
 
     public int getPrecipitationIntensity() {

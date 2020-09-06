@@ -4,12 +4,15 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.minefit.xerxestireiron.weatherfronts.FrontsWorld.FrontsWorld;
+import com.minefit.xerxestireiron.weatherfronts.Simulator.Simulator;
+import com.minefit.xerxestireiron.weatherfronts.Storm.Storm;
 
 public class PacketHandler {
     private final WeatherFronts plugin;
@@ -19,70 +22,16 @@ public class PacketHandler {
     }
 
     public void onSoundPacket(PacketEvent event) {
-        event.setCancelled(true);
         World world = event.getPlayer().getWorld();
-        boolean isThunder = event.getPacket().getSoundEffects().read(0) == Sound.ENTITY_LIGHTNING_BOLT_THUNDER;
+        boolean isThunder = soundIsThunder(event.getPacket().getSoundEffects().read(0));
 
         if (!this.plugin.worldEnabled(world) || !isThunder) {
-            event.setCancelled(false);
             return;
         }
 
         double x = (event.getPacket().getIntegers().read(0) / 8.0);
         double y = (event.getPacket().getIntegers().read(1) / 8.0);
         double z = (event.getPacket().getIntegers().read(2) / 8.0);
-        FrontsWorld frontsWorld = this.plugin.getWorldHandle(world);
-        String stormName = frontsWorld.locationInWhichStorm((int) x, (int) z);
-
-        if (stormName == null) {
-            return;
-        }
-
-        YamlConfiguration simConfig = frontsWorld.getSimulatorByStorm(stormName).getSimulatorConfig();
-        int volume = simConfig.getInt("thunder-volume", 192);
-
-        // Make sure intracloud lightning isn't too quiet
-        if (y > 255) {
-            volume += y - 255;
-        }
-
-        int hearOutside = simConfig.getInt("thunder-distance-outside", 90);
-        Location playerLoc = event.getPlayer().getLocation();
-        int playerX = playerLoc.getBlockX();
-        int playerZ = playerLoc.getBlockZ();
-        YamlConfiguration stormConfig = frontsWorld.getSimulatorByStorm(stormName).getStormData(stormName);
-        int stormRadiusX = stormConfig.getInt("radius-x");
-        int stormRadiusZ = stormConfig.getInt("radius-z");
-        int stormX = stormConfig.getInt("center-x");
-        int stormZ = stormConfig.getInt("center-z");
-
-        int x1 = stormX + stormRadiusX;
-        int x2 = stormX - stormRadiusX;
-        int z1 = stormZ + stormRadiusZ;
-        int z2 = stormZ - stormRadiusZ;
-
-        if (x1 + hearOutside > playerX && x2 - hearOutside < playerX && z1 + hearOutside > playerZ
-                && z2 - hearOutside < playerZ) {
-            event.setCancelled(false);
-            event.getPacket().getFloat().write(0, (float) volume / 16);
-        }
-    }
-
-    public void onLightningPacket(PacketEvent event) {
-        event.setCancelled(true);
-        World world = event.getPlayer().getWorld();
-
-        if (!this.plugin.worldEnabled(world)) {
-            event.setCancelled(false);
-            return;
-        }
-
-        double x = (event.getPacket().getDoubles().read(0));
-        double y = (event.getPacket().getDoubles().read(1));
-        double z = (event.getPacket().getDoubles().read(2));
-        Player player = event.getPlayer();
-        double playerX = player.getLocation().getX();
-        double playerZ = player.getLocation().getZ();
         FrontsWorld frontsWorld = this.plugin.getWorldHandle(world.getName());
         String stormName = frontsWorld.locationInWhichStorm((int) x, (int) z);
 
@@ -90,18 +39,87 @@ public class PacketHandler {
             return;
         }
 
-        YamlConfiguration stormConfig = frontsWorld.getSimulatorByStorm(stormName).getStormData(stormName);
-        int stormRadiusX = stormConfig.getInt("radius-x");
-        int stormRadiusZ = stormConfig.getInt("radius-z");
-        int stormX = stormConfig.getInt("center-x");
-        int stormZ = stormConfig.getInt("center-z");
-        int seeOutside = frontsWorld.getSimulatorByStorm(stormName).getSimulatorConfig()
-                .getInt("lightning-distance-outside", 160);
+        Simulator simulator = frontsWorld.getSimulatorByStorm(stormName);
 
-        if (stormX + stormRadiusX + seeOutside > playerX && stormX - stormRadiusX - seeOutside < playerX
-                && stormZ + stormRadiusZ + seeOutside > playerZ && stormZ - stormRadiusZ - seeOutside < playerZ) {
-            event.setCancelled(false);
+        if (simulator == null) {
+            return;
         }
+
+        YamlConfiguration simConfig = simulator.getSimulatorConfig();
+        int volume = simConfig.getInt("thunder-volume", 300);
+
+        // Make sure intracloud lightning isn't too quiet
+        if (y > 255) {
+            volume += y - 255;
+        }
+
+
+        Storm storm = simulator.getStorm(stormName);
+        Player player = event.getPlayer();
+        Location playerLoc = player.getLocation();
+        double playerX = playerLoc.getX();
+        double playerZ = playerLoc.getZ();
+        int hearOutside = simConfig.getInt("thunder-distance-outside", 140);
+
+        if(storm.isInStorm(playerX, playerZ)) {
+            event.getPacket().getFloat().write(0, (float) volume / 16);
+            return;
+        }
+
+        if(storm.isInRangeOf(playerX, playerZ, hearOutside)) {
+            event.getPacket().getFloat().write(0, (float) volume / 16);
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    public void onLightningPacket(PacketEvent event) {
+        World world = event.getPlayer().getWorld();
+
+        if (!this.plugin.worldEnabled(world)) {
+            return;
+        }
+
+        EntityType packetEntity = event.getPacket().getEntityTypeModifier().getValues().get(0);
+
+        if(packetEntity != EntityType.LIGHTNING) {
+            return;
+        }
+
+        double x = (event.getPacket().getDoubles().read(0));
+        double y = (event.getPacket().getDoubles().read(1));
+        double z = (event.getPacket().getDoubles().read(2));
+        FrontsWorld frontsWorld = this.plugin.getWorldHandle(world.getName());
+        String stormName = frontsWorld.locationInWhichStorm((int) x, (int) z);
+
+        if (stormName == null) {
+            return;
+        }
+
+        Simulator simulator = frontsWorld.getSimulatorByStorm(stormName);
+
+        if (simulator == null) {
+            return;
+        }
+
+        Storm storm = simulator.getStorm(stormName);
+        Player player = event.getPlayer();
+        Location playerLoc = player.getLocation();
+        double playerX = playerLoc.getX();
+        double playerZ = playerLoc.getZ();
+        int seeOutside = frontsWorld.getSimulatorByStorm(stormName).getSimulatorConfig()
+                .getInt("lightning-distance-outside", 180);
+
+        if(storm.isInStorm(playerX, playerZ)) {
+            return;
+        }
+
+        if(storm.isInRangeOf(playerX, playerZ, seeOutside)) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 
     public void changeWeather(Player player, String storm) {
@@ -166,6 +184,9 @@ public class PacketHandler {
 
         event.getPacket().getIntegers().write(0, 7);
         event.getPacket().getFloat().write(0, 1.0F);
+    }
 
+    public boolean soundIsThunder(Sound sound) {
+        return sound == Sound.ENTITY_LIGHTNING_BOLT_IMPACT || sound == Sound.ENTITY_LIGHTNING_BOLT_THUNDER;
     }
 }
