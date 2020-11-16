@@ -36,7 +36,7 @@ public class WeatherFronts extends JavaPlugin {
     // TODO: Shift class inits to onEnable after check
 
     public WeatherFronts() {
-        this.compatibleVersions = Arrays.asList("v1_16_R1");
+        this.compatibleVersions = Arrays.asList("v1_16_R1", "v1_16_R2", "v_1_16_R3");
         this.outputPrefix = "[" + this.getName() + "] ";
     }
 
