@@ -36,6 +36,7 @@ public class PacketHandler {
         String stormName = frontsWorld.locationInWhichStorm((int) x, (int) z);
 
         if (stormName == null) {
+            event.setCancelled(true);
             return;
         }
 
@@ -52,7 +53,6 @@ public class PacketHandler {
         if (y > 255) {
             volume += y - 255;
         }
-
 
         Storm storm = simulator.getStorm(stormName);
         Player player = event.getPlayer();
