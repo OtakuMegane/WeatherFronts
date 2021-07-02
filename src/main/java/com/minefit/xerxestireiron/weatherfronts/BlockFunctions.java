@@ -83,8 +83,7 @@ public class BlockFunctions {
         Block block = findHighestBlock(location, 255);
 
         for (int start = block.getY(); start > 0; --start) {
-            if ((block.getType().isSolid() || block.isLiquid())
-                    && (block.getRelative(BlockFace.UP).isEmpty() || !isShelter(block))) {
+            if (lightningCanStrike(block)) {
                 return block;
             }
 
@@ -92,6 +91,15 @@ public class BlockFunctions {
         }
 
         return block;
+    }
+
+    public boolean lightningCanStrike(Block block) {
+        if ((block.getType().isSolid() || block.isLiquid())
+                && (block.getRelative(BlockFace.UP).isEmpty() || !isShelter(block))) {
+            return true;
+        }
+
+        return false;
     }
 
     public boolean adjacentBlockExposed(Block block) {

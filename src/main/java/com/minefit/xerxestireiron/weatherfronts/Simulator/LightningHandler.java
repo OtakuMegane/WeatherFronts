@@ -1,6 +1,9 @@
 package com.minefit.xerxestireiron.weatherfronts.Simulator;
 
 import org.bukkit.Difficulty;
+import org.bukkit.GameRule;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -41,9 +44,9 @@ public class LightningHandler implements Listener {
             return;
         }
 
-        YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
+        /*YamlConfiguration simulatorConfig = this.simulator.getSimulatorConfig();
 
-        if (simulatorConfig.getBoolean("spawn-skeleton-traps", true)) {
+        if (event.getWorld().getGameRuleValue(GameRule.DO_MOB_SPAWNING) && simulatorConfig.getBoolean("spawn-skeleton-traps", true)) {
             if (!location.inSpawnChunk() || simulatorConfig.getBoolean("skeleton-traps-in-spawn-chunk", false)) {
 
                 Difficulty difficulty = world.getDifficulty();
@@ -75,6 +78,6 @@ public class LightningHandler implements Listener {
                     new Fulgurite(this.simulator, block);
                 }
             }
-        }
+        }*/
     }
 }

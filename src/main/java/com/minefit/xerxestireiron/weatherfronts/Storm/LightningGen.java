@@ -1,13 +1,22 @@
 package com.minefit.xerxestireiron.weatherfronts.Storm;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
+import org.bukkit.GameRule;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.LightningStrike;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
 import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
+import com.minefit.xerxestireiron.weatherfronts.NMSBullshit.NMSHandler;
+import com.minefit.xerxestireiron.weatherfronts.Simulator.Fulgurite;
 
 public class LightningGen {
     private final WeatherFronts plugin;
@@ -22,6 +31,7 @@ public class LightningGen {
     private double lightningPerCheck;
     private boolean weighted = false;
     private final XORShiftRandom random;
+    private final NMSHandler nmsHandler;
 
     public LightningGen(WeatherFronts instance, YamlConfiguration config, Storm storm) {
         this.plugin = instance;
@@ -33,6 +43,7 @@ public class LightningGen {
         this.random = new XORShiftRandom();
         this.baseLPM = this.stormConfig.getInt("lightning-per-minute");
         this.weightedLPM = this.baseLPM;
+        this.nmsHandler = new NMSHandler(this.plugin);
 
         if (this.systemConfig.getBoolean("use-weighted-lightning", true)) {
             weight(this.systemConfig.getInt("weight-radius-threshold", 192));
@@ -92,18 +103,84 @@ public class LightningGen {
 
         boolean lightningDry = this.simulatorConfig.getBoolean("lightning-in-dry-biomes", false);
         boolean lightningCold = this.simulatorConfig.getBoolean("lightning-in-cold-biomes", false);
+        LightningStrike newLightning = null;
+        Location strikeLocation = location.getBukkitLocation();
 
         if (this.random.nextInt(100) < this.storm.intracloudPecentage()) {
-            location.setY(this.random.nextInt(45) + 256);
-            world.strikeLightning(location);
+            strikeLocation.setY(this.random.nextInt(45) + 256); // TODO: Figure out max height
+            newLightning = world.strikeLightning(location);
         } else {
             Block block = this.blockFunction.getTopBlockLightningValid(location);
 
-            if ((!this.blockFunction.isDry(block) && !this.blockFunction.isCold(block))
-                    || (this.blockFunction.isDry(block) && lightningDry)
-                    || (this.blockFunction.isCold(block) && lightningCold)) {
-                world.strikeLightning(block.getLocation());
+            strikeLocation = strikeLocation(block.getLocation());
+            Block strikeBlock = world.getBlockAt(strikeLocation);
+
+            if (!this.blockFunction.lightningCanStrike(strikeBlock)) {
+                return;
+            }
+
+            if ((!this.blockFunction.isDry(strikeBlock) && !this.blockFunction.isCold(strikeBlock))
+                    || (this.blockFunction.isDry(strikeBlock) && lightningDry)
+                    || (this.blockFunction.isCold(strikeBlock) && lightningCold)) {
+                newLightning = world.strikeLightning(strikeLocation);
             }
         }
+
+        if (world.getGameRuleValue(GameRule.DO_MOB_SPAWNING)
+                && this.simulatorConfig.getBoolean("spawn-skeleton-traps", true)) {
+            if (!location.inSpawnChunk() || this.simulatorConfig.getBoolean("skeleton-traps-in-spawn-chunk", false)) {
+
+                Difficulty difficulty = world.getDifficulty();
+                double chanceLimit = 0.0;
+
+                if (difficulty == Difficulty.EASY) {
+                    chanceLimit = this.random.nextDoubleRange(0.0, 0.0075) + 0.0075;
+                } else if (difficulty == Difficulty.NORMAL) {
+                    chanceLimit = this.random.nextDoubleRange(0.0, 0.025) + 0.015;
+                } else if (difficulty == Difficulty.HARD) {
+                    chanceLimit = this.random.nextDoubleRange(0.0, 0.039375) + 0.028125;
+                }
+
+                double spawnChance = this.random.nextDouble();
+                boolean doSpawn = spawnChance > 0.0 && spawnChance <= chanceLimit;
+
+                if (doSpawn) {
+                    this.nmsHandler.createHorseTrap(location);
+                }
+            }
+        }
+
+        if (this.simulatorConfig.getBoolean("create-fulgurites", false)) {
+            if (!location.inSpawnChunk() || this.simulatorConfig.getBoolean("fulgurite-in-spawn-chunk", false)) {
+
+                double fulguriteChance = this.simulatorConfig.getDouble("fulgurite-chance", 0.10D) / 100;
+
+                if (this.random.nextDouble() <= fulguriteChance) {
+                    new Fulgurite(this.storm.getSimulator(), world.getBlockAt(strikeLocation)); // TODO: Call generate manually
+                }
+            }
+        }
+    }
+
+    private Location strikeLocation(Location location) {
+        int blockX = location.getBlockX();
+        int blockY = location.getBlockY();
+        int blockZ = location.getBlockZ();
+        World world = location.getWorld();
+
+        for (int i = -16; i < 16; ++i) {
+            for (int j = 0; j > -4; --j) {
+                for (int k = -16; k < 16; ++k) {
+
+                    Block checkBlock = world.getBlockAt(blockX + i, blockY + j, blockZ + k);
+
+                    if (checkBlock.getRelative(BlockFace.DOWN).getType() == Material.LIGHTNING_ROD) {
+                        return checkBlock.getLocation();
+                    }
+                }
+            }
+        }
+
+        return location;
     }
 }
