@@ -14,7 +14,6 @@ import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.type.Farmland;
 import org.bukkit.event.block.CauldronLevelChangeEvent;
 import org.bukkit.event.block.MoistureChangeEvent;
-import org.bukkit.material.Cauldron;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
 import com.minefit.xerxestireiron.weatherfronts.ChunkFunctions;
@@ -76,6 +75,7 @@ public class ChunkTick {
                 }
 
                 Block block = this.blockFunction.getTopBlock(location);
+                Material blockType = block.getType();
 
                 if (this.blockFunction.isDry(block)) {
                     continue;
@@ -86,7 +86,7 @@ public class ChunkTick {
                     continue;
                 }
 
-                if (block.getType() == Material.CAULDRON) {
+                if (blockType == Material.WATER_CAULDRON || blockType == Material.CAULDRON) {
                     fillCauldron(block);
                 } else if (block.getType() == Material.FARMLAND) {
                     hydrateFarmland(block);
@@ -98,19 +98,25 @@ public class ChunkTick {
     }
 
     private void fillCauldron(Block block) {
+        Material blockType = block.getType();
+        boolean newWater = blockType == Material.CAULDRON;
+
+        if (newWater) {
+            block.setType(Material.WATER_CAULDRON);
+        }
+
         Levelled cauldron = (Levelled) block.getBlockData();
         int oldLevel = cauldron.getLevel();
 
-        if (oldLevel < cauldron.getMaximumLevel()) {
+        if (!newWater && oldLevel < cauldron.getMaximumLevel()) {
             int newLevel = cauldron.getLevel() + 1;
-            CauldronLevelChangeEvent newEvent = new CauldronLevelChangeEvent(block, null, null, oldLevel, newLevel);
-            Bukkit.getServer().getPluginManager().callEvent(newEvent);
-
-            if (!newEvent.isCancelled()) {
-                cauldron.setLevel(newLevel);
-                block.setBlockData(cauldron);
-            }
+            cauldron.setLevel(newLevel);
+            block.setBlockData(cauldron);
         }
+
+        CauldronLevelChangeEvent newEvent = new CauldronLevelChangeEvent(block, null,
+                CauldronLevelChangeEvent.ChangeReason.NATURAL_FILL, block.getState());
+        Bukkit.getServer().getPluginManager().callEvent(newEvent);
     }
 
     private void hydrateFarmland(Block block) {

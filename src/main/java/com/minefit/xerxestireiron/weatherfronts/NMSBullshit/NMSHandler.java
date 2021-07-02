@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FishHook;
+import org.bukkit.entity.SkeletonHorse;
 
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 
@@ -26,10 +27,9 @@ public class NMSHandler {
             String methodName = null;
             Entity entity = null;
 
-            if (this.nmsVersion.equals("v1_16_R1") || this.nmsVersion.equals("v1_16_R2")
-                    || this.nmsVersion.equals("v1_16_R3")) {
+            if (this.nmsVersion.equals("v1_17_R1")) {
                 entity = location.getWorld().spawnEntity(location, EntityType.SKELETON_HORSE);
-                methodName = "t";
+                methodName = "v";
             } else {
                 return;
             }
