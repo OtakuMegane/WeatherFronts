@@ -142,7 +142,7 @@ public class MobSpawner {
                     int chunkX = playerChunkX + i;
                     int chunkZ = playerChunkZ + j;
 
-                    if (this.world.isChunkInUse(chunkX, chunkZ)) {
+                    if (this.world.isChunkLoaded(chunkX, chunkZ)) {
                         playerChunks.add(this.world.getChunkAt(chunkX, chunkZ));
                     }
                 }

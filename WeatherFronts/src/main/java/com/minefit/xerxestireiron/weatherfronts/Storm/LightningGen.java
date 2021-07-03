@@ -5,6 +5,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -12,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LightningStrike;
 
 import com.minefit.xerxestireiron.weatherfronts.BlockFunctions;
+import com.minefit.xerxestireiron.weatherfronts.ChunkFunctions;
 import com.minefit.xerxestireiron.weatherfronts.FrontsLocation;
 import com.minefit.xerxestireiron.weatherfronts.WeatherFronts;
 import com.minefit.xerxestireiron.weatherfronts.XORShiftRandom;
@@ -25,6 +27,7 @@ public class LightningGen {
     private final YamlConfiguration simulatorConfig;
     private final YamlConfiguration systemConfig;
     private final BlockFunctions blockFunction;
+    private final ChunkFunctions chunkFunctions;
     private double accumulator = 0.0;
     private double baseLPM;
     private double weightedLPM;
@@ -40,6 +43,7 @@ public class LightningGen {
         this.simulatorConfig = config;
         this.systemConfig = storm.getSimulator().getWeatherSystem().getConfig();
         this.blockFunction = new BlockFunctions(instance, storm.getSimulator());
+        this.chunkFunctions = new ChunkFunctions(instance);
         this.random = new XORShiftRandom();
         this.baseLPM = this.stormConfig.getInt("lightning-per-minute");
         this.weightedLPM = this.baseLPM;
@@ -168,6 +172,8 @@ public class LightningGen {
         int blockZ = location.getBlockZ();
         World world = location.getWorld();
 
+        this.chunkFunctions.chunksInRadiusByLevel(location, 8, false);
+
         for (int i = -16; i < 16; ++i) {
             for (int j = 0; j > -4; --j) {
                 for (int k = -16; k < 16; ++k) {
@@ -183,4 +189,6 @@ public class LightningGen {
 
         return location;
     }
+
+
 }
